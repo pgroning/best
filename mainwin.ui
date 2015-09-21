@@ -11,70 +11,33 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Bundle Designer</string>
+   <string>Best</string>
   </property>
   <property name="windowIcon">
    <iconset>
-    <normalon>icons/bird-icon_32x32.png</normalon>
+    <normalon>../bundes/icons/bird-icon_32x32.png</normalon>
    </iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QFrame" name="frame">
-    <property name="geometry">
-     <rect>
-      <x>10</x>
-      <y>10</y>
-      <width>661</width>
-      <height>451</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::StyledPanel</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Raised</enum>
-    </property>
-    <widget class="QWidget" name="gridLayoutWidget">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>0</y>
-       <width>641</width>
-       <height>431</height>
-      </rect>
-     </property>
-     <layout class="QGridLayout" name="gridLayout">
-      <item row="1" column="0">
-       <widget class="QPushButton" name="pushButton">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QPushButton" name="pushButton_2">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QPushButton" name="pushButton_3">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
-       <widget class="QPushButton" name="pushButton_4">
-        <property name="text">
-         <string>PushButton</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </widget>
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>0</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+      </widget>
+     </widget>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -115,9 +78,9 @@
    <widget class="QMenu" name="menuHelp">
     <property name="geometry">
      <rect>
-      <x>380</x>
-      <y>211</y>
-      <width>174</width>
+      <x>381</x>
+      <y>195</y>
+      <width>125</width>
       <height>107</height>
      </rect>
     </property>
@@ -129,7 +92,7 @@
     </property>
     <addaction name="actionAbout"/>
     <addaction name="separator"/>
-    <addaction name="actionAbout_Fundo"/>
+    <addaction name="actionAbout_Best"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
@@ -141,10 +104,45 @@
     <bool>false</bool>
    </property>
   </widget>
+  <widget class="QDockWidget" name="dockWidget">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents">
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="text">
+        <string>PushButton</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QDockWidget" name="dockWidget_2">
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="dockWidgetContents_2">
+    <layout class="QVBoxLayout" name="verticalLayout_3">
+     <item>
+      <widget class="QPushButton" name="pushButton_2">
+       <property name="text">
+        <string>PushButton</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEdit"/>
+     </item>
+    </layout>
+   </widget>
+  </widget>
   <action name="actionOpen_file">
    <property name="icon">
     <iconset>
-     <normalon>icons/open-file-icon_32x32.png</normalon>
+     <normalon>../bundes/icons/open-file-icon_32x32.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -157,7 +155,7 @@
   <action name="actionExit">
    <property name="icon">
     <iconset>
-     <normalon>icons/exit-icon_32x32.png</normalon>
+     <normalon>../bundes/icons/exit-icon_32x32.png</normalon>
     </iconset>
    </property>
    <property name="text">
@@ -171,12 +169,12 @@
   </action>
   <action name="actionAbout">
    <property name="text">
-    <string>Bundle Designer Help</string>
+    <string>Best Help</string>
    </property>
   </action>
-  <action name="actionAbout_Fundo">
+  <action name="actionAbout_Best">
    <property name="text">
-    <string>About Bundle Designer</string>
+    <string>About Best</string>
    </property>
   </action>
   <action name="actionFint">
