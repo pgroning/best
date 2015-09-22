@@ -160,7 +160,7 @@ class Bundle(QtGui.QWidget):
                 if r2 < dia**2/4: # Click is within pin radius
                     self.pinSelect = (i,j)
 
-        print self.pinSelect
+        #print self.pinSelect
 
         d = s*0.06*1.2
 

@@ -31,7 +31,7 @@ class Main(QtGui.QMainWindow):
         # Draw bundle map
         b = Bundle()
         #self.ui.tabWidget.grid.addWidget(b,1,0,1,1)
-        #print dir(self.ui.tabWidget)
+        self.ui.gridLayout.addWidget(b,0,0,1,1)
         
     def fileDialog(self):
 

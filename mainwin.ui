@@ -25,10 +25,27 @@
       <property name="currentIndex">
        <number>0</number>
       </property>
+      <property name="movable">
+       <bool>false</bool>
+      </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
         <string>Tab 1</string>
        </attribute>
+       <attribute name="toolTip">
+        <string>Map 1</string>
+       </attribute>
+       <widget class="QWidget" name="gridLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>10</y>
+          <width>501</width>
+          <height>381</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout"/>
+       </widget>
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
