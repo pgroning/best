@@ -16,6 +16,41 @@ class Main(QtGui.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        #Show message in statusbar
+        self.statusBar().showMessage('Ready')
+
+        # File menu exit action
+        self.ui.fileMenuExit.triggered.connect(self.close)        
+        #self.ui.fileMenuExit.setStatusTip('Exit application')
+        #self.ui.fileMenuExit.setShortcut('Ctrl+Q')
+        
+        # File menu open file action
+        self.ui.fileMenuOpenFile.triggered.connect(self.fileDialog)
+        
+        
+        
+    def fileDialog(self):
+
+        fileName = QtGui.QFileDialog.getOpenFileName(self, "Open Data File", "/", "Text files (*.txt)") 
+        #if fileName:
+            #f = open(fileName, 'r')
+            #data = f.read()
+            #self.textEdit.setText(data)
+            
+            
+    def closeEvent(self, event):
+        
+        reply = QtGui.QMessageBox.question(self, 'Message',
+             "Are you sure to quit?", QtGui.QMessageBox.Yes | 
+             QtGui.QMessageBox.No, QtGui.QMessageBox.No)
+
+        if reply == QtGui.QMessageBox.Yes:
+            event.accept()
+        else:
+            event.ignore()
+
+
+
 if __name__ == '__main__':
     # Create an PyQT4 application object.
     app = QtGui.QApplication(sys.argv)
