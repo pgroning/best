@@ -6,6 +6,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import pyqtSlot
 
 from mainwin import Ui_MainWindow
+from pyDraw import Bundle
 
 
 
@@ -26,8 +27,11 @@ class Main(QtGui.QMainWindow):
         
         # File menu open file action
         self.ui.fileMenuOpenFile.triggered.connect(self.fileDialog)
-        
-        
+
+        # Draw bundle map
+        b = Bundle()
+        #self.ui.tabWidget.grid.addWidget(b,1,0,1,1)
+        #print dir(self.ui.tabWidget)
         
     def fileDialog(self):
 
