@@ -1,0 +1,645 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>FilesPopup</class>
+ <widget class="QDialog" name="FilesPopup">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>679</width>
+    <height>691</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Files Popup</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_5">
+   <item>
+    <layout class="QHBoxLayout">
+     <item>
+      <widget class="QPushButton" name="closeButton">
+       <property name="text">
+        <string>Close</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer>
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>131</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="readBisFilesCheckBox">
+       <property name="text">
+        <string>Read-bis files</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="readAllVoidsCheckBox">
+       <property name="text">
+        <string>Read all voids</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="browseButton">
+       <property name="text">
+        <string>Browse</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="readFileButton">
+       <property name="text">
+        <string>Read</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="simFuelFileGroupBox">
+     <property name="title">
+      <string>Simulate fuel description file (with FUE.ZON and SEG.LIB)</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_4">
+      <item>
+       <widget class="FileLineWidget" name="simFuelLineWidget" native="true"/>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_6">
+        <item>
+         <widget class="QPushButton" name="readSimFuelButton">
+          <property name="text">
+           <string>Read fuel descriptions</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="fuelTypeNftLabel">
+          <property name="minimumSize">
+           <size>
+            <width>90</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>FUE.ZON NFT:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="fuelTypeNftComboBox"/>
+        </item>
+        <item>
+         <widget class="QLabel" name="fuelTypeIdentLabel">
+          <property name="minimumSize">
+           <size>
+            <width>0</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="maximumSize">
+           <size>
+            <width>16777215</width>
+            <height>16777215</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>FUE.ZON Ident:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="fuelTypeIdentComboBox"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="readThisCaseButton">
+          <property name="text">
+           <string>Read cax-files</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QLineEdit" name="segmentLineEdit">
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="casmoFileGroupBox">
+     <property name="title">
+      <string>Casmo File</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_5">
+        <item>
+         <widget class="QLabel" name="fileLabel">
+          <property name="minimumSize">
+           <size>
+            <width>74</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>File name:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="fileLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QLabel" name="fuelIdentLabel">
+          <property name="minimumSize">
+           <size>
+            <width>74</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Fuel ident:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="fuelIdentLineEdit">
+          <property name="maximumSize">
+           <size>
+            <width>110</width>
+            <height>16777215</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="topDirLabel">
+          <property name="text">
+           <string>Directory:</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLineEdit" name="topdirLineEdit"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <spacer>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showCaiButton">
+          <property name="text">
+           <string>Show cai</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showCaoButton">
+          <property name="text">
+           <string>Show cao</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showCaxButton">
+          <property name="text">
+           <string>Show cax</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showPhiButton">
+          <property name="text">
+           <string>Show phi</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showPhxButton">
+          <property name="text">
+           <string>Show phx</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="showSlxButton">
+          <property name="text">
+           <string>Show slx</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout">
+        <item>
+         <widget class="QLabel" name="fillLabel">
+          <property name="minimumSize">
+           <size>
+            <width>74</width>
+            <height>0</height>
+           </size>
+          </property>
+          <property name="text">
+           <string>Fill type:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="fillComboBox"/>
+        </item>
+        <item>
+         <widget class="QPushButton" name="fillButton">
+          <property name="text">
+           <string>Fill tables</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="dataPopupButton">
+          <property name="text">
+           <string>Data...</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="startCasmoGroupBox">
+     <property name="title">
+      <string>Start Casmo</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QRadioButton" name="oneVoidRadioButton">
+          <property name="text">
+           <string>One void</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QRadioButton" name="allVoidsRadioButton">
+          <property name="text">
+           <string>v00/40/80</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2">
+         <widget class="QCheckBox" name="coeffsCheckBox">
+          <property name="text">
+           <string>Coeffs</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="conrodLabel">
+          <property name="text">
+           <string>Conrod:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="4">
+         <widget class="QComboBox" name="conrodComboBox">
+          <item>
+           <property name="text">
+            <string>All</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLabel" name="programLabel">
+          <property name="text">
+           <string>Program:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="6">
+         <widget class="ProgramChoice" name="programChoice"/>
+        </item>
+        <item row="1" column="0">
+         <widget class="QRadioButton" name="s3cRadioButton">
+          <property name="text">
+           <string>S3C</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QRadioButton" name="s3cFastRadioButton">
+          <property name="text">
+           <string>S3C Fast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="2">
+         <widget class="QCheckBox" name="cclCheckBox">
+          <property name="text">
+           <string>CCL</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QLabel" name="voidLabel">
+          <property name="text">
+           <string>Void:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="4">
+         <widget class="QComboBox" name="voidComboBox">
+          <item>
+           <property name="text">
+            <string>All</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QLabel" name="versionLabel">
+          <property name="text">
+           <string>Version:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="6">
+         <widget class="VersionChoice" name="versionChoice"/>
+        </item>
+        <item row="2" column="0">
+         <widget class="QRadioButton" name="s3kRadioButton">
+          <property name="text">
+           <string>S3K</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QRadioButton" name="s3kFastRadioButton">
+          <property name="text">
+           <string>S3K Fast</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QCheckBox" name="overwriteCheckBox">
+          <property name="text">
+           <string>Overwrite</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="3">
+         <widget class="QLabel" name="burnupLabel">
+          <property name="text">
+           <string>Burnup:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="4">
+         <widget class="QComboBox" name="burnupComboBox">
+          <item>
+           <property name="text">
+            <string>e25</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>e50</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>e70</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+        <item row="2" column="5">
+         <widget class="QLabel" name="cpuLabel">
+          <property name="text">
+           <string>Cpu:</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="6">
+         <widget class="CpuChoice" name="cpuChoice"/>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <item>
+         <layout class="QVBoxLayout" name="verticalLayout">
+          <item>
+           <widget class="QPushButton" name="writeInputButton">
+            <property name="text">
+             <string>Write input</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="startProgramButton">
+            <property name="text">
+             <string>Start</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../CuteBird.qrc">
+              <normaloff>:/images/start_run.png</normaloff>:/images/start_run.png</iconset>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="consoleButton">
+            <property name="text">
+             <string>Console</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="showOutputButton">
+            <property name="text">
+             <string>Output</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>28</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QListWidget" name="fileList">
+          <property name="selectionMode">
+           <enum>QAbstractItemView::ExtendedSelection</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="writeDefaultButton">
+       <property name="text">
+        <string>Write default</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="readDefaultButton">
+       <property name="text">
+        <string>Read default</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="writeQaButton">
+       <property name="text">
+        <string>Write QA</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ProgramChoice</class>
+   <extends>QComboBox</extends>
+   <header>comboChoice.h</header>
+  </customwidget>
+  <customwidget>
+   <class>VersionChoice</class>
+   <extends>QComboBox</extends>
+   <header>comboChoice.h</header>
+  </customwidget>
+  <customwidget>
+   <class>CpuChoice</class>
+   <extends>QComboBox</extends>
+   <header>comboChoice.h</header>
+  </customwidget>
+  <customwidget>
+   <class>FileLineWidget</class>
+   <extends>QWidget</extends>
+   <header>fileLineWidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="../CuteBird.qrc"/>
+ </resources>
+ <connections/>
+</ui>
