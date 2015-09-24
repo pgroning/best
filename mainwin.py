@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Tue Sep 22 23:02:13 2015
+# Created: Thu Sep 24 22:06:49 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -96,6 +96,10 @@ class Ui_MainWindow(object):
         self.verticalLayout_3.addWidget(self.lineEdit)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
+        self.toolBar = QtGui.QToolBar(MainWindow)
+        self.toolBar.setAutoFillBackground(False)
+        self.toolBar.setObjectName(_fromUtf8("toolBar"))
+        MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.fileMenuOpenFile = QtGui.QAction(MainWindow)
         self.fileMenuOpenFile.setCheckable(False)
         icon1 = QtGui.QIcon()
@@ -133,6 +137,9 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
+        self.toolBar.addAction(self.fileMenuExit)
+        self.toolBar.addAction(self.fileMenuOpenFile)
+        self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
@@ -150,6 +157,7 @@ class Ui_MainWindow(object):
         self.menuHelp.setTitle(_translate("MainWindow", "Help", None))
         self.pushButton.setText(_translate("MainWindow", "PushButton", None))
         self.pushButton_2.setText(_translate("MainWindow", "PushButton", None))
+        self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
         self.fileMenuOpenFile.setText(_translate("MainWindow", "Open file...", None))
         self.fileMenuOpenFile.setToolTip(_translate("MainWindow", "Open file", None))
         self.fileMenuOpenFile.setStatusTip(_translate("MainWindow", "Open file", None))
