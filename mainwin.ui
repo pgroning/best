@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>678</width>
-    <height>495</height>
+    <height>539</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -169,9 +169,10 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="fileMenuExit"/>
-   <addaction name="fileMenuOpenFile"/>
    <addaction name="separator"/>
+   <addaction name="fileMenuOpenFile"/>
+   <addaction name="actionPreferencies"/>
+   <addaction name="fileMenuExit"/>
   </widget>
   <action name="fileMenuOpenFile">
    <property name="checkable">
@@ -219,6 +220,10 @@
    </property>
   </action>
   <action name="actionPreferencies">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/preferences-icon_32x32.png</normaloff>icons/preferences-icon_32x32.png</iconset>
+   </property>
    <property name="text">
     <string>Preferencies...</string>
    </property>

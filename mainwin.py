@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Thu Sep 24 22:06:49 2015
+# Created: Thu Sep 24 22:27:30 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(678, 495)
+        MainWindow.resize(678, 539)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("../bundes/icons/bird-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         MainWindow.setWindowIcon(icon)
@@ -114,6 +114,9 @@ class Ui_MainWindow(object):
         self.fileMenuExit.setWhatsThis(_fromUtf8(""))
         self.fileMenuExit.setObjectName(_fromUtf8("fileMenuExit"))
         self.actionPreferencies = QtGui.QAction(MainWindow)
+        icon3 = QtGui.QIcon()
+        icon3.addPixmap(QtGui.QPixmap(_fromUtf8("icons/preferences-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPreferencies.setIcon(icon3)
         self.actionPreferencies.setObjectName(_fromUtf8("actionPreferencies"))
         self.actionAbout = QtGui.QAction(MainWindow)
         self.actionAbout.setObjectName(_fromUtf8("actionAbout"))
@@ -137,9 +140,10 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuEdit.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
-        self.toolBar.addAction(self.fileMenuExit)
-        self.toolBar.addAction(self.fileMenuOpenFile)
         self.toolBar.addSeparator()
+        self.toolBar.addAction(self.fileMenuOpenFile)
+        self.toolBar.addAction(self.actionPreferencies)
+        self.toolBar.addAction(self.fileMenuExit)
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
