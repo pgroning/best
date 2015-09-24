@@ -15,8 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normalon>../bundes/icons/bird-icon_32x32.png</normalon>
-   </iconset>
+    <normaloff>icons/bird-icon_32x32.png</normaloff>icons/bird-icon_32x32.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget"/>
   <widget class="QMenuBar" name="menubar">
