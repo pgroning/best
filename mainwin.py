@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Thu Sep 24 23:03:36 2015
+# Created: Thu Sep 24 23:21:55 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -80,6 +80,9 @@ class Ui_MainWindow(object):
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setAutoFillBackground(False)
+        self.toolBar.setAllowedAreas(QtCore.Qt.BottomToolBarArea|QtCore.Qt.TopToolBarArea)
+        self.toolBar.setToolButtonStyle(QtCore.Qt.ToolButtonFollowStyle)
+        self.toolBar.setFloatable(True)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidget_3 = QtGui.QDockWidget(MainWindow)
@@ -148,7 +151,9 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuOpenFile)
         self.toolBar.addAction(self.actionPreferencies)
+        self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuExit)
+        self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
