@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Thu Sep 24 23:26:46 2015
+# Created: Thu Sep 24 23:31:24 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -76,6 +76,8 @@ class Ui_MainWindow(object):
         self.lineEdit = QtGui.QLineEdit(self.dockWidgetContents_2)
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.verticalLayout_3.addWidget(self.lineEdit)
+        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
+        self.verticalLayout_3.addItem(spacerItem)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.toolBar = QtGui.QToolBar(MainWindow)
