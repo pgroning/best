@@ -199,7 +199,7 @@ class Bundle(QtGui.QWidget):
 
     def drawBox(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 3, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         x1 = s*0.05
         x2 = s*0.92
@@ -209,7 +209,7 @@ class Bundle(QtGui.QWidget):
         #x2 = s.height()*0.92
         
         #qp.drawRect(x1, x1, x2, x2)
-        qp.drawRoundedRect(x1, x1, x2, x2, 20.0, 20.0)
+        qp.drawRoundedRect(x1, x1, x2, x2, 0.05*s, 0.05*s)
 
     def drawQuad(self, qp):
 
