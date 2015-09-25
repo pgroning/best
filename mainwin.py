@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Thu Sep 24 23:31:24 2015
+# Created: Thu Sep 24 23:03:36 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -28,7 +28,7 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
         MainWindow.resize(719, 548)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/bird-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon.addPixmap(QtGui.QPixmap(_fromUtf8("../bundes/icons/bird-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.On)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
@@ -76,15 +76,10 @@ class Ui_MainWindow(object):
         self.lineEdit = QtGui.QLineEdit(self.dockWidgetContents_2)
         self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
         self.verticalLayout_3.addWidget(self.lineEdit)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_3.addItem(spacerItem)
         self.dockWidget_2.setWidget(self.dockWidgetContents_2)
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setAutoFillBackground(False)
-        self.toolBar.setAllowedAreas(QtCore.Qt.BottomToolBarArea|QtCore.Qt.TopToolBarArea)
-        self.toolBar.setToolButtonStyle(QtCore.Qt.ToolButtonFollowStyle)
-        self.toolBar.setFloatable(True)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
         self.dockWidget_3 = QtGui.QDockWidget(MainWindow)
@@ -153,9 +148,7 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuOpenFile)
         self.toolBar.addAction(self.actionPreferencies)
-        self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuExit)
-        self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
