@@ -208,7 +208,8 @@ class Bundle(QtGui.QWidget):
         #x1 = s.height()*0.05
         #x2 = s.height()*0.92
         
-        qp.drawRect(x1, x1, x2, x2)
+        #qp.drawRect(x1, x1, x2, x2)
+        qp.drawRoundedRect(x1, x1, x2, x2, 20.0, 20.0)
 
     def drawQuad(self, qp):
 
