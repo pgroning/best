@@ -31,7 +31,7 @@ class Bundle(QtGui.QWidget):
         
     def initUI(self):      
 
-        self.setGeometry(0, 0, 100, 100)
+        self.setGeometry(0, 0, 500, 500)
         #self.setWindowTitle('Bundle')
         self.show()
 
@@ -97,6 +97,7 @@ class Bundle(QtGui.QWidget):
         self.setBackground(qp)
         self.drawCRD(qp)
         self.drawBox(qp)
+        self.drawSymline(qp)
         qp.end()
 
         qp.begin(self)
@@ -143,7 +144,7 @@ class Bundle(QtGui.QWidget):
     def clickMark(self, qp):
         s = self.dim
         #color = QtGui.QColor(0, 0, 0)
-        pen = QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
         #pen = QtGui.QPen(color, 2, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
@@ -163,13 +164,15 @@ class Bundle(QtGui.QWidget):
         #print self.pinSelect
 
         d = s*0.06*1.2
+        brush = QtGui.QBrush(QtCore.Qt.Dense7Pattern)
+        qp.setBrush(brush)
 
         if self.pinSelect >= (0,0):
             if (self.pinSelect != (4,4) and self.pinSelect != (5,4) and
                 self.pinSelect != (4,5) and self.pinSelect != (5,5)):
                 (x,y) = self.pinPos(self.pinSelect[0],self.pinSelect[1])
                 qp.drawRect(x-d/2, y-d/2, d, d)
-
+                
 
     def setBackground(self, qp):
 
@@ -199,7 +202,7 @@ class Bundle(QtGui.QWidget):
 
     def drawBox(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 3, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 5, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         x1 = s*0.05
         x2 = s*0.92
@@ -210,6 +213,14 @@ class Bundle(QtGui.QWidget):
         
         #qp.drawRect(x1, x1, x2, x2)
         qp.drawRoundedRect(x1, x1, x2, x2, 0.05*s, 0.05*s)
+
+    def drawSymline(self, qp):
+        s = self.dim
+        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        qp.setPen(pen)
+        x1 = s*0.0
+        x2 = s*1.0
+        qp.drawLine(x1, x1, x2, x2)
 
     def drawQuad(self, qp):
 
@@ -231,7 +242,7 @@ class Bundle(QtGui.QWidget):
 
     def drawDiamond(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 4, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
         color = QtGui.QColor(0, 0, 0)
@@ -279,7 +290,7 @@ class Bundle(QtGui.QWidget):
 
     def drawChannels(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 4, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
         color = QtGui.QColor(0, 0, 0)
@@ -310,7 +321,7 @@ class Bundle(QtGui.QWidget):
 
     def drawCircles(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 3, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         
         r = s*0.06
