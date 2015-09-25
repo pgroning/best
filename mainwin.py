@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Thu Sep 24 23:31:24 2015
+# Created: Fri Sep 25 21:03:15 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,7 +45,7 @@ class Ui_MainWindow(object):
         self.menuPlot = QtGui.QMenu(self.menuTools)
         self.menuPlot.setObjectName(_fromUtf8("menuPlot"))
         self.menuHelp = QtGui.QMenu(self.menubar)
-        self.menuHelp.setGeometry(QtCore.QRect(381, 195, 125, 107))
+        self.menuHelp.setGeometry(QtCore.QRect(343, 172, 125, 107))
         self.menuHelp.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         MainWindow.setMenuBar(self.menubar)
@@ -82,8 +82,8 @@ class Ui_MainWindow(object):
         MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setAutoFillBackground(False)
+        self.toolBar.setMovable(False)
         self.toolBar.setAllowedAreas(QtCore.Qt.BottomToolBarArea|QtCore.Qt.TopToolBarArea)
-        self.toolBar.setToolButtonStyle(QtCore.Qt.ToolButtonFollowStyle)
         self.toolBar.setFloatable(True)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
@@ -163,11 +163,11 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Best", None))
-        self.menuFile.setTitle(_translate("MainWindow", "File", None))
-        self.menuEdit.setTitle(_translate("MainWindow", "Edit", None))
-        self.menuTools.setTitle(_translate("MainWindow", "Tools", None))
+        self.menuFile.setTitle(_translate("MainWindow", "&File", None))
+        self.menuEdit.setTitle(_translate("MainWindow", "&Edit", None))
+        self.menuTools.setTitle(_translate("MainWindow", "&Tools", None))
         self.menuPlot.setTitle(_translate("MainWindow", "Plot", None))
-        self.menuHelp.setTitle(_translate("MainWindow", "Help", None))
+        self.menuHelp.setTitle(_translate("MainWindow", "&Help", None))
         self.pushButton.setText(_translate("MainWindow", "PushButton", None))
         self.pushButton_2.setText(_translate("MainWindow", "PushButton", None))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
@@ -187,4 +187,14 @@ class Ui_MainWindow(object):
         self.actionAbout_Best.setText(_translate("MainWindow", "About Best", None))
         self.actionFint.setText(_translate("MainWindow", "Fint", None))
         self.actionKinf.setText(_translate("MainWindow", "Kinf", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 
