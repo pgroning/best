@@ -31,7 +31,7 @@ class Bundle(QtGui.QWidget):
         
     def initUI(self):      
 
-        self.setGeometry(0, 0, 500, 500)
+        self.setGeometry(0, 0, 600, 600)
         #self.setWindowTitle('Bundle')
         self.show()
 
@@ -213,10 +213,13 @@ class Bundle(QtGui.QWidget):
         
         #qp.drawRect(x1, x1, x2, x2)
         qp.drawRoundedRect(x1, x1, x2, x2, 0.05*s, 0.05*s)
+        
 
     def drawSymline(self, qp):
         s = self.dim
         pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        #pen.setStyle(QtCore.Qt.CustomDashLine)
+        #pen.setDashPattern([2, 5, 2, 5])
         qp.setPen(pen)
         x1 = s*0.0
         x2 = s*1.0
