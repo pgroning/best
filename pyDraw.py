@@ -200,7 +200,7 @@ class Bundle(QtGui.QWidget):
     def drawCRD(self, qp):
         s = self.dim
         # Paint crd
-        pen = QtGui.QPen(QtCore.Qt.black, 8, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         x1 = s*0.025
         x2 = s*0.92
@@ -208,8 +208,25 @@ class Bundle(QtGui.QWidget):
         #s = self.size()
         #x1 = s.height()*0.025
         #x2 = s.height()*0.92
-        qp.drawLine(x1, x1, x2, x1)
-        qp.drawLine(x1, x1, x1, x2)
+        #qp.drawLine(x1, x1, x2, x1)
+        #qp.drawLine(x1, x1, x1, x2)
+        gradient = QtGui.QLinearGradient(0, 0, 1, 0)
+        
+        brush = QtGui.QBrush(QtCore.Qt.transparent)
+        qp.setBrush(brush)
+
+        x1 = s*0.018
+        y1 = s*0.1
+        x2 = s*0.044
+        y2 = s*0.77
+
+        qp.drawRect(x1,y1,x2,y2)
+        qp.drawLine(x1, y1*1.3, x1+x2, y1*1.3)
+        qp.drawLine(x1, y2+y1*0.7, x1+x2, y2+y1*0.7)
+
+        qp.drawRect(y1,x1,y2,x2)
+        qp.drawLine(y1*1.3,x1, y1*1.3 ,x1+x2)
+        qp.drawLine(y2+y1*0.7, x1, y2+y1*0.7, x1+x2)
         
         #qp.drawLine(20, 20, 555, 20)
         #qp.drawLine(20, 20, 20, 555) 
