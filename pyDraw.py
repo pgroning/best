@@ -229,7 +229,7 @@ class Bundle(QtGui.QWidget):
         #x2 = s.height()*0.92
         
         #qp.drawRect(x1, x1, x2, x2)
-        qp.drawRoundedRect(x1, x1, x2, x2, 0.05*s, 0.05*s)
+        qp.drawRoundedRect(x1, x1, x2, x2, 0.03*s, 0.03*s)
         
 
     def drawSymline(self, qp):
