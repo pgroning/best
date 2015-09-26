@@ -96,6 +96,7 @@ class Bundle(QtGui.QWidget):
         qp.begin(self)
         self.setBackground(qp)
         self.drawFrame(qp)
+        self.drawCoords(qp)
         self.drawCRD(qp)
         self.drawBox(qp)
         self.drawSymline(qp)
@@ -196,6 +197,25 @@ class Bundle(QtGui.QWidget):
         x1 = s*0.04
         x2 = s*0.92
         qp.drawRect(x1,x1,x2,x2)
+
+    def drawCoords(self, qp):
+        s = self.dim
+        
+        qfont = QtGui.QFont('Ubuntu', 10)
+        qfont.setStyle(QtGui.QFont.StyleNormal)
+        qfont.setWeight(QtGui.QFont.Normal)
+        qp.setFont(qfont)
+
+        ycoords = ['A','B','C','D','E','F','G','H','I','J']
+        xcoords = [1,2,3,4,5,6,7,8,9,10]
+        for i,val in list(enumerate(ycoords)):
+            x,y,r = self.pinPos(9,9-i)
+            qp.drawText(x+0.1*s,y+0.01*s,val)
+
+        for i,val in list(enumerate(xcoords)):
+            x,y,r = self.pinPos(9-i,9)
+            qp.drawText(x-0.01*s,y+0.115*s,str(val))
+
 
     def drawCRD(self, qp):
         s = self.dim
