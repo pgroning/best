@@ -182,7 +182,10 @@ class Bundle(QtGui.QWidget):
 
     def setBackground(self, qp):
 
-        qp.setBrush(QtCore.Qt.white)
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#FFFFE5') # light yellow
+        qp.setBrush(color)
+        #qp.setBrush(QtCore.Qt.white)
         #x1 = s*0.999
 
         x1 = self.size().width()*0.999
@@ -194,9 +197,13 @@ class Bundle(QtGui.QWidget):
         s = self.dim
         qp.drawRect(0,0,s,s)
 
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#BFEFFF') # light blue
+        qp.setBrush(color)
         x1 = s*0.04
         x2 = s*0.92
         qp.drawRect(x1,x1,x2,x2)
+        
 
     def drawCoords(self, qp):
         s = self.dim
@@ -266,6 +273,11 @@ class Bundle(QtGui.QWidget):
         #x2 = s.height()*0.92
         
         #qp.drawRect(x1, x1, x2, x2)
+
+        color = QtGui.QColor(0, 200, 255)
+        color.setNamedColor('#D1EEEE') #
+        qp.setBrush(color)
+
         qp.drawRoundedRect(x1, x1, x2, x2, 0.03*s, 0.03*s)
         
 
