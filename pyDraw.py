@@ -208,9 +208,9 @@ class Bundle(QtGui.QWidget):
     def drawCoords(self, qp):
         s = self.dim
         
-        qfont = QtGui.QFont('Ubuntu', 10)
+        qfont = QtGui.QFont('Decorative', 10)
         qfont.setStyle(QtGui.QFont.StyleNormal)
-        qfont.setWeight(QtGui.QFont.Normal)
+        qfont.setWeight(QtGui.QFont.Bold)
         qp.setFont(qfont)
 
         ycoords = ['A','B','C','D','E','F','G','H','I','J']
