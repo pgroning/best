@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'mainwin.ui'
 #
-# Created: Fri Sep 25 21:03:15 2015
+# Created: Sun Sep 27 19:58:19 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -45,7 +45,7 @@ class Ui_MainWindow(object):
         self.menuPlot = QtGui.QMenu(self.menuTools)
         self.menuPlot.setObjectName(_fromUtf8("menuPlot"))
         self.menuHelp = QtGui.QMenu(self.menubar)
-        self.menuHelp.setGeometry(QtCore.QRect(343, 172, 125, 107))
+        self.menuHelp.setGeometry(QtCore.QRect(359, 196, 125, 107))
         self.menuHelp.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.menuHelp.setObjectName(_fromUtf8("menuHelp"))
         MainWindow.setMenuBar(self.menubar)
@@ -136,6 +136,11 @@ class Ui_MainWindow(object):
         self.actionFint.setObjectName(_fromUtf8("actionFint"))
         self.actionKinf = QtGui.QAction(MainWindow)
         self.actionKinf.setObjectName(_fromUtf8("actionKinf"))
+        self.actionPlot = QtGui.QAction(MainWindow)
+        icon4 = QtGui.QIcon()
+        icon4.addPixmap(QtGui.QPixmap(_fromUtf8("icons/diagram-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.actionPlot.setIcon(icon4)
+        self.actionPlot.setObjectName(_fromUtf8("actionPlot"))
         self.menuFile.addAction(self.fileMenuOpenFile)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.fileMenuExit)
@@ -153,6 +158,7 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuOpenFile)
         self.toolBar.addAction(self.actionPreferencies)
+        self.toolBar.addAction(self.actionPlot)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.fileMenuExit)
         self.toolBar.addSeparator()
@@ -187,6 +193,8 @@ class Ui_MainWindow(object):
         self.actionAbout_Best.setText(_translate("MainWindow", "About Best", None))
         self.actionFint.setText(_translate("MainWindow", "Fint", None))
         self.actionKinf.setText(_translate("MainWindow", "Kinf", None))
+        self.actionPlot.setText(_translate("MainWindow", "Plot", None))
+        self.actionPlot.setShortcut(_translate("MainWindow", "Ctrl+P", None))
 
 
 if __name__ == "__main__":

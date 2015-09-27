@@ -57,8 +57,8 @@
    <widget class="QMenu" name="menuHelp">
     <property name="geometry">
      <rect>
-      <x>343</x>
-      <y>172</y>
+      <x>359</x>
+      <y>196</y>
       <width>125</width>
       <height>107</height>
      </rect>
@@ -156,6 +156,7 @@
    <addaction name="separator"/>
    <addaction name="fileMenuOpenFile"/>
    <addaction name="actionPreferencies"/>
+   <addaction name="actionPlot"/>
    <addaction name="separator"/>
    <addaction name="fileMenuExit"/>
    <addaction name="separator"/>
@@ -285,6 +286,18 @@
   <action name="actionKinf">
    <property name="text">
     <string>Kinf</string>
+   </property>
+  </action>
+  <action name="actionPlot">
+   <property name="icon">
+    <iconset>
+     <normaloff>icons/diagram-icon_32x32.png</normaloff>icons/diagram-icon_32x32.png</iconset>
+   </property>
+   <property name="text">
+    <string>Plot</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+P</string>
    </property>
   </action>
  </widget>
