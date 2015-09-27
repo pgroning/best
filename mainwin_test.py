@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'mainwin.ui'
+# Form implementation generated from reading ui file 'mainwin_test.ui'
 #
-# Created: Sun Sep 27 22:38:22 2015
+# Created: Sun Sep 27 23:07:18 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+from pyDraw import Bundle
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -26,15 +27,32 @@ except AttributeError:
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName(_fromUtf8("MainWindow"))
-        MainWindow.resize(719, 548)
+        MainWindow.resize(765, 542)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(_fromUtf8("icons/bird-icon_32x32.png")), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         self.centralwidget = QtGui.QWidget(MainWindow)
         self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+        self.horizontalLayout = QtGui.QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
+        self.pushButton = QtGui.QPushButton(self.centralwidget)
+        self.pushButton.setObjectName(_fromUtf8("pushButton"))
+        self.horizontalLayout.addWidget(self.pushButton)
+        self.widget = QtGui.QWidget(self.centralwidget)
+        self.widget.setObjectName(_fromUtf8("widget"))
+        self.verticalLayout = QtGui.QVBoxLayout(self.widget)
+        self.verticalLayout.setMargin(0)
+        self.verticalLayout.setObjectName(_fromUtf8("verticalLayout"))
+
+        # Draw bundle map
+        b = Bundle()
+        #self.ui.tabWidget.grid.addWidget(b,1,0,1,1)
+        self.verticalLayout.addWidget(b)
+
+        self.horizontalLayout.addWidget(self.widget)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtGui.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 719, 27))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 765, 27))
         self.menubar.setObjectName(_fromUtf8("menubar"))
         self.menuFile = QtGui.QMenu(self.menubar)
         self.menuFile.setObjectName(_fromUtf8("menuFile"))
@@ -53,33 +71,6 @@ class Ui_MainWindow(object):
         self.statusbar.setAutoFillBackground(False)
         self.statusbar.setObjectName(_fromUtf8("statusbar"))
         MainWindow.setStatusBar(self.statusbar)
-        self.dockWidget = QtGui.QDockWidget(MainWindow)
-        self.dockWidget.setObjectName(_fromUtf8("dockWidget"))
-        self.dockWidgetContents = QtGui.QWidget()
-        self.dockWidgetContents.setObjectName(_fromUtf8("dockWidgetContents"))
-        self.verticalLayout_2 = QtGui.QVBoxLayout(self.dockWidgetContents)
-        self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
-        self.pushButton = QtGui.QPushButton(self.dockWidgetContents)
-        self.pushButton.setObjectName(_fromUtf8("pushButton"))
-        self.verticalLayout_2.addWidget(self.pushButton)
-        self.dockWidget.setWidget(self.dockWidgetContents)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget)
-        self.dockWidget_2 = QtGui.QDockWidget(MainWindow)
-        self.dockWidget_2.setObjectName(_fromUtf8("dockWidget_2"))
-        self.dockWidgetContents_2 = QtGui.QWidget()
-        self.dockWidgetContents_2.setObjectName(_fromUtf8("dockWidgetContents_2"))
-        self.verticalLayout_3 = QtGui.QVBoxLayout(self.dockWidgetContents_2)
-        self.verticalLayout_3.setObjectName(_fromUtf8("verticalLayout_3"))
-        self.pushButton_2 = QtGui.QPushButton(self.dockWidgetContents_2)
-        self.pushButton_2.setObjectName(_fromUtf8("pushButton_2"))
-        self.verticalLayout_3.addWidget(self.pushButton_2)
-        self.lineEdit = QtGui.QLineEdit(self.dockWidgetContents_2)
-        self.lineEdit.setObjectName(_fromUtf8("lineEdit"))
-        self.verticalLayout_3.addWidget(self.lineEdit)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.verticalLayout_3.addItem(spacerItem)
-        self.dockWidget_2.setWidget(self.dockWidgetContents_2)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(1), self.dockWidget_2)
         self.toolBar = QtGui.QToolBar(MainWindow)
         self.toolBar.setAutoFillBackground(False)
         self.toolBar.setMovable(False)
@@ -87,29 +78,6 @@ class Ui_MainWindow(object):
         self.toolBar.setFloatable(True)
         self.toolBar.setObjectName(_fromUtf8("toolBar"))
         MainWindow.addToolBar(QtCore.Qt.TopToolBarArea, self.toolBar)
-        self.dockWidget_3 = QtGui.QDockWidget(MainWindow)
-        self.dockWidget_3.setMinimumSize(QtCore.QSize(430, 459))
-        self.dockWidget_3.setObjectName(_fromUtf8("dockWidget_3"))
-        self.dockWidgetContents_7 = QtGui.QWidget()
-        self.dockWidgetContents_7.setObjectName(_fromUtf8("dockWidgetContents_7"))
-        self.tabWidget = QtGui.QTabWidget(self.dockWidgetContents_7)
-        self.tabWidget.setGeometry(QtCore.QRect(10, 0, 411, 431))
-        self.tabWidget.setMinimumSize(QtCore.QSize(411, 431))
-        self.tabWidget.setMovable(False)
-        self.tabWidget.setObjectName(_fromUtf8("tabWidget"))
-        self.tab = QtGui.QWidget()
-        self.tab.setObjectName(_fromUtf8("tab"))
-        self.verticalLayout_4 = QtGui.QVBoxLayout(self.tab)
-        self.verticalLayout_4.setObjectName(_fromUtf8("verticalLayout_4"))
-        self.gridLayout = QtGui.QGridLayout()
-        self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-        self.verticalLayout_4.addLayout(self.gridLayout)
-        self.tabWidget.addTab(self.tab, _fromUtf8(""))
-        self.tab_2 = QtGui.QWidget()
-        self.tab_2.setObjectName(_fromUtf8("tab_2"))
-        self.tabWidget.addTab(self.tab_2, _fromUtf8(""))
-        self.dockWidget_3.setWidget(self.dockWidgetContents_7)
-        MainWindow.addDockWidget(QtCore.Qt.DockWidgetArea(2), self.dockWidget_3)
         self.fileMenuOpenFile = QtGui.QAction(MainWindow)
         self.fileMenuOpenFile.setCheckable(False)
         icon1 = QtGui.QIcon()
@@ -164,22 +132,17 @@ class Ui_MainWindow(object):
         self.toolBar.addSeparator()
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(_translate("MainWindow", "Best", None))
+        self.pushButton.setText(_translate("MainWindow", "PushButton", None))
         self.menuFile.setTitle(_translate("MainWindow", "&File", None))
         self.menuEdit.setTitle(_translate("MainWindow", "&Edit", None))
         self.menuTools.setTitle(_translate("MainWindow", "&Tools", None))
         self.menuPlot.setTitle(_translate("MainWindow", "Plot", None))
         self.menuHelp.setTitle(_translate("MainWindow", "&Help", None))
-        self.pushButton.setText(_translate("MainWindow", "PushButton", None))
-        self.pushButton_2.setText(_translate("MainWindow", "PushButton", None))
         self.toolBar.setWindowTitle(_translate("MainWindow", "toolBar", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Tab 1", None))
-        self.tabWidget.setTabToolTip(self.tabWidget.indexOf(self.tab), _translate("MainWindow", "Map 1", None))
-        self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), _translate("MainWindow", "Tab 2", None))
         self.fileMenuOpenFile.setText(_translate("MainWindow", "Open file...", None))
         self.fileMenuOpenFile.setToolTip(_translate("MainWindow", "Open file", None))
         self.fileMenuOpenFile.setStatusTip(_translate("MainWindow", "Open file", None))
@@ -195,4 +158,14 @@ class Ui_MainWindow(object):
         self.actionKinf.setText(_translate("MainWindow", "Kinf", None))
         self.actionPlot.setText(_translate("MainWindow", "Plot", None))
         self.actionPlot.setShortcut(_translate("MainWindow", "Ctrl+P", None))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtGui.QApplication(sys.argv)
+    MainWindow = QtGui.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
 
