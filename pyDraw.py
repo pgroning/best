@@ -1,12 +1,10 @@
 #!/usr/bin/python
 
-
 import sys, random
 from PyQt4 import QtGui, QtCore
 
 class Bundle(QtGui.QWidget):
-    
-   
+       
     def __init__(self):
         super(Bundle, self).__init__()
         
@@ -31,7 +29,7 @@ class Bundle(QtGui.QWidget):
         
     def initUI(self):      
 
-        self.setGeometry(0, 0, 800, 600)
+        self.setGeometry(0, 0, 700, 500)
         #self.setWindowTitle('Bundle')
         self.show()
 
@@ -86,7 +84,8 @@ class Bundle(QtGui.QWidget):
 
     def paintEvent(self, event):
 
-        self.dim = min(self.size().height(),self.size().width())
+        self.dim = min(self.size().height(),self.size().width()/1.5)
+        #self.dim = self.size().height()
         s = self.dim
         #global s
         #s = min(self.size().height(),self.size().width())  
@@ -116,6 +115,8 @@ class Bundle(QtGui.QWidget):
 
         qp.begin(self)
         self.drawCircles(qp)
+        self.drawPinGroups(qp)
+        self.drawZpin(qp)
         qp.end()
 
         qp.begin(self)
@@ -210,17 +211,19 @@ class Bundle(QtGui.QWidget):
         
         qfont = QtGui.QFont('Decorative', 10)
         qfont.setStyle(QtGui.QFont.StyleNormal)
-        qfont.setWeight(QtGui.QFont.Bold)
+        qfont.setWeight(QtGui.QFont.Normal)
         qp.setFont(qfont)
 
         ycoords = ['A','B','C','D','E','F','G','H','I','J']
         xcoords = [1,2,3,4,5,6,7,8,9,10]
         for i,val in list(enumerate(ycoords)):
-            x,y,r = self.pinPos(9,9-i)
+            #x,y,r = self.pinPos(9,9-i)
+            x,y,r = self.pinPos(9,i)
             qp.drawText(x+0.1*s,y+0.01*s,val)
 
         for i,val in list(enumerate(xcoords)):
-            x,y,r = self.pinPos(9-i,9)
+            #x,y,r = self.pinPos(9-i,9)
+            x,y,r = self.pinPos(i,9)
             qp.drawText(x-0.01*s,y+0.115*s,str(val))
 
 
@@ -455,6 +458,34 @@ class Bundle(QtGui.QWidget):
                     qp.drawEllipse(x-r,y-r,2*r,2*r)
                     #qp.drawEllipse(d+x0+i*x1,d+x0+j*x1,r,r)
         
+    def drawPinGroups(self, qp):
+        s = self.dim
+        dx = s*0.2
+        x,y0,r = self.pinPos(9,0)
+        x,y1,r = self.pinPos(9,1)
+        dy = y1-y0
+        for i in range(0,9):
+            self.setColor(qp)
+            x,y,r = self.pinPos(9,i)
+            qp.drawEllipse(x-r+dx,y0+i*dy-r,2*r,2*r)
+
+    def drawZpin(self, qp):
+        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        qp.setPen(pen)
+
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#F08080') # light coral
+        qp.setBrush(color)
+        brush = QtGui.QBrush(QtCore.Qt.Dense7Pattern)
+        #qp.setBrush(brush)
+        qp.setBrush(color)
+
+        s = self.dim
+        x1 = self.width()-s*0.04
+        y1 = 0
+        x2 = self.width()
+        y2 = self.height()
+        qp.drawRect(x1,y1,x2,y2)
 
 
     def setColor(self, qp):
