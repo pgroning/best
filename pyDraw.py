@@ -31,7 +31,7 @@ class Bundle(QtGui.QWidget):
         
     def initUI(self):      
 
-        self.setGeometry(0, 0, 100, 100)
+        self.setGeometry(0, 0, 800, 600)
         #self.setWindowTitle('Bundle')
         self.show()
 
@@ -95,8 +95,11 @@ class Bundle(QtGui.QWidget):
 
         qp.begin(self)
         self.setBackground(qp)
+        self.drawFrame(qp)
+        self.drawCoords(qp)
         self.drawCRD(qp)
         self.drawBox(qp)
+        self.drawSymline(qp)
         qp.end()
 
         qp.begin(self)
@@ -121,13 +124,17 @@ class Bundle(QtGui.QWidget):
 
     def pinPos(self, i, j):
         s = self.dim
-        dia = s*0.06
-        c = s*0.082
-        a = s*0.07
-        b = s*0.08
+        
+        r = s*0.028
+        b = s*0.075
 
-        x = a+i*b+dia/2
-        y = a+j*b+dia/2
+        c = s*0.07
+        a = s*0.1
+        #b = s*0.070
+
+
+        x = a+i*b+r
+        y = a+j*b+r
         if i >= 5:
             x = x+c
         if j >= 5:
@@ -138,16 +145,16 @@ class Bundle(QtGui.QWidget):
         if j < 0:
             y = -100
 
-        return x,y
+        return x,y,r
 
     def clickMark(self, qp):
         s = self.dim
         #color = QtGui.QColor(0, 0, 0)
-        pen = QtGui.QPen(QtCore.Qt.red, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
         #pen = QtGui.QPen(color, 2, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
-        dia = s*0.06
+        dia = s*0.055
 
         xc = self.click_x
         yc = self.click_y
@@ -155,7 +162,7 @@ class Bundle(QtGui.QWidget):
         #self.pinSelect = (-1,-1) 
         for i in range(10):
             for j in range(10):
-                x,y = self.pinPos(i,j)
+                x,y,r = self.pinPos(i,j)
                 r2 = (x-xc)**2 + (y-yc)**2
                 if r2 < dia**2/4: # Click is within pin radius
                     self.pinSelect = (i,j)
@@ -163,17 +170,22 @@ class Bundle(QtGui.QWidget):
         #print self.pinSelect
 
         d = s*0.06*1.2
+        brush = QtGui.QBrush(QtCore.Qt.Dense7Pattern)
+        qp.setBrush(brush)
 
         if self.pinSelect >= (0,0):
             if (self.pinSelect != (4,4) and self.pinSelect != (5,4) and
                 self.pinSelect != (4,5) and self.pinSelect != (5,5)):
-                (x,y) = self.pinPos(self.pinSelect[0],self.pinSelect[1])
+                (x,y,r) = self.pinPos(self.pinSelect[0],self.pinSelect[1])
                 qp.drawRect(x-d/2, y-d/2, d, d)
 
 
     def setBackground(self, qp):
 
-        qp.setBrush(QtCore.Qt.white)
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#FFFFE5') # light yellow
+        qp.setBrush(color)
+        #qp.setBrush(QtCore.Qt.white)
         #x1 = s*0.999
 
         x1 = self.size().width()*0.999
@@ -181,34 +193,103 @@ class Bundle(QtGui.QWidget):
         qp.drawRect(0,0,x1,x2)
         #qp.drawRect(0,0,600,600)
 
+    def drawFrame(self, qp):
+        s = self.dim
+        qp.drawRect(0,0,s,s)
+
+        color = QtGui.QColor(0, 0, 0)
+        color.setNamedColor('#BFEFFF') # light blue
+        qp.setBrush(color)
+        x1 = s*0.04
+        x2 = s*0.92
+        qp.drawRect(x1,x1,x2,x2)
+        
+
+    def drawCoords(self, qp):
+        s = self.dim
+        
+        qfont = QtGui.QFont('Decorative', 10)
+        qfont.setStyle(QtGui.QFont.StyleNormal)
+        qfont.setWeight(QtGui.QFont.Bold)
+        qp.setFont(qfont)
+
+        ycoords = ['A','B','C','D','E','F','G','H','I','J']
+        xcoords = [1,2,3,4,5,6,7,8,9,10]
+        for i,val in list(enumerate(ycoords)):
+            x,y,r = self.pinPos(9,9-i)
+            qp.drawText(x+0.1*s,y+0.01*s,val)
+
+        for i,val in list(enumerate(xcoords)):
+            x,y,r = self.pinPos(9-i,9)
+            qp.drawText(x-0.01*s,y+0.115*s,str(val))
+
+
     def drawCRD(self, qp):
         s = self.dim
         # Paint crd
-        pen = QtGui.QPen(QtCore.Qt.black, 8, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         x1 = s*0.025
         x2 = s*0.92
+
         #s = self.size()
         #x1 = s.height()*0.025
         #x2 = s.height()*0.92
-        qp.drawLine(x1, x1, x2, x1)
-        qp.drawLine(x1, x1, x1, x2)
+        #qp.drawLine(x1, x1, x2, x1)
+        #qp.drawLine(x1, x1, x1, x2)
+        gradient = QtGui.QLinearGradient(0, 0, 1, 0)
+        
+        brush = QtGui.QBrush(QtCore.Qt.transparent)
+        qp.setBrush(brush)
+
+        x1 = s*0.018
+        y1 = s*0.1
+        x2 = s*0.044
+        y2 = s*0.77
+
+        qp.drawRect(x1,y1,x2,y2)
+        qp.drawLine(x1, y1*1.3, x1+x2, y1*1.3)
+        qp.drawLine(x1, y2+y1*0.7, x1+x2, y2+y1*0.7)
+
+        qp.drawRect(y1,x1,y2,x2)
+        qp.drawLine(y1*1.3,x1, y1*1.3 ,x1+x2)
+        qp.drawLine(y2+y1*0.7, x1, y2+y1*0.7, x1+x2)
         
         #qp.drawLine(20, 20, 555, 20)
         #qp.drawLine(20, 20, 20, 555) 
 
     def drawBox(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 5, QtCore.Qt.SolidLine)
         qp.setPen(pen)
-        x1 = s*0.05
-        x2 = s*0.92
+        #x1 = s*0.05
+        #x2 = s*0.92
         
+        x1 = s*0.08
+        x2 = s*0.84
+
         #s = self.size()
         #x1 = s.height()*0.05
         #x2 = s.height()*0.92
         
-        qp.drawRect(x1, x1, x2, x2)
+        #qp.drawRect(x1, x1, x2, x2)
+
+        color = QtGui.QColor(0, 200, 255)
+        color.setNamedColor('#D1EEEE') #
+        qp.setBrush(color)
+
+        qp.drawRoundedRect(x1, x1, x2, x2, 0.03*s, 0.03*s)
+        
+
+    def drawSymline(self, qp):
+        s = self.dim
+        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        #pen.setStyle(QtCore.Qt.CustomDashLine)
+        #pen.setDashPattern([2, 5, 2, 5])
+        qp.setPen(pen)
+        x1 = s*0.04
+        x2 = s*0.96
+        qp.drawLine(x1, x1, x2, x2)
 
     def drawQuad(self, qp):
 
@@ -230,7 +311,7 @@ class Bundle(QtGui.QWidget):
 
     def drawDiamond(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 4, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
         color = QtGui.QColor(0, 0, 0)
@@ -278,7 +359,7 @@ class Bundle(QtGui.QWidget):
 
     def drawChannels(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 2, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 4, QtCore.Qt.SolidLine)
         qp.setPen(pen)
 
         color = QtGui.QColor(0, 0, 0)
@@ -291,8 +372,8 @@ class Bundle(QtGui.QWidget):
         c = s*0.5
         d = s*0.05
 
-        x1 = s*0.05
-        x2 = s*0.92
+        x1 = s*0.08
+        x2 = s*0.84
 
         #s = self.size()
 
@@ -309,14 +390,16 @@ class Bundle(QtGui.QWidget):
 
     def drawCircles(self, qp):
         s = self.dim
-        pen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        pen = QtGui.QPen(QtCore.Qt.black, 3, QtCore.Qt.SolidLine)
         qp.setPen(pen)
         
-        r = s*0.06
-        d = s*0.082
-        x0 = s*0.07
-        x1 = s*0.08
+        r = s*0.055
+        d = s*0.070
+        #x0 = s*0.07
+        #x1 = s*0.08
 
+        x0 = s*0.1
+        x1 = s*0.075
 
         #s = self.size()
 
@@ -333,7 +416,10 @@ class Bundle(QtGui.QWidget):
                     continue
                 else:
                     self.setColor(qp)
-                    qp.drawEllipse(x0+i*x1,x0+j*x1,r,r)
+                    x,y,r = self.pinPos(i,j)
+                    qp.drawEllipse(x-r,y-r,2*r,2*r)
+                    #qp.drawEllipse(x0+i*x1,x0+j*x1,r,r)
+                    
 
         #d = self.height()*0.082
         # Quad 2
@@ -343,7 +429,9 @@ class Bundle(QtGui.QWidget):
                     continue
                 else:
                     self.setColor(qp)
-                    qp.drawEllipse(d+x0+i*x1,x0+j*x1,r,r)
+                    x,y,r = self.pinPos(i,j)
+                    qp.drawEllipse(x-r,y-r,2*r,2*r)
+                    #qp.drawEllipse(d+x0+i*x1,x0+j*x1,r,r)
         
         # Quad 3
         for i in range(0,5):
@@ -352,7 +440,9 @@ class Bundle(QtGui.QWidget):
                     continue
                 else:
                     self.setColor(qp)
-                    qp.drawEllipse(x0+i*x1,d+x0+j*x1,r,r)
+                    x,y,r = self.pinPos(i,j)
+                    qp.drawEllipse(x-r,y-r,2*r,2*r)
+                    #qp.drawEllipse(x0+i*x1,d+x0+j*x1,r,r)
         
         # Quad 4
         for i in range(5,10):
@@ -361,7 +451,9 @@ class Bundle(QtGui.QWidget):
                     continue
                 else:
                     self.setColor(qp)
-                    qp.drawEllipse(d+x0+i*x1,d+x0+j*x1,r,r)
+                    x,y,r = self.pinPos(i,j)
+                    qp.drawEllipse(x-r,y-r,2*r,2*r)
+                    #qp.drawEllipse(d+x0+i*x1,d+x0+j*x1,r,r)
         
 
 
