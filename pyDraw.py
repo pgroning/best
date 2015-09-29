@@ -29,7 +29,7 @@ class Bundle(QtGui.QWidget):
         
     def initUI(self):      
 
-        self.setGeometry(0, 0, 700, 500)
+        self.setGeometry(0, 0, 800, 600)
         #self.setWindowTitle('Bundle')
         self.show()
 
@@ -84,10 +84,9 @@ class Bundle(QtGui.QWidget):
 
     def paintEvent(self, event):
 
-        self.dim = min(self.size().height(),self.size().width()/1.5)
-        #self.dim = self.size().height()
+        #self.dim = min(self.size().height(),self.size().width()/1.5)
+        self.dim = self.size().height()
         s = self.dim
-        #global s
         #s = min(self.size().height(),self.size().width())  
         
         qp = QtGui.QPainter()
