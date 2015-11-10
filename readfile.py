@@ -43,10 +43,21 @@ def readfile():
         elif rePOW.match(line) is not None:
             iPOW = np.append(iPOW,idx)
 
-    # Calculate number of burnup points
-    tmpvec = iTIT[iTIT>iTTL[1]]
-    tmpvec = tmpvec[tmpvec<iTTL[2]]
+    # Calculate burnup points
+    S3C = False
+    if S3C:
+        tmpvec = iTIT[iTIT>iTTL[1]]
+        tmpvec = tmpvec[tmpvec<iTTL[2]]
+    else:
+        tmpvec = iTIT[iTIT<iTTL[1]]
+
     Nburnpts = tmpvec.size
+    iTITs = tmpvec[0:Nburnpts]
+    burnpts = np.zeros(Nburnpts)
+    for i in range(Nburnpts):
+        burnpts[i] = flines[iTIT[i]+2][0:6]
+        
+    
 
 
     Tracer()()
