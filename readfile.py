@@ -48,25 +48,28 @@ def readfile():
     if S3C:
         tmpvec = iTIT[iTIT>iTTL[1]]
         tmpvec = tmpvec[tmpvec<iTTL[2]]
+        Nburnpts = tmpvec.size
+        iTITs = tmpvec[0:Nburnpts]
+        tmpvec = iREA[iREA>iTITs[0]]
+        iREAs = tmpvec[0:Nburnpts]
+        tmpvec = iPOW[iPOW>iTITs[0]]
+        iPOWs = tmpvec[0:Nburnpts]
     else:
-        tmpvec = iTIT[iTIT<iTTL[1]]
+        Nburnpts = iTIT[iTIT<iTTL[1]].size
+        iTITs = iTIT[0:Nburnpts]
+        iREAs = iREA[0:Nburnpts]
+        iPOWs = iPOW[0:Nburnpts]
 
-    Nburnpts = tmpvec.size
-    iTITs = tmpvec[0:Nburnpts]
-    burnpts = np.zeros(Nburnpts)
+    # Calculate burnup and kinf
+    burnup = np.zeros(Nburnpts)
+    kinf = np.zeros(Nburnpts)
     for i in range(Nburnpts):
-        burnpts[i] = flines[iTIT[i]+2][0:6]
-        
+        burnup[i] = flines[iTITs[i]+2][0:6]
+        kinf[i] = flines[iREAs[i]+1][0:12]
     
 
 
     Tracer()()
-    #print iGPO[0]
-    #print flines[iGPO[0]]
-    #print iGPO.size
-
-
-
 
 
 if __name__ == '__main__':
