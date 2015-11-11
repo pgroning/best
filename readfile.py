@@ -15,6 +15,13 @@ def readfile():
     with open(fname) as f:
         #flines = f.readlines() # include \n
         flines = f.read().splitlines() #exclude \n
+    
+    # Read fuel dimension
+    reBWR = re.compile('^\s*BWR')
+    for line in flines:
+        if reBWR.match(line) is not None:
+            fuedim = int(line[5:7])
+            break
 
     # Find the lines containing some key cards
     reTIT = re.compile('^TIT')
@@ -42,6 +49,7 @@ def readfile():
             iGPO = np.append(iGPO,idx)
         elif rePOW.match(line) is not None:
             iPOW = np.append(iPOW,idx)
+ 
 
     # Calculate burnup points
     S3C = False
@@ -49,27 +57,72 @@ def readfile():
         tmpvec = iTIT[iTIT>iTTL[1]]
         tmpvec = tmpvec[tmpvec<iTTL[2]]
         Nburnpts = tmpvec.size
-        iTITs = tmpvec[0:Nburnpts]
+        iTITbp = tmpvec[0:Nburnpts]
         tmpvec = iREA[iREA>iTITs[0]]
-        iREAs = tmpvec[0:Nburnpts]
+        iREAbp = tmpvec[0:Nburnpts]
+        tmpvec = iGPO[iGPO>iTITs[0]]
+        iGPObp = tmpvec[0:Nburnpts]
         tmpvec = iPOW[iPOW>iTITs[0]]
-        iPOWs = tmpvec[0:Nburnpts]
+        iPOWbp = tmpvec[0:Nburnpts]
     else:
         Nburnpts = iTIT[iTIT<iTTL[1]].size
-        iTITs = iTIT[0:Nburnpts]
-        iREAs = iREA[0:Nburnpts]
-        iPOWs = iPOW[0:Nburnpts]
+        iTITbp = iTIT[0:Nburnpts]
+        iREAbp = iREA[0:Nburnpts]
+        iGPObp = iGPO[0:Nburnpts]
+        iPOWbp = iPOW[0:Nburnpts]
 
-    # Calculate burnup and kinf
-    burnup = np.zeros(Nburnpts)
-    kinf = np.zeros(Nburnpts)
+    # Read burnup and kinf
+    burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
+    kinf = np.zeros(Nburnpts); kinf.fill(np.nan)
     for i in range(Nburnpts):
-        burnup[i] = flines[iTITs[i]+2][0:6]
-        kinf[i] = flines[iREAs[i]+1][0:12]
+        burnup[i] = flines[iTITbp[i]+2][0:6]
+        kinf[i] = flines[iREAbp[i]+1][0:12]
     
+    
+    # Read radial power distribution map
+    gamma = True # Use GPO insted of POW
+
+    if gamma:
+        idx = iGPObp
+    else:
+        idx = iPOWbp
+
+    POW = np.zeros((fuedim,fuedim,Nburnpts)); POW.fill(np.nan)
+    for i in range(Nburnpts):
+        caxmap = flines[idx[i]+2:idx[i]+2+fuedim]
+        M = map2mat(caxmap,fuedim)
+        M = symtrans(M)
+        POW[:,:,i] = M
+
+
+    # Calculate radial burnup distribution
+    EXP = np.zeros((fuedim,fuedim,Nburnpts)); EXP.fill(np.nan)
+    EXP[:,:,0] = 0 # Initial burnup
+    for i in range(1,Nburnpts):
+        dburn = burnup[i] - burnup[i-1]
+        EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
+
 
 
     Tracer()()
+
+
+
+def map2mat(caxmap,dim):
+    M = np.zeros((dim,dim)); M.fill(np.nan)
+    for i in range(dim):
+        rstr = caxmap[i]
+        rvec = rstr.strip().split(' ')
+        M[i,0:i+1] = rvec
+    return M
+
+def symtrans(M):
+    Mt = M.transpose()
+    dim = M.shape[0]
+    for i in range(1,dim):
+        Mt[i,0:i] = M[i,0:i]
+    return Mt
+
 
 
 if __name__ == '__main__':
