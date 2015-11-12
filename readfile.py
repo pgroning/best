@@ -7,22 +7,94 @@ from IPython.core.debugger import Tracer
 
 import numpy as np
 import re
+import linecache
 
 def readfile():
     fname = "cax/e29OPT2-389-10g40mid-cas.cax"
+    #fname = "cax/e34OPT3-367-10g50mid-cas.cax"
     print "Reading file " + fname
     
-    with open(fname) as f:
-        #flines = f.readlines() # include \n
-        flines = f.read().splitlines() #exclude \n
-    
-    # Read fuel dimension
-    reBWR = re.compile('^\s*BWR')
-    for line in flines:
-        if reBWR.match(line) is not None:
-            fuedim = int(line[5:7])
-            break
+    # Read input file up to maxlen using random access
+    maxlen = 50000
+    flines = []
+    for i in range(maxlen):
+        flines.append(linecache.getline(fname,i+1).rstrip())
+       
+    # Read the whole file
+    #with open(fname) as f:
+    #   #flines = f.readlines() # include \n
+    #    flines = f.read().splitlines() #exclude \n
 
+    # Search for cards
+    reBWR = re.compile('^\s*BWR')
+    reLFU = re.compile('^\s*LFU')
+    reLPI = re.compile('^\s*LPI')
+    reFUE = re.compile('^\s*FUE')
+    reTTL = re.compile('^\s*TTL')
+    reSIM = re.compile('^\s*SIM')
+    rePDE = re.compile('^\s*PDE')
+    rePIN = re.compile('^\s*PIN')
+    reSLA = re.compile('^\s*SLA')
+    reSPA = re.compile('^\s*SPA')
+    reCRD = re.compile('^\s*CRD')
+    reGAM = re.compile('^\s*GAM')
+    reWRI = re.compile('^\s*WRI')
+    reSTA = re.compile('^\s*STA')
+    reEND = re.compile('^\s*END')
+    reTMO = re.compile('^\s*TMO')
+    reTFU = re.compile('^\s*TFU')
+    reVOI = re.compile('^\s*VOI')
+    
+    # Setup empty integer array
+    iBWR = np.arange(0,dtype='int32')
+    iLFU = np.arange(0,dtype='int32')
+    iLPI = np.arange(0,dtype='int32')
+    iFUE = np.arange(0,dtype='int32')
+
+    for i, line in enumerate(flines):
+        if reBWR.match(line) is not None:
+            iBWR = np.append(iBWR,i)
+        elif reLFU.match(line) is not None:
+            iLFU = np.append(iLFU,i)
+        elif reLPI.match(line) is not None:
+            iLPI = np.append(iLPI,i)
+        elif reFUE.match(line) is not None:
+            iFUE = np.append(iFUE,i)
+
+    # Read fuel dimension
+    npst = int(flines[iBWR[0]][5:7])
+    
+    # Read LFU map
+    caxmap = flines[iLFU[0]+1:iLFU[0]+1+npst]
+    LFU = symtrans(map2mat(caxmap,npst)).astype(int)
+
+    # Read LPI map
+    caxmap = flines[iLPI[0]+1:iLPI[0]+1+npst]
+    LPI = symtrans(map2mat(caxmap,npst)).astype(int)
+
+    # Read FUE
+    
+
+
+
+#    reBWR = re.compile('^\s*BWR')
+#    for line in flines:
+#        if reBWR.match(line) is not None:
+#            fuedim = int(line[5:7])
+#            break
+
+
+    Tracer()()
+
+    # Check if S3C card exists
+    S3C = False
+    reS3C = re.compile('(^| )S3C')
+    for i,line in enumerate(flines):
+        if reS3C.match(line) is not None:
+            iS3C = i
+            S3C = True
+            break
+    
     # Find the lines containing some key cards
     reTIT = re.compile('^TIT')
     reTTL = re.compile('^\*I TTL')
@@ -49,10 +121,13 @@ def readfile():
             iGPO = np.append(iGPO,idx)
         elif rePOW.match(line) is not None:
             iPOW = np.append(iPOW,idx)
- 
+        #if idx == 50000: # Max number of rows to scan
+        #    break
+
+    if iGPO.size >= iREA.size:
+        iPOW = iGPO
 
     # Calculate burnup points
-    S3C = False
     if S3C:
         tmpvec = iTIT[iTIT>iTTL[1]]
         tmpvec = tmpvec[tmpvec<iTTL[2]]
@@ -80,20 +155,13 @@ def readfile():
     
     
     # Read radial power distribution map
-    gamma = True # Use GPO insted of POW
-
-    if gamma:
-        idx = iGPObp
-    else:
-        idx = iPOWbp
 
     POW = np.zeros((fuedim,fuedim,Nburnpts)); POW.fill(np.nan)
     for i in range(Nburnpts):
-        caxmap = flines[idx[i]+2:idx[i]+2+fuedim]
+        caxmap = flines[iPOW[i]+2:iPOW[i]+2+fuedim]
         M = map2mat(caxmap,fuedim)
         M = symtrans(M)
         POW[:,:,i] = M
-
 
     # Calculate radial burnup distribution
     EXP = np.zeros((fuedim,fuedim,Nburnpts)); EXP.fill(np.nan)
@@ -112,7 +180,8 @@ def map2mat(caxmap,dim):
     M = np.zeros((dim,dim)); M.fill(np.nan)
     for i in range(dim):
         rstr = caxmap[i]
-        rvec = rstr.strip().split(' ')
+        #rvec = rstr.strip().split(' ')
+        rvec = re.split('\s+',rstr.strip())
         M[i,0:i+1] = rvec
     return M
 
