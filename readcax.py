@@ -13,6 +13,7 @@ import numpy as np
 import re
 import linecache
 import os.path
+import sys
 
 class readcax:
 
@@ -228,4 +229,4 @@ class readcax:
         
 
 if __name__ == '__main__':
-    readcax()
+    readcax(sys.argv[1])
