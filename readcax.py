@@ -5,7 +5,7 @@
 
 
 # For debugging. Add Tracer()() inside the code to break at that line
-#from IPython.core.debugger import Tracer
+from IPython.core.debugger import Tracer
 # Inside iptyhon shell: run -d b<L> readfile.py
 # sets a break point add line L.
 
@@ -210,7 +210,7 @@ class readcax:
         self.Kinf = Kinf
         self.Fint = Fint
         self.EXP = EXP
-
+        Tracer()()
 
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
