@@ -19,7 +19,8 @@ class casdata:
 
     def __init__(self,fname):
         self.readcax(fname)
-        self.avenr()
+        self.ave_enr()
+        self.Fint()
 #self.writecai()
         
     # -------Read cax file---------
@@ -137,13 +138,13 @@ class casdata:
                 FUE[i,3:5] = re.split('=',rvec[3])
         
         # Translate LFU map to ENR map
-        ENR = np.zeros((npst,npst)); ENR.fill(np.nan)
+        ENR = np.zeros((npst,npst)); #ENR.fill(np.nan)
         for i in range(Nfue):
             ifu = int(FUE[i,0])
             ENR[LFU==ifu] = FUE[i,2]
 
         # Translate LFU map to BA map
-        BA = np.zeros((npst,npst)); BA.fill(np.nan)
+        BA = np.zeros((npst,npst)); #BA.fill(np.nan)
         for i in range(Nfue):
             ifu = int(FUE[i,0])
             if np.isnan(FUE[i,3]):
@@ -212,20 +213,13 @@ class casdata:
             burnup[i] = flines[iTITbp[i]+2][0:6]
             Kinf[i] = flines[iREAbp[i]+1][0:12]
 
-        
         # Read radial power distribution map
-        
         POW = np.zeros((npst,npst,Nburnpts)); POW.fill(np.nan)
         for i in range(Nburnpts):
             caxmap = flines[iPOW[i]+2:iPOW[i]+2+npst]
             M = self.__symtrans(self.__map2mat(caxmap,npst))
             POW[:,:,i] = M
             
-        # Calculate Fint
-        Fint = np.zeros(Nburnpts); Fint.fill(np.nan)
-        for i in range(Nburnpts):
-            Fint[i] = POW[:,:,i].max()
-
         # Calculate radial burnup distribution
         EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
         EXP[:,:,0] = 0 # Initial burnup
@@ -236,7 +230,6 @@ class casdata:
         self.fname = fname
         self.burnup = burnup
         self.Kinf = Kinf
-        self.Fint = Fint
         self.EXP = EXP
         self.ENR = ENR
         self.BA = BA
@@ -245,7 +238,7 @@ class casdata:
         self.FUE = FUE
         self.LFU = LFU
         self.npst = npst
-
+        self.POW = POW
 
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
@@ -263,12 +256,16 @@ class casdata:
         return Mt
 
 
-
+    #---------Calculate Fint-------------
+    def Fint(self):
+        Nburnpts = self.POW.shape[2]
+        Fint = np.zeros(Nburnpts); Fint.fill(np.nan)
+        for i in range(Nburnpts):
+            Fint[i] = self.POW[:,:,i].max()
+        self.Fint = Fint
 
     # --------Calculate average enrichment----------
-    def avenr(self):
-        
-        #M = ~np.isnan(self.ENR) # Pin map
+    def ave_enr(self):
 
         # Translate LFU map to density map
         DENS = np.zeros((self.npst,self.npst));
@@ -280,10 +277,18 @@ class casdata:
         # Translate LPI map to pin radius map
         RADI = np.zeros((self.npst,self.npst));
         Npin = self.PIN[:,0].size
-        #for i in range(Npin):
-            
+        for i in range(Npin):
+            ipi = int(self.PIN[i,0])
+            RADI[self.LPI==ipi] = self.PIN[i,1]
+        
+        # Calculate mass
+        VOLU = np.pi*RADI**2
+        MASS = DENS*VOLU
+        mass = np.sum(MASS)
+        MASS_U235 = MASS*self.ENR
+        mass_u235 = np.sum(MASS_U235)
+        self.ave_enr = mass_u235/mass
 
-        Tracer()()
 
     # -------Write cai file------------
     def writecai(self):
