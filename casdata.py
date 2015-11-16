@@ -15,12 +15,14 @@ import linecache
 import os.path
 import sys
 
-class readcax:
+class casdata:
 
     def __init__(self,fname):
         self.readcax(fname)
+        self.avenr()
+#self.writecai()
         
-
+    # -------Read cax file---------
     def readcax(self,fname):
         #fname = "cax/e29OPT2-389-10g40mid-cas.cax"
         #fname = "cax/e34OPT3-367-10g50mid-cas.cax"
@@ -120,7 +122,7 @@ class readcax:
         # Read LPI map
         caxmap = flines[iLPI[0]+1:iLPI[0]+1+npst]
         LPI = self.__symtrans(self.__map2mat(caxmap,npst)).astype(int)
-            
+
         # Read FUE
         iFUE = iFUE[iFUE<iEND[0]]
         Nfue = iFUE.size
@@ -133,15 +135,41 @@ class readcax:
             FUE[i,1:3] = re.split('/',rvec[2])
             if np.size(rvec) > 3:
                 FUE[i,3:5] = re.split('=',rvec[3])
-                
+        
+        # Translate LFU map to ENR map
+        ENR = np.zeros((npst,npst)); ENR.fill(np.nan)
+        for i in range(Nfue):
+            ifu = int(FUE[i,0])
+            ENR[LFU==ifu] = FUE[i,2]
+
+        # Translate LFU map to BA map
+        BA = np.zeros((npst,npst)); BA.fill(np.nan)
+        for i in range(Nfue):
+            ifu = int(FUE[i,0])
+            if np.isnan(FUE[i,3]):
+                BA[LFU==ifu] = 0.0
+            else:
+                BA[LFU==ifu] = FUE[i,4]
+
+
         # Determine number of BA rods types
         Nba = 0
         for content in FUE[:,4]:
             if np.isnan(content) == False:
                 Nba += 1
                 
-        # Read PIN
+
+        # Read PIN (pin radius)
         Npin = iPIN.size
+        ncol = 4
+        PIN = np.zeros((Npin,ncol)); PIN.fill(np.nan)
+        for i,idx in enumerate(iPIN):
+            rvec = re.split(',|/',flines[idx].strip())
+            rstr = rvec[0]
+            rvec = re.split('\s+',rstr.strip())
+            rlen = np.size(rvec)
+            PIN[i,:rlen-1] = rvec[1:ncol+1]
+
         
         # Read SLA
             
@@ -210,7 +238,14 @@ class readcax:
         self.Kinf = Kinf
         self.Fint = Fint
         self.EXP = EXP
-        Tracer()()
+        self.ENR = ENR
+        self.BA = BA
+        self.PIN = PIN
+        self.LPI = LPI
+        self.FUE = FUE
+        self.LFU = LFU
+        self.npst = npst
+
 
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
@@ -226,7 +261,36 @@ class readcax:
         for i in range(1,dim):
             Mt[i,0:i] = M[i,0:i]
         return Mt
+
+
+
+
+    # --------Calculate average enrichment----------
+    def avenr(self):
+        
+        #M = ~np.isnan(self.ENR) # Pin map
+
+        # Translate LFU map to density map
+        DENS = np.zeros((self.npst,self.npst));
+        Nfue = self.FUE[:,0].size
+        for i in range(Nfue):
+            ifu = int(self.FUE[i,0])
+            DENS[self.LFU==ifu] = self.FUE[i,1]
+ 
+        # Translate LPI map to pin radius map
+        RADI = np.zeros((self.npst,self.npst));
+        Npin = self.PIN[:,0].size
+        #for i in range(Npin):
+            
+
+        Tracer()()
+
+    # -------Write cai file------------
+    def writecai(self):
+        print "Creating file cas.inp"
+        
+        #Tracer()()
         
 
 if __name__ == '__main__':
-    readcax(sys.argv[1])
+    casdata(sys.argv[1])
