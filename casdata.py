@@ -69,13 +69,14 @@ class casdata:
         reTMO = re.compile('^\s*TMO')
         reTFU = re.compile('^\s*TFU')
         reVOI = re.compile('^\s*VOI')
+        reDEP = re.compile('^\s*DEP')
         reS3C = re.compile('(^| )S3C')
         reTIT = re.compile('^TIT')
         reITTL = re.compile('^\*I TTL')
         reREA = re.compile('REA\s+')
         reGPO = re.compile('GPO\s+')
         rePOW = re.compile('POW\s+')
-        
+
         # Setup empty integer arrays
         iEND = np.arange(0,dtype='int32')
         iBWR = np.arange(0,dtype='int32')
@@ -93,6 +94,10 @@ class casdata:
         iTFU = np.arange(0,dtype='int32')
         iTMO = np.arange(0,dtype='int32')
         iVOI = np.arange(0,dtype='int32')
+        iPDE = np.arange(0,dtype='int32')
+        iSLA = np.arange(0,dtype='int32')
+        iSPA = np.arange(0,dtype='int32')
+        iDEP = np.arange(0,dtype='int32')
 
         # Search for regexp matches
         for i, line in enumerate(flines):
@@ -128,8 +133,15 @@ class casdata:
                 iTMO = np.append(iTMO,i)
             elif reVOI.match(line) is not None:
                 iVOI = np.append(iVOI,i)
-
-
+            elif rePDE.match(line) is not None:
+                iPDE = np.append(iPDE,i)
+            elif reSLA.match(line) is not None:
+                iSLA = np.append(iSLA,i)
+            elif reSPA.match(line) is not None:
+                iSPA = np.append(iSPA,i)
+            elif reDEP.match(line) is not None:
+                iDEP = np.append(iDEP,i)
+            
         # Read title
         self.title = flines[iTTL[0]]
         # SIM
@@ -140,10 +152,17 @@ class casdata:
         self.tmo = flines[iTMO[0]]
         # VOI
         self.voi = flines[iVOI[0]]
+        # PDE
+        self.pde = flines[iPDE[0]]
+        # BWR
+        self.bwr = flines[iBWR[0]]
+        # SPA
+        self.spa = flines[iSPA[0]]
+        # DEP
+        self.dep = flines[iDEP[0]]
 
         # Read fuel dimension
         npst = int(flines[iBWR[0]][5:7])
-
         
         # Read LFU map
         caxmap = flines[iLFU[0]+1:iLFU[0]+1+npst]
@@ -203,9 +222,11 @@ class casdata:
             rlen = np.size(rvec)
             PIN[i,:rlen-1] = rvec[1:ncol+1]
 
-        
+        self.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
+
         # Read SLA
-            
+        Nsla = iSLA.size
+        self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
         
         # Calculate burnup points
         
@@ -336,8 +357,44 @@ class casdata:
         f.write(self.tmo + '\n')
         f.write(self.voi + '\n')
 
-        f.close()
+        Nfue = self.FUE.shape[0]
+        for i in range(Nfue):
+            f.write(' FUE  %d ' % (self.FUE[i,0]))
+            f.write('%5.3f/%5.3f' % (self.FUE[i,1],self.FUE[i,2]))
+            if ~np.isnan(self.FUE[i,3]):
+                f.write(' %d=%4.2f' % (self.FUE[i,3],self.FUE[i,4]))
+            f.write('\n')
 
+        f.write(' LFU\n')
+        for i in range(self.npst):
+            for j in range(i+1):
+                f.write(' %d' % self.LFU[i,j])
+                if j < i: f.write(' ')
+            f.write('\n')
+
+        f.write(self.pde + '\n')
+
+        f.write(self.bwr + '\n')
+
+        Npin = np.size(self.pinlines)
+        for i in range(Npin):
+            f.write(self.pinlines[i] + '\n')
+        
+        Nsla = np.size(self.slalines)
+        for i in range(Nsla):
+            f.write(self.slalines[i] + '\n')
+
+        f.write(' LPI\n')
+        for i in range(self.npst):
+            for j in range(i+1):
+                f.write(' %d' % self.LPI[i,j])
+                if j < i: f.write(' ')
+            f.write('\n')
+
+        f.write(self.spa + '\n')
+        f.write(self.dep + '\n')
+
+        f.close()
 
         Tracer()()
         
