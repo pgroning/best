@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-# > from readcax import readcax
-# > data = readcax('fname')
-
+# Run from ipython:
+# > from casdata import casdata
+# > case = casdata('caxfile')
+#
+# or:
+# run casdata "caxfile"
+#
 
 # For debugging. Add Tracer()() inside the code to break at that line
 from IPython.core.debugger import Tracer
@@ -17,32 +21,32 @@ import sys
 
 class casdata:
 
-    def __init__(self,fname):
-        self.readcax(fname)
+    def __init__(self,caxfile):
+        self.readcax(caxfile)
         self.ave_enr()
-        self.Fint()
-#self.writecai()
+        self.fint()
+        self.writecai()
         
     # -------Read cax file---------
-    def readcax(self,fname):
-        #fname = "cax/e29OPT2-389-10g40mid-cas.cax"
-        #fname = "cax/e34OPT3-367-10g50mid-cas.cax"
-        #print "Reading file " + fname
+    def readcax(self,caxfile):
+        #caxfile = "cax/e29OPT2-389-10g40mid-cas.cax"
+        #caxfile = "cax/e34OPT3-367-10g50mid-cas.cax"
+        #print "Reading file " + caxfile
         
         # Read input file up to maxlen using random access
-        if not os.path.isfile(fname):
-            print "Could not open file " + fname
+        if not os.path.isfile(caxfile):
+            print "Could not open file " + caxfile
             return
         else:
-            print "Reading file " + fname
+            print "Reading file " + caxfile
 
         maxlen = 50000
         flines = []
         for i in range(maxlen):
-            flines.append(linecache.getline(fname,i+1).rstrip())
+            flines.append(linecache.getline(caxfile,i+1).rstrip())
         
         # Read the whole file
-        #with open(fname) as f:
+        #with open(caxfile) as f:
         #   #flines = f.readlines() # include \n
         #    flines = f.read().splitlines() #exclude \n
         
@@ -67,7 +71,7 @@ class casdata:
         reVOI = re.compile('^\s*VOI')
         reS3C = re.compile('(^| )S3C')
         reTIT = re.compile('^TIT')
-        reTTL = re.compile('^\*I TTL')
+        reITTL = re.compile('^\*I TTL')
         reREA = re.compile('REA\s+')
         reGPO = re.compile('GPO\s+')
         rePOW = re.compile('POW\s+')
@@ -80,11 +84,16 @@ class casdata:
         iFUE = np.arange(0,dtype='int32')
         iPIN = np.arange(0,dtype='int32')
         iTIT = np.arange(0,dtype='int32')
+        iITTL = np.arange(0,dtype='int32')
         iTTL = np.arange(0,dtype='int32')
         iREA = np.arange(0,dtype='int32')
         iGPO = np.arange(0,dtype='int32')
         iPOW = np.arange(0,dtype='int32')
-        
+        iSIM = np.arange(0,dtype='int32')
+        iTFU = np.arange(0,dtype='int32')
+        iTMO = np.arange(0,dtype='int32')
+        iVOI = np.arange(0,dtype='int32')
+
         # Search for regexp matches
         for i, line in enumerate(flines):
             if reEND.match(line) is not None:
@@ -101,6 +110,8 @@ class casdata:
                 iPIN = np.append(iPIN,i)
             elif reTIT.match(line) is not None:
                 iTIT = np.append(iTIT,i)
+            elif reITTL.match(line) is not None:
+                iITTL = np.append(iITTL,i)
             elif reTTL.match(line) is not None:
                 iTTL = np.append(iTTL,i)
             elif reREA.match(line) is not None:
@@ -109,9 +120,30 @@ class casdata:
                 iGPO = np.append(iGPO,i)
             elif rePOW.match(line) is not None:
                 iPOW = np.append(iPOW,i)
+            elif reSIM.match(line) is not None:
+                iSIM = np.append(iSIM,i)
+            elif reTFU.match(line) is not None:
+                iTFU = np.append(iTFU,i)
+            elif reTMO.match(line) is not None:
+                iTMO = np.append(iTMO,i)
+            elif reVOI.match(line) is not None:
+                iVOI = np.append(iVOI,i)
+
+
+        # Read title
+        self.title = flines[iTTL[0]]
+        # SIM
+        self.sim = flines[iSIM[0]]
+        # TFU
+        self.tfu = flines[iTFU[0]]
+        # TMO
+        self.tmo = flines[iTMO[0]]
+        # VOI
+        self.voi = flines[iVOI[0]]
 
         # Read fuel dimension
         npst = int(flines[iBWR[0]][5:7])
+
         
         # Read LFU map
         caxmap = flines[iLFU[0]+1:iLFU[0]+1+npst]
@@ -189,8 +221,8 @@ class casdata:
             iPOW = iGPO
             
         if S3C:
-            tmpvec = iTIT[iTIT>iTTL[1]]
-            tmpvec = tmpvec[tmpvec<iTTL[2]]
+            tmpvec = iTIT[iTIT>iITTL[1]]
+            tmpvec = tmpvec[tmpvec<iITTL[2]]
             Nburnpts = tmpvec.size
             iTITbp = tmpvec[0:Nburnpts]
             tmpvec = iREA[iREA>iTITs[0]]
@@ -200,7 +232,7 @@ class casdata:
             tmpvec = iPOW[iPOW>iTITs[0]]
             iPOWbp = tmpvec[0:Nburnpts]
         else:
-            Nburnpts = iTIT[iTIT<iTTL[1]].size
+            Nburnpts = iTIT[iTIT<iITTL[1]].size
             iTITbp = iTIT[0:Nburnpts]
             iREAbp = iREA[0:Nburnpts]
             iGPObp = iGPO[0:Nburnpts]
@@ -208,10 +240,10 @@ class casdata:
                 
         # Read burnup and kinf
         burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
-        Kinf = np.zeros(Nburnpts); Kinf.fill(np.nan)
+        kinf = np.zeros(Nburnpts); kinf.fill(np.nan)
         for i in range(Nburnpts):
             burnup[i] = flines[iTITbp[i]+2][0:6]
-            Kinf[i] = flines[iREAbp[i]+1][0:12]
+            kinf[i] = flines[iREAbp[i]+1][0:12]
 
         # Read radial power distribution map
         POW = np.zeros((npst,npst,Nburnpts)); POW.fill(np.nan)
@@ -227,9 +259,9 @@ class casdata:
             dburn = burnup[i] - burnup[i-1]
             EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
             
-        self.fname = fname
+        self.caxfile = caxfile
         self.burnup = burnup
-        self.Kinf = Kinf
+        self.kinf = kinf
         self.EXP = EXP
         self.ENR = ENR
         self.BA = BA
@@ -239,6 +271,7 @@ class casdata:
         self.LFU = LFU
         self.npst = npst
         self.POW = POW
+
 
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
@@ -257,12 +290,12 @@ class casdata:
 
 
     #---------Calculate Fint-------------
-    def Fint(self):
+    def fint(self):
         Nburnpts = self.POW.shape[2]
-        Fint = np.zeros(Nburnpts); Fint.fill(np.nan)
+        fint = np.zeros(Nburnpts); fint.fill(np.nan)
         for i in range(Nburnpts):
-            Fint[i] = self.POW[:,:,i].max()
-        self.Fint = Fint
+            fint[i] = self.POW[:,:,i].max()
+        self.fint = fint
 
     # --------Calculate average enrichment----------
     def ave_enr(self):
@@ -294,7 +327,19 @@ class casdata:
     def writecai(self):
         print "Creating file cas.inp"
         
-        #Tracer()()
+        caifile = "cas.inp"
+
+        f = open(caifile,'w')
+        f.write(self.title + '\n')
+        f.write(self.sim + '\n')
+        f.write(self.tfu + '\n')
+        f.write(self.tmo + '\n')
+        f.write(self.voi + '\n')
+
+        f.close()
+
+
+        Tracer()()
         
 
 if __name__ == '__main__':
