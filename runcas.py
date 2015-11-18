@@ -7,7 +7,7 @@ import os
 def runcas(caifile,*args):
 
     if not os.path.isfile(caifile):
-        print "Could not open file " + caifile
+        print "Could not find file " + caifile
         return
     
     # Remove existing files
@@ -32,7 +32,21 @@ def runcas(caifile,*args):
         cmd = 'cas4 -V 2.05.12_MROD ' + caifile + ' >/dev/null 2>&1 &'
         os.system(cmd)
 
+def cascheck(caifile):
 
+    if not os.path.isfile(caifile):
+        print "Could not find file " + caifile
+        return
+
+    tmpfile = os.path.dirname(caifile)+'/tmp.'+os.path.basename(caifile)
+    if os.path.isfile(tmpfile):
+        # Process is running
+        return True
+    else:
+        # Process is not running
+        return False
+
+    #Tracer()()
 
 #if __name__ == '__main__':
 #    casdata(sys.argv[1])
