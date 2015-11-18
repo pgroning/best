@@ -25,7 +25,7 @@ class casdata:
         self.readcax(caxfile)
         self.ave_enr()
         self.fint()
-        self.writecai()
+        #self.writecai()
         
     # -------Read cax file---------
     def readcax(self,caxfile):
@@ -98,6 +98,10 @@ class casdata:
         iSLA = np.arange(0,dtype='int32')
         iSPA = np.arange(0,dtype='int32')
         iDEP = np.arange(0,dtype='int32')
+        iGAM = np.arange(0,dtype='int32')
+        iWRI = np.arange(0,dtype='int32')
+        iSTA = np.arange(0,dtype='int32')
+        iCRD = np.arange(0,dtype='int32')
 
         # Search for regexp matches
         for i, line in enumerate(flines):
@@ -141,7 +145,16 @@ class casdata:
                 iSPA = np.append(iSPA,i)
             elif reDEP.match(line) is not None:
                 iDEP = np.append(iDEP,i)
+            elif reGAM.match(line) is not None:
+                iGAM = np.append(iGAM,i)
+            elif reWRI.match(line) is not None:
+                iWRI = np.append(iWRI,i)
+            elif reSTA.match(line) is not None:
+                iSTA = np.append(iSTA,i)
+            elif reCRD.match(line) is not None:
+                iCRD = np.append(iCRD,i)
             
+
         # Read title
         self.title = flines[iTTL[0]]
         # SIM
@@ -160,7 +173,15 @@ class casdata:
         self.spa = flines[iSPA[0]]
         # DEP
         self.dep = flines[iDEP[0]]
-
+        # GAM
+        self.gam = flines[iGAM[0]]
+        # WRI
+        self.wri = flines[iWRI[0]]
+        # STA
+        self.sta = flines[iSTA[0]]
+        # CRD
+        self.crd = flines[iCRD[0]]
+        
         # Read fuel dimension
         npst = int(flines[iBWR[0]][5:7])
         
@@ -210,7 +231,6 @@ class casdata:
             if np.isnan(content) == False:
                 Nba += 1
                 
-
         # Read PIN (pin radius)
         Npin = iPIN.size
         ncol = 4
@@ -345,10 +365,10 @@ class casdata:
 
 
     # -------Write cai file------------
-    def writecai(self):
-        print "Creating file cas.inp"
+    def writecai(self,caifile):
+        print "Writing to file " + caifile
         
-        caifile = "cas.inp"
+        #caifile = "cas.inp"
 
         f = open(caifile,'w')
         f.write(self.title + '\n')
@@ -369,7 +389,7 @@ class casdata:
         for i in range(self.npst):
             for j in range(i+1):
                 f.write(' %d' % self.LFU[i,j])
-                if j < i: f.write(' ')
+                #if j < i: f.write(' ')
             f.write('\n')
 
         f.write(self.pde + '\n')
@@ -388,15 +408,29 @@ class casdata:
         for i in range(self.npst):
             for j in range(i+1):
                 f.write(' %d' % self.LPI[i,j])
-                if j < i: f.write(' ')
+                #if j < i: f.write(' ')
             f.write('\n')
 
         f.write(self.spa + '\n')
         f.write(self.dep + '\n')
+        f.write(self.gam + '\n')
+        f.write(self.wri + '\n')
+        f.write(self.sta + '\n')
+
+        f.write(' TTL\n')
+
+        depstr = re.split('DEP',self.dep)[1].replace(',','').strip()
+        f.write(' RES,,%s\n' % (depstr))
+
+        #f.write(' RES,,0 0.5 1.5 2.5 5.0 7.5 10.0 12.5 15.0 17.5 20.0 25 30 40 50 60 70\n')
+        f.write(self.crd + '\n')
+        f.write(' NLI\n')
+        f.write(' STA\n')
+        f.write(' END\n')
 
         f.close()
 
-        Tracer()()
+        #Tracer()()
         
 
 if __name__ == '__main__':
