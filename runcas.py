@@ -2,6 +2,7 @@ from IPython.core.debugger import Tracer
 
 import os
 import sys
+import re
 
 class runcas:
 
@@ -22,7 +23,14 @@ class runcas:
                 os.remove(os.path.splitext(caifile)[0]+'.out')
         if os.path.isfile(os.path.splitext(caifile)[0]+'.cax'):
             os.remove(os.path.splitext(caifile)[0]+'.cax')
-    
+
+        files = os.listdir(os.path.dirname(caifile))
+        reg = re.compile('^cas4.o*')
+        for f in files:
+            if reg.match(f):
+                fabs = os.path.dirname(caifile)+os.path.sep+f
+                os.remove(fabs)
+
         workdir = os.path.abspath(os.path.curdir)
         os.chdir(os.path.dirname(caifile)) # change dir
 
@@ -36,6 +44,8 @@ class runcas:
             os.system(cmd)
 
         os.chdir(workdir) # change back to working dir
+        self.caxfile = os.path.splitext(caifile)[0]+'.cax'
+
 
     def procrun(self):
         
