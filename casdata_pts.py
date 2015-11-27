@@ -28,9 +28,6 @@ class casdata:
         
     # -------Read cax file---------
     def readcax(self,caxfile):
-        #caxfile = "cax/e29OPT2-389-10g40mid-cas.cax"
-        #caxfile = "cax/e34OPT3-367-10g50mid-cas.cax"
-        #print "Reading file " + caxfile
         
         if not os.path.isfile(caxfile):
             print "Could not open file " + caxfile
@@ -49,7 +46,7 @@ class casdata:
            #flines = f.readlines() # include \n
             flines = f.read().splitlines() #exclude \n
         
-        # Search for cards
+        # Define regexps
         reBWR = re.compile('^\s*BWR')
         reLFU = re.compile('^\s*LFU')
         reLPI = re.compile('^\s*LPI')
@@ -77,106 +74,81 @@ class casdata:
         reREA = re.compile('REA\s+')
         reGPO = re.compile('GPO\s+')
         rePOW = re.compile('POW\s+')
-
-        # Setup empty integer arrays
-        iEND = np.arange(0,dtype='int32')
-        iBWR = np.arange(0,dtype='int32')
-        iLFU = np.arange(0,dtype='int32')
-        iLPI = np.arange(0,dtype='int32')
-        iFUE = np.arange(0,dtype='int32')
-        iPIN = np.arange(0,dtype='int32')
-        iTIT = np.arange(0,dtype='int32')
-        iITTL = np.arange(0,dtype='int32')
-        iTTL = np.arange(0,dtype='int32')
-        iREA = np.arange(0,dtype='int32')
-        iGPO = np.arange(0,dtype='int32')
-        iPOW = np.arange(0,dtype='int32')
-        iSIM = np.arange(0,dtype='int32')
-        iTFU = np.arange(0,dtype='int32')
-        iTMO = np.arange(0,dtype='int32')
-        iVOI = np.arange(0,dtype='int32')
-        iPDE = np.arange(0,dtype='int32')
-        iSLA = np.arange(0,dtype='int32')
-        iSPA = np.arange(0,dtype='int32')
-        iDEP = np.arange(0,dtype='int32')
-        iGAM = np.arange(0,dtype='int32')
-        iWRI = np.arange(0,dtype='int32')
-        iSTA = np.arange(0,dtype='int32')
-        iCRD = np.arange(0,dtype='int32')
-        iPOL = np.arange(0,dtype='int32')
-        iXFL = np.arange(0,dtype='int32')
-
+        
         # Search for regexp matches
         print "Scanning content..."
+        
+        iTIT = [i for i,x in enumerate(flines) if reTIT.match(x)]
+        iFUE = [i for i,x in enumerate(flines) if reFUE.match(x)]
+        iPOW = [i for i,x in enumerate(flines) if rePOW.match(x)]
+        iSIM = [i for i,x in enumerate(flines) if reSIM.match(x)]
+        iSPA = [i for i,x in enumerate(flines) if reSPA.match(x)]
+        iGAM = [i for i,x in enumerate(flines) if reGAM.match(x)]
+        iCRD = [i for i,x in enumerate(flines) if reCRD.match(x)]
+        iPOL = [i for i,x in enumerate(flines) if rePOL.match(x)]
+        iXFL = [i for i,x in enumerate(flines) if reXFL.match(x)]
+        
+        iPIN = [i for i,x in enumerate(flines) if rePIN.match(x)]
+        iTTL = [i for i,x in enumerate(flines) if reTTL.match(x)]
+        iVOI = [i for i,x in enumerate(flines) if reVOI.match(x)]
+        iDEP = [i for i,x in enumerate(flines) if reDEP.match(x)]
+
         for i, line in enumerate(flines):
             if reEND.match(line) is not None:
-                iEND = np.append(iEND,i)
-            elif reBWR.match(line) is not None:
-                iBWR = np.append(iBWR,i)
-            elif reLFU.match(line) is not None:
-                iLFU = np.append(iLFU,i)
-            elif reLPI.match(line) is not None:
-                iLPI = np.append(iLPI,i)
-            elif reFUE.match(line) is not None:
-                iFUE = np.append(iFUE,i)
-            elif rePIN.match(line) is not None:
-                iPIN = np.append(iPIN,i)
-            elif reTIT.match(line) is not None:
-                iTIT = np.append(iTIT,i)
-            #elif reITTL.match(line) is not None:
-            #    iITTL = np.append(iITTL,i)
-            elif reTTL.match(line) is not None:
-                iTTL = np.append(iTTL,i)
-            #elif reREA.match(line) is not None:
-            #    iREA = np.append(iREA,i)
-            #elif reGPO.match(line) is not None:
-            #    iGPO = np.append(iGPO,i)
-            elif rePOW.match(line) is not None:
-                iPOW = np.append(iPOW,i)
-            elif reSIM.match(line) is not None:
-                iSIM = np.append(iSIM,i)
-            elif reTFU.match(line) is not None:
-                iTFU = np.append(iTFU,i)
-            elif reTMO.match(line) is not None:
-                iTMO = np.append(iTMO,i)
-            elif reVOI.match(line) is not None:
-                iVOI = np.append(iVOI,i)
-            elif rePDE.match(line) is not None:
-                iPDE = np.append(iPDE,i)
-            elif reSLA.match(line) is not None:
-                iSLA = np.append(iSLA,i)
-            elif reSPA.match(line) is not None:
-                iSPA = np.append(iSPA,i)
-            elif reDEP.match(line) is not None:
-                iDEP = np.append(iDEP,i)
-            elif reGAM.match(line) is not None:
-                iGAM = np.append(iGAM,i)
-            elif reWRI.match(line) is not None:
-                iWRI = np.append(iWRI,i)
-            elif reSTA.match(line) is not None:
-                iSTA = np.append(iSTA,i)
-            elif reCRD.match(line) is not None:
-                iCRD = np.append(iCRD,i)
-            elif rePOL.match(line) is not None:
-                iPOL = np.append(iPOL,i)
-            elif reXFL.match(line) is not None:
-                iXFL = np.append(iXFL,i)
-        print "Done."
+                iEND = i; break
+        
+        for i, line in enumerate(flines):
+            if reBWR.match(line) is not None:
+                iBWR = i; break
 
+        for i, line in enumerate(flines):
+            if reLFU.match(line) is not None:
+                iLFU = i; break
+
+        for i, line in enumerate(flines):
+            if reLPI.match(line) is not None:
+                iLPI = i; break
+
+        for i, line in enumerate(flines):
+            if reTFU.match(line) is not None:
+                iTFU = i; break
+
+        for i, line in enumerate(flines):
+            if reTMO.match(line) is not None:
+                iTMO = i; break
+
+        for i, line in enumerate(flines):
+            if rePDE.match(line) is not None:
+                iPDE = i; break
+
+        for i, line in enumerate(flines):
+            if reSLA.match(line) is not None:
+                iSLA = i; break
+        
+        for i, line in enumerate(flines):
+            if reWRI.match(line) is not None:
+                iWRI = i; break
+        
+        for i, line in enumerate(flines):
+            if reSTA.match(line) is not None:
+                iSTA = i; break
+
+        print "Done."
+        
         # Read title
         self.title = flines[iTTL[0]]
         # SIM
         self.sim = flines[iSIM[0]]
         # TFU
-        self.tfu = flines[iTFU[0]]
+        self.tfu = flines[iTFU]
         # TMO
-        self.tmo = flines[iTMO[0]]
+        self.tmo = flines[iTMO]
         # VOI
         self.voi = flines[iVOI[0]]
         # PDE
-        self.pde = flines[iPDE[0]]
+        self.pde = flines[iPDE]
         # BWR
-        self.bwr = flines[iBWR[0]]
+        self.bwr = flines[iBWR]
         # SPA
         self.spa = flines[iSPA[0]]
         # DEP
@@ -184,26 +156,28 @@ class casdata:
         # GAM
         self.gam = flines[iGAM[0]]
         # WRI
-        self.wri = flines[iWRI[0]]
+        self.wri = flines[iWRI]
         # STA
-        self.sta = flines[iSTA[0]]
+        self.sta = flines[iSTA]
         # CRD
         self.crd = flines[iCRD[0]]
         
         # Read fuel dimension
-        npst = int(flines[iBWR[0]][5:7])
+        npst = int(flines[iBWR][5:7])
         
         # Read LFU map
-        caxmap = flines[iLFU[0]+1:iLFU[0]+1+npst]
+        caxmap = flines[iLFU+1:iLFU+1+npst]
         LFU = self.__symtrans(self.__map2mat(caxmap,npst)).astype(int)
 
         # Read LPI map
-        caxmap = flines[iLPI[0]+1:iLPI[0]+1+npst]
+        caxmap = flines[iLPI+1:iLPI+1+npst]
         LPI = self.__symtrans(self.__map2mat(caxmap,npst)).astype(int)
-
+        
         # Read FUE
-        iFUE = iFUE[iFUE<iEND[0]]
-        Nfue = iFUE.size
+        #iFUE = iFUE[iFUE<iEND[0]]
+        iFUE = [i for i in iFUE if i<iEND]
+        #Nfue = iFUE.size
+        Nfue = len(iFUE)
         FUE = np.zeros((Nfue,5)); FUE.fill(np.nan)
         for i,idx in enumerate(iFUE):
             rvec = re.split('\*',flines[idx].strip())
@@ -236,7 +210,8 @@ class casdata:
                 Nba += 1
                 
         # Read PIN (pin radius)
-        Npin = iPIN.size
+        #Npin = iPIN.size
+        Npin = len(iPIN)
         ncol = 4
         PIN = np.zeros((Npin,ncol)); PIN.fill(np.nan)
         for i,idx in enumerate(iPIN):
@@ -249,16 +224,18 @@ class casdata:
         self.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
         
         # Read SLA
-        Nsla = iSLA.size
-        self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
-        
+        #Nsla = iSLA.size
+        #self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
+        self.slalines = flines[iSLA]
+
         # ------Step through the state points----------
         print "Step through state points..."
 
         # Remove the last TIT card (only necessary if file is partially read)
         #iTIT = iTIT[0:-1]
 
-        Nburnpts = iTIT.size
+        #Nburnpts = iTIT.size
+        Nburnpts = len(iTIT)
         burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
         voi = np.zeros(Nburnpts); voi.fill(np.nan)
         vhi = np.zeros(Nburnpts); vhi.fill(np.nan)
