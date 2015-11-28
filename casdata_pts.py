@@ -93,48 +93,59 @@ class casdata:
         iVOI = [i for i,x in enumerate(flines) if reVOI.match(x)]
         iDEP = [i for i,x in enumerate(flines) if reDEP.match(x)]
 
-        for i, line in enumerate(flines):
-            if reEND.match(line) is not None:
-                iEND = i; break
+        # Stop at first occurence
+        #for i, line in enumerate(flines):
+        #    if reEND.match(line) is not None:
+        #        iEND = i; break
+        iEND = next(i for i,x in enumerate(flines) if reEND.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reBWR.match(line) is not None:
+        #        iBWR = i; break
+        iBWR = next(i for i,x in enumerate(flines) if reBWR.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reLFU.match(line) is not None:
+        #        iLFU = i; break
+        iLFU = next(i for i,x in enumerate(flines) if reLFU.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reLPI.match(line) is not None:
+        #        iLPI = i; break
+        iLPI = next(i for i,x in enumerate(flines) if reLPI.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reTFU.match(line) is not None:
+        #        iTFU = i; break
+        iTFU = next(i for i,x in enumerate(flines) if reTFU.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reTMO.match(line) is not None:
+        #        iTMO = i; break
+        iTMO = next(i for i,x in enumerate(flines) if reTMO.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if rePDE.match(line) is not None:
+        #        iPDE = i; break
+        iPDE = next(i for i,x in enumerate(flines) if rePDE.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reSLA.match(line) is not None:
+        #        iSLA = i; break
+        iSLA = next(i for i,x in enumerate(flines) if reSLA.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reWRI.match(line) is not None:
+        #        iWRI = i; break
+        iWRI = next(i for i,x in enumerate(flines) if reWRI.match(x))
+
+        #for i, line in enumerate(flines):
+        #    if reSTA.match(line) is not None:
+        #        iSTA = i; break
+        iSTA = next(i for i,x in enumerate(flines) if reSTA.match(x))
         
-        for i, line in enumerate(flines):
-            if reBWR.match(line) is not None:
-                iBWR = i; break
-
-        for i, line in enumerate(flines):
-            if reLFU.match(line) is not None:
-                iLFU = i; break
-
-        for i, line in enumerate(flines):
-            if reLPI.match(line) is not None:
-                iLPI = i; break
-
-        for i, line in enumerate(flines):
-            if reTFU.match(line) is not None:
-                iTFU = i; break
-
-        for i, line in enumerate(flines):
-            if reTMO.match(line) is not None:
-                iTMO = i; break
-
-        for i, line in enumerate(flines):
-            if rePDE.match(line) is not None:
-                iPDE = i; break
-
-        for i, line in enumerate(flines):
-            if reSLA.match(line) is not None:
-                iSLA = i; break
-        
-        for i, line in enumerate(flines):
-            if reWRI.match(line) is not None:
-                iWRI = i; break
-        
-        for i, line in enumerate(flines):
-            if reSTA.match(line) is not None:
-                iSTA = i; break
-
         print "Done."
-        
+
         # Read title
         self.title = flines[iTTL[0]]
         # SIM
