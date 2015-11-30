@@ -77,7 +77,12 @@ class casdata:
         
         # Search for regexp matches
         print "Scanning content..."
+        #iTITobj = (i for i,x in enumerate(flines) if reTIT.match(x))
+        #aa=[]
+        #aa.append(iTITobj.next())
+        #aa.append(iTITobj.next())
         
+        # Loop through the whole file content
         iTIT = [i for i,x in enumerate(flines) if reTIT.match(x)]
         iFUE = [i for i,x in enumerate(flines) if reFUE.match(x)]
         iPOW = [i for i,x in enumerate(flines) if rePOW.match(x)]
@@ -93,57 +98,17 @@ class casdata:
         iVOI = [i for i,x in enumerate(flines) if reVOI.match(x)]
         iDEP = [i for i,x in enumerate(flines) if reDEP.match(x)]
 
-        # Stop at first occurence
-        #for i, line in enumerate(flines):
-        #    if reEND.match(line) is not None:
-        #        iEND = i; break
+        # Stop looping at first finding
         iEND = next(i for i,x in enumerate(flines) if reEND.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reBWR.match(line) is not None:
-        #        iBWR = i; break
         iBWR = next(i for i,x in enumerate(flines) if reBWR.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reLFU.match(line) is not None:
-        #        iLFU = i; break
         iLFU = next(i for i,x in enumerate(flines) if reLFU.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reLPI.match(line) is not None:
-        #        iLPI = i; break
         iLPI = next(i for i,x in enumerate(flines) if reLPI.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reTFU.match(line) is not None:
-        #        iTFU = i; break
         iTFU = next(i for i,x in enumerate(flines) if reTFU.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reTMO.match(line) is not None:
-        #        iTMO = i; break
         iTMO = next(i for i,x in enumerate(flines) if reTMO.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if rePDE.match(line) is not None:
-        #        iPDE = i; break
         iPDE = next(i for i,x in enumerate(flines) if rePDE.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reSLA.match(line) is not None:
-        #        iSLA = i; break
         iSLA = next(i for i,x in enumerate(flines) if reSLA.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reWRI.match(line) is not None:
-        #        iWRI = i; break
         iWRI = next(i for i,x in enumerate(flines) if reWRI.match(x))
-
-        #for i, line in enumerate(flines):
-        #    if reSTA.match(line) is not None:
-        #        iSTA = i; break
         iSTA = next(i for i,x in enumerate(flines) if reSTA.match(x))
-        
         print "Done."
 
         # Read title
@@ -187,6 +152,7 @@ class casdata:
         # Read FUE
         #iFUE = iFUE[iFUE<iEND[0]]
         iFUE = [i for i in iFUE if i<iEND]
+        #iFUE = filter(lambda x,y=iEND:x<y,iFUE)
         #Nfue = iFUE.size
         Nfue = len(iFUE)
         FUE = np.zeros((Nfue,5)); FUE.fill(np.nan)
