@@ -19,13 +19,16 @@ import linecache
 import os.path
 import sys
 
+from btf import btf
+
 class casdata:
 
     def __init__(self,caxfile):
-        self.readcax(caxfile)
-        self.ave_enr()
+        #self.readcax(caxfile)
+        #self.ave_enr()
         #self.writecai()
-        
+        self.btfcalc()
+
     # -------Read cax file---------
     def readcax(self,caxfile):
         
@@ -282,7 +285,11 @@ class casdata:
         self.XFL1 = XFL1
         self.XFL2 = XFL2
 
-
+    def btfcalc(self):
+        btf('SVEA-96','')
+        
+        
+        
 
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
