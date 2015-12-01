@@ -3,7 +3,8 @@ from IPython.core.debugger import Tracer
 import numpy as np
 import sys
 
-import libADDC
+#import libADDC
+from addc import addc
 
 def btf(fuetype,POW):
     print "Calculating btf... 447"
@@ -35,11 +36,13 @@ def btf(fuetype,POW):
 
     # Import addc from shared lib
     print fuetype
-    ADDC,dim = libADDC.addc(fuetype)
-    addc = ADDC[:dim,:dim]
+    acObj = addc(fuetype)
+    ac = acObj.addc
+    #ADDC,dim = libADDC.addc(fuetype)
+    #addc = ADDC[:dim,:dim]
 
     # Define some matrices
-    ndim = addc.shape[0]
+    ndim = ac.shape[0]
     RP = np.zeros((ndim,ndim)) # Square root of power matrix
     WP = np.zeros((ndim,ndim)) # Rod weight factors
 
@@ -67,6 +70,7 @@ def btf(fuetype,POW):
     MF = -0.14 + 1.5*FSUBn - 0.36*FSUBn**2
 
 
-
-
     Tracer()()
+
+if __name__ == '__main__':
+    btf(sys.argv[1],sys.argv[2])
