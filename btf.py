@@ -4,8 +4,8 @@ import numpy as np
 import sys
 
 sys.path.append('/home/prog/dvlp/PERG/python/LIBADDC/lib/')
-import libADDC
-#from addc import addc
+#import libADDC
+from addc import addc
 
 def acc_weifun(x):
     if x <= 0.06:
@@ -31,10 +31,10 @@ def rfact_axial(fuetype,POW):
     
     # Import addc from shared lib
     #print fuetype
-    #acObj = addc(fuetype)
-    #ac = acObj.addc
-    AC,dim = libADDC.addc(fuetype)
-    AC = AC[:dim,:dim]
+    acObj = addc(fuetype)
+    AC = acObj.addc
+    #AC,dim = libADDC.addc(fuetype)
+    #AC = AC[:dim,:dim]
 
     # Define some matrices
     nside = AC.shape[0] # Number of side pins of the assembly
@@ -137,12 +137,25 @@ def calc_btf(fuetype):
 
     naxial_nodes = 25
 
+    # Setup part length rod maps
+    Mplr1 = np.zeros((11,11)) # PLR (1/3) map
+    Mplr1[0,0]=Mplr1[0,10]=Mplr1[10,0]=Mplr1[10,10]=1
+
+    Mplr2 = np.zeros((11,11)) # PLR (2/3) map
+    Mplr2[3,4]=Mplr2[4,3]=Mplr2[3,6]=Mplr2[6,3]=1
+    Mplr2[4,7]=Mplr2[7,4]=Mplr2[6,7]=Mplr2[7,6]=1
+
+    Mflr = 1-Mplr1-Mplr2
+
     # read power dist
     POW = np.loadtxt('./powdist.txt')
+    MF = np.zeros((naxial_nodes,4))
+    DOW = np.zeros((naxial_nodes,POW[0].size,POW[1].size))
+    WZ = np.zeros(naxial_nodes)
     Raxw = np.zeros(POW.shape)
     MFpl = np.zeros(4)
 
-    for z in range(1,naxial_nodes+1):
+    for z in range(naxial_nodes):
         
         # Calculate number of hot rods (POW[i,j] > 0)
         Ntotrods = 96 # Total number of rods for SVEA-96
@@ -161,28 +174,54 @@ def calc_btf(fuetype):
         FSUB = FSUB/FSUB.mean()
 
         # Calculate mismatch-factor for each sub-bundle
-        # Full length rods (FLR)
-        MF = -0.14 + 1.5*FSUB - 0.36*FSUB**2
-        # Part length rods (PLR) (Sum over nodes)
-        MFpl += MF
-
-        DOW = rfact_axial(fuetype,POW)
-
-        # Apply mismatch-factor to FLRs only (PLRs are taken care of separately)
-        DOW[:5,:5] = DOW[:5,:5] * MF[0]
-        DOW[6:,:5] = DOW[6:,:5] * MF[1]
-        DOW[:5,6:] = DOW[:5,6:] * MF[2]
-        DOW[6:,6:] = DOW[6:,6:] * MF[3]
+        MF[z,:] = -0.14 + 1.5*FSUB - 0.36*FSUB**2
         
-        # Apply axial weight function
-        WZ = node_weight(z,naxial_nodes)
-        Raxw += DOW*WZ
+        # Part length rods (PLR) (Sum over nodes)
+        #MFpl += MF
 
-    # Apply average mismatch-factor for PLRs
-    MFpl = MFpl/naxial_nodes
-
+        DOW[z,:,:] = rfact_axial(fuetype,POW)
+        WZ[z] = node_weight(z+1,naxial_nodes)
+        
+        
+    # Apply mismatch-factor to FLRs only (PLRs are taken care of separately)
+    for z in range(naxial_nodes):
+        for i in range(DOW[0][0].size):
+            for j in range(DOW[0][1].size):
+                if Mflr[i,j]:
+                    if i<5 and j<5:
+                        DOW[z,i,j] = DOW[z,i,j] * MF[z,0]
+                    elif i<11 and j<5:
+                        DOW[z,i,j] = DOW[z,i,j] * MF[z,1]
+                    elif i<5 and j<11:
+                        DOW[z,i,j] = DOW[z,i,j] * MF[z,2]
+                    elif i<11 and j<11:
+                        DOW[z,i,j] = DOW[z,i,j] * MF[z,3]
     
 
+        # Apply axial weight function
+        #WZ[z-1] = node_weight(z,naxial_nodes)
+        #Raxw += DOW*WZ
+
+                
+    # Apply average mismatch-factor (along z-direction) for PLRs
+    MFpl = MF.mean(0)
+    Mplr = Mplr1 + Mplr2
+    
+    for z in range(naxial_nodes):
+        for i in range(DOW[0][0].size):
+            for j in range(DOW[0][1].size):
+                if Mplr[i,j]:
+                    if i<5 and j<5:
+                        DOW[z,i,j] = DOW[z,i,j] * MFpl[0]
+                    elif i<11 and j<5:
+                        DOW[z,i,j] = DOW[z,i,j] * MFpl[1]
+                    elif i<5 and j<11:
+                        DOW[z,i,j] = DOW[z,i,j] * MFpl[2]
+                    elif i<11 and j<11:
+                        DOW[z,i,j] = DOW[z,i,j] * MFpl[3]
+
+    # Integrate along z-direction and apply axial weight function
+    
 
     Tracer()()
 
