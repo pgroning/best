@@ -7,36 +7,30 @@ sys.path.append('/home/prog/dvlp/PERG/python/LIBADDC/lib/')
 import libADDC
 #from addc import addc
 
-def btf(fuetype,POW):
-    print "Calculating btf... 447"
+def acc_weifun(x):
+    if x <= 0.06:
+        f = 0.0
+    elif x <= 0.279:
+        f = -0.201924 + 3.40947*x - 12.3305*x**3 + 24.486*x**5
+    elif x <= 0.96:
+        f = 0.332027 + 0.684359*x
+    else:
+        f = 1.0
+    return f
+
+def node_weight(z,naxial_nodes):
+    x1 = 1-(z-1)/float(naxial_nodes)
+    x2 = 1-z/float(naxial_nodes)
+    f1 = acc_weifun(x1)
+    f2 = acc_weifun(x2)
+    wz = f1-f2
+    return wz
+
+def rfact_axial(fuetype,POW):
+    # Calculating axial R-factor
     
-    # temp power dist
-    POW = np.array([[ 0.   ,  1.15 ,  1.155,  1.183,  1.019,  0.   ,  0.991,  1.094,
-         1.159,  1.154,  0.   ],
-       [ 1.15 ,  1.103,  1.164,  0.371,  1.14 ,  0.   ,  1.115,  0.361,
-         0.964,  0.379,  1.126],
-       [ 1.155,  1.164,  1.089,  0.992,  1.066,  0.   ,  1.044,  0.949,
-         0.919,  0.999,  1.1  ],
-       [ 1.183,  0.371,  0.992,  0.981,  1.183,  0.   ,  1.092,  0.943,
-         0.943,  0.355,  1.15 ],
-       [ 1.019,  1.14 ,  1.066,  1.183,  0.   ,  0.   ,  0.   ,  1.086,
-         1.02 ,  1.092,  1.059],
-       [ 0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,  0.   ,
-         0.   ,  0.   ,  0.   ],
-       [ 0.991,  1.115,  1.044,  1.092,  0.   ,  0.   ,  0.   ,  1.164,
-         1.03 ,  1.097,  1.076],
-       [ 1.094,  0.361,  0.949,  0.943,  1.086,  0.   ,  1.164,  0.954,
-         0.978,  0.364,  1.212],
-       [ 1.159,  0.964,  0.919,  0.943,  1.02 ,  0.   ,  1.03 ,  0.978,
-         1.015,  1.223,  1.218],
-       [ 1.154,  0.379,  0.999,  0.355,  1.092,  0.   ,  1.097,  0.364,
-         1.223,  1.011,  1.048],
-       [ 0.   ,  1.126,  1.1  ,  1.15 ,  1.059,  0.   ,  1.076,  1.212,
-         1.218,  1.048,  0.   ]])
-
-
     # Import addc from shared lib
-    print fuetype
+    #print fuetype
     #acObj = addc(fuetype)
     #ac = acObj.addc
     AC,dim = libADDC.addc(fuetype)
@@ -45,8 +39,6 @@ def btf(fuetype,POW):
     # Define some matrices
     nside = AC.shape[0] # Number of side pins of the assembly
     dim = nside + 2 # Pin map storage dimension
-    #RP = np.zeros((dim,dim)) # Square root of power matrix
-    #WP = np.zeros((dim,dim)) # Rod weight factors
 
     # Calculate number of hot rods (POW[i,j] > 0)
     Ntotrods = 96 # Total number of rods for SVEA-96
@@ -60,16 +52,15 @@ def btf(fuetype,POW):
     FSUB[3] = sum(sum(POW[6:,6:])) # South-East
     
     # Normalized sub bundle power distribution
-    #POWn = POW
     POW[:5,:5] = POW[:5,:5]/FSUB[0] * Nhotrods/4
     POW[6:,:5] = POW[6:,:5]/FSUB[1] * Nhotrods/4
     POW[:5,6:] = POW[:5,6:]/FSUB[2] * Nhotrods/4
     POW[6:,6:] = POW[6:,6:]/FSUB[3] * Nhotrods/4
 
-    FSUB = FSUB/FSUB.mean()
+    #FSUB = FSUB/FSUB.mean()
 
     # Calculate mismatch-factor
-    MF = -0.14 + 1.5*FSUB - 0.36*FSUB**2
+    #MF = -0.14 + 1.5*FSUB - 0.36*FSUB**2
 
     # Calculate square root of power
     RP = np.zeros((dim,dim))
@@ -79,6 +70,8 @@ def btf(fuetype,POW):
     WP = np.zeros((dim,dim))
     WP[1:nside+1,1:nside+1] = np.ones((nside,nside))
     
+    # PLR (modeled as cold rods)
+    # For cold rods the weighting factor is 0.25 of the value of heated rod in that position
     # PLR (1/3)
     if POW[0,0]   < 0.0001: WP[1,1]   = 0.25
     if POW[0,10]  < 0.0001: WP[1,11]  = 0.25
@@ -126,25 +119,75 @@ def btf(fuetype,POW):
                 DOW[i-1,j-1] = (RP[i,j] + SJ + SK)/(1.0 + SWJ + SWK)*np.sqrt(Ntotrods/Nhotrods) + AC[i-1,j-1]
                 
 
-    # Apply mismatch-factor to sub bundles
-    DOW[:5,:5] = DOW[:5,:5] * MF[0]
-    DOW[6:,:5] = DOW[6:,:5] * MF[1]
-    DOW[:5,6:] = DOW[:5,6:] * MF[2]
-    DOW[6:,6:] = DOW[6:,6:] * MF[3]
-
     # Apply corner rod protection.
     # The R-factor should be increased about half of the desired CPR correction
-    crpfact = 0.02
-    DOW[0,0] = DOW[0,0]                         * (1.0 + crpfact*0.5)
-    DOW[0,nside-1] = DOW[0,nside-1]             * (1.0 + crpfact*0.5)
-    DOW[nside-1,0] = DOW[nside-1,0]             * (1.0 + crpfact*0.5)
-    DOW[nside-1,nside-1] = DOW[nside-1,nside-1] * (1.0 + crpfact*0.5)
+    #crpfact = 0.02
+    #DOW[0,0] = DOW[0,0]                         * (1.0 + crpfact*0.5)
+    #DOW[0,nside-1] = DOW[0,nside-1]             * (1.0 + crpfact*0.5)
+    #DOW[nside-1,0] = DOW[nside-1,0]             * (1.0 + crpfact*0.5)
+    #DOW[nside-1,nside-1] = DOW[nside-1,nside-1] * (1.0 + crpfact*0.5)
 
     # Calculate the max R-factor for the assembly
     Rfact = DOW.max()
+    
+    return DOW
+
+
+def calc_btf(fuetype):
+
+    naxial_nodes = 25
+
+    # read power dist
+    POW = np.loadtxt('./powdist.txt')
+    Raxw = np.zeros(POW.shape)
+    MFpl = np.zeros(4)
+
+    for z in range(1,naxial_nodes+1):
+        
+        # Calculate number of hot rods (POW[i,j] > 0)
+        Ntotrods = 96 # Total number of rods for SVEA-96
+        Nhotrods = sum(sum(POW>0)) # Number of hot rods
+        
+
+        # *****Mismatch factor calculation*****
+        
+        # Determine total power for each sub bundle
+        FSUB = np.zeros(4)
+        FSUB[0] = sum(sum(POW[:5,:5])) # North-West quarter
+        FSUB[1] = sum(sum(POW[6:,:5])) # South-West
+        FSUB[2] = sum(sum(POW[:5,6:])) # North-East
+        FSUB[3] = sum(sum(POW[6:,6:])) # South-East
+        # Normalize sub-bundle power
+        FSUB = FSUB/FSUB.mean()
+
+        # Calculate mismatch-factor for each sub-bundle
+        # Full length rods (FLR)
+        MF = -0.14 + 1.5*FSUB - 0.36*FSUB**2
+        # Part length rods (PLR) (Sum over nodes)
+        MFpl += MF
+
+        DOW = rfact_axial(fuetype,POW)
+
+        # Apply mismatch-factor to FLRs only (PLRs are taken care of separately)
+        DOW[:5,:5] = DOW[:5,:5] * MF[0]
+        DOW[6:,:5] = DOW[6:,:5] * MF[1]
+        DOW[:5,6:] = DOW[:5,6:] * MF[2]
+        DOW[6:,6:] = DOW[6:,6:] * MF[3]
+        
+        # Apply axial weight function
+        WZ = node_weight(z,naxial_nodes)
+        Raxw += DOW*WZ
+
+    # Apply average mismatch-factor for PLRs
+    MFpl = MFpl/naxial_nodes
+
+    
 
 
     Tracer()()
 
+
+
+
 if __name__ == '__main__':
-    btf(sys.argv[1],sys.argv[2])
+    calc_btf(sys.argv[1])
