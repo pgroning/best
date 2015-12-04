@@ -3,9 +3,10 @@ from IPython.core.debugger import Tracer
 import numpy as np
 import sys
 
-sys.path.append('/home/prog/dvlp/PERG/python/LIBADDC/lib/')
-#import libADDC
-from addc import addc
+
+sys.path.append('lib/')
+import libADDC
+#from addc import addc
 
 def acc_weifun(x):
     if x <= 0.06:
@@ -31,7 +32,7 @@ def rfact_axial(fuetype,POW):
     
     # Import addc from shared lib
     #print fuetype
-    acObj = addc(fuetype)
+    acObj = libADDC.addc(fuetype)
     AC = acObj.addc
     #AC,dim = libADDC.addc(fuetype)
     #AC = AC[:dim,:dim]
@@ -52,19 +53,19 @@ def rfact_axial(fuetype,POW):
     FSUB[3] = sum(sum(POW[6:,6:])) # South-East
     
     # Normalized sub bundle power distribution
-    POW[:5,:5] = POW[:5,:5]/FSUB[0] * Nhotrods/4
-    POW[6:,:5] = POW[6:,:5]/FSUB[1] * Nhotrods/4
-    POW[:5,6:] = POW[:5,6:]/FSUB[2] * Nhotrods/4
-    POW[6:,6:] = POW[6:,6:]/FSUB[3] * Nhotrods/4
+    POWn = np.zeros(POW.shape)
+    POWn[:5,:5] = POW[:5,:5]/FSUB[0] * Nhotrods/4
+    POWn[6:,:5] = POW[6:,:5]/FSUB[1] * Nhotrods/4
+    POWn[:5,6:] = POW[:5,6:]/FSUB[2] * Nhotrods/4
+    POWn[6:,6:] = POW[6:,6:]/FSUB[3] * Nhotrods/4
 
     #FSUB = FSUB/FSUB.mean()
-
     # Calculate mismatch-factor
     #MF = -0.14 + 1.5*FSUB - 0.36*FSUB**2
 
     # Calculate square root of power
     RP = np.zeros((dim,dim))
-    RP[1:nside+1,1:nside+1] = np.sqrt(POW)
+    RP[1:nside+1,1:nside+1] = np.sqrt(POWn)
     
     # Define Rod Weight factors
     WP = np.zeros((dim,dim))
@@ -136,6 +137,8 @@ def rfact_axial(fuetype,POW):
 def calc_btf(fuetype):
 
     naxial_nodes = 25
+    naxial_nodes_plr1 = 7  # number of full axial_nodes for 1/3 PLRs
+    naxial_nodes_plr2 = 16 # number of full axial nodes for 2/3 PLRs
 
     # Setup part length rod maps
     Mplr1 = np.zeros((11,11)) # PLR (1/3) map
@@ -145,7 +148,7 @@ def calc_btf(fuetype):
     Mplr2[3,4]=Mplr2[4,3]=Mplr2[3,6]=Mplr2[6,3]=1
     Mplr2[4,7]=Mplr2[7,4]=Mplr2[6,7]=Mplr2[7,6]=1
 
-    Mflr = 1-Mplr1-Mplr2
+    Mflr = 1-Mplr1-Mplr2 # FLR map
 
     # read power dist
     POW = np.loadtxt('./powdist.txt')
@@ -156,7 +159,7 @@ def calc_btf(fuetype):
     MFpl = np.zeros(4)
 
     for z in range(naxial_nodes):
-        
+
         # Calculate number of hot rods (POW[i,j] > 0)
         Ntotrods = 96 # Total number of rods for SVEA-96
         Nhotrods = sum(sum(POW>0)) # Number of hot rods
@@ -172,10 +175,10 @@ def calc_btf(fuetype):
         FSUB[3] = sum(sum(POW[6:,6:])) # South-East
         # Normalize sub-bundle power
         FSUB = FSUB/FSUB.mean()
-
+        
         # Calculate mismatch-factor for each sub-bundle
         MF[z,:] = -0.14 + 1.5*FSUB - 0.36*FSUB**2
-        
+
         # Part length rods (PLR) (Sum over nodes)
         #MFpl += MF
 
@@ -188,14 +191,11 @@ def calc_btf(fuetype):
         for i in range(DOW[0][0].size):
             for j in range(DOW[0][1].size):
                 if Mflr[i,j]:
-                    if i<5 and j<5:
-                        DOW[z,i,j] = DOW[z,i,j] * MF[z,0]
-                    elif i<11 and j<5:
-                        DOW[z,i,j] = DOW[z,i,j] * MF[z,1]
-                    elif i<5 and j<11:
-                        DOW[z,i,j] = DOW[z,i,j] * MF[z,2]
-                    elif i<11 and j<11:
-                        DOW[z,i,j] = DOW[z,i,j] * MF[z,3]
+                    if i<5 and j<5    : mf = MF[z,0]
+                    elif i<11 and j<5 : mf = MF[z,1]
+                    elif i<5 and j<11 : mf = MF[z,2]
+                    elif i<11 and j<11: mf = MF[z,3]
+                    DOW[z,i,j] = DOW[z,i,j] * mf
     
 
         # Apply axial weight function
@@ -206,22 +206,50 @@ def calc_btf(fuetype):
     # Apply average mismatch-factor (along z-direction) for PLRs
     MFpl = MF.mean(0)
     Mplr = Mplr1 + Mplr2
-    
+
     for z in range(naxial_nodes):
         for i in range(DOW[0][0].size):
             for j in range(DOW[0][1].size):
                 if Mplr[i,j]:
-                    if i<5 and j<5:
-                        DOW[z,i,j] = DOW[z,i,j] * MFpl[0]
-                    elif i<11 and j<5:
-                        DOW[z,i,j] = DOW[z,i,j] * MFpl[1]
-                    elif i<5 and j<11:
-                        DOW[z,i,j] = DOW[z,i,j] * MFpl[2]
-                    elif i<11 and j<11:
-                        DOW[z,i,j] = DOW[z,i,j] * MFpl[3]
+                    if i<5 and j<5    : mf = MFpl[0]
+                    elif i<11 and j<5 : mf = MFpl[1]
+                    elif i<5 and j<11 : mf = MFpl[2]
+                    elif i<11 and j<11: mf = MFpl[3]
+                    DOW[z,i,j] = DOW[z,i,j] * mf
 
-    # Integrate along z-direction and apply axial weight function
-    
+    # Integrate along z-direction and apply axial weight function to get pinwise R-factors
+    DOX = np.zeros(DOW[0].shape)
+    frac1 = 0.337*naxial_nodes - naxial_nodes_plr1
+    frac2 = 0.65*naxial_nodes - naxial_nodes_plr2
+
+    for z in range(naxial_nodes):
+        if z < naxial_nodes_plr1-1: # All rods present
+            DOX += DOW[z,:,:]*WZ[z]
+
+        elif z < naxial_nodes_plr2-1: # 2/3 PLR + FLR rods (not 1/3 PLRs)
+            for i in range(DOX.shape[0]):
+                for j in range(DOX.shape[1]):
+                    if not Mplr1[i,j]:
+                        DOX[i,j] += DOW[z,i,j]*WZ[z]
+
+        else: # only FLR rods present
+            for i in range(DOX.shape[0]):
+                for j in range(DOX.shape[1]):
+                    if Mflr[i,j]:
+                        DOX[i,j] += DOW[z,i,j]*WZ[z]
+
+        if z == naxial_nodes_plr1-1: # Account for the fact that the heated length top part of 1/3 PLR is within node 
+            for i in range(DOX.shape[0]):
+                for j in range(DOX.shape[1]):
+                    if Mplr1[i,j]:
+                        DOX[i,j] += DOW[z,i,j]*WZ[z]*frac1
+
+        if z == naxial_nodes_plr2-1: # Account for the fact that the heated length top part of 2/3 PLR is within node 
+            for i in range(DOX.shape[0]):
+                for j in range(DOX.shape[1]):
+                    if Mplr2[i,j]:
+                        DOX[i,j] += DOW[z,i,j]*WZ[z]*frac2
+
 
     Tracer()()
 
