@@ -137,7 +137,7 @@ def rfact_axial(fuetype,POW):
 def calc_btf(fuetype):
 
     naxial_nodes = 25
-    naxial_nodes_plr1 = 7  # number of full axial_nodes for 1/3 PLRs
+    naxial_nodes_plr1 = 8  # number of full axial_nodes for 1/3 PLRs
     naxial_nodes_plr2 = 16 # number of full axial nodes for 2/3 PLRs
 
     # Setup part length rod maps

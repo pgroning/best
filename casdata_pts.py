@@ -19,15 +19,15 @@ import linecache
 import os.path
 import sys
 
-from btf import btf
+#from btf import btf
 
 class casdata:
 
     def __init__(self,caxfile):
-        #self.readcax(caxfile)
+        self.readcax(caxfile)
         #self.ave_enr()
         #self.writecai()
-        self.btfcalc()
+        #self.btfcalc()
 
     # -------Read cax file---------
     def readcax(self,caxfile):
@@ -81,9 +81,9 @@ class casdata:
         # Search for regexp matches
         print "Scanning content..."
         #iTITobj = (i for i,x in enumerate(flines) if reTIT.match(x))
-        #aa=[]
-        #aa.append(iTITobj.next())
-        #aa.append(iTITobj.next())
+        #iTIT=[]
+        #for i in range(5):
+        #    iTIT.append(iTITobj.next())
         
         # Loop through the whole file content
         iTIT = [i for i,x in enumerate(flines) if reTIT.match(x)]
@@ -285,8 +285,8 @@ class casdata:
         self.XFL1 = XFL1
         self.XFL2 = XFL2
 
-    def btfcalc(self):
-        btf('SVEA-96','')
+#    def btfcalc(self):
+#        btf('SVEA-96','')
         
         
         
