@@ -12,12 +12,12 @@ from casdata_pts import casdata
 
 class casio:
 
-    def __init__(self,inpfile):
+    def __init__(self):
         #self.readinpfile(inpfile)
         #self.readcas()
         #self.savecasobj()
-        self.loadcasobj(inpfile)
-
+        #self.loadcasobj(inpfile)
+        pass
 
     def readinpfile(self,inpfile):
         if not os.path.isfile(inpfile):

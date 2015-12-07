@@ -3,10 +3,34 @@ from IPython.core.debugger import Tracer
 import numpy as np
 import sys
 
+from casio import casio
 
 sys.path.append('lib/')
 import libADDC
 #from addc import addc
+
+
+def pow3d(objlist):
+    print "Constructing 3D pin power distribution for specific void and burnup"
+    
+    casobjs = casio()
+    casobjs.loadcasobj('caxfiles.p')
+    
+    i = 0
+
+    dim = casobjs.casobjlist[0].npst
+    nodes = casobjs.casobjlist[0].nodes
+    POW3 = np.zeros((nodes,dim,dim))
+
+    z_old = 0
+    for cobj in casobjs.casobjlist:
+        z = int(np.ceil(cobj.nodefrac*nodes))
+        print z_old,z
+        POW3[z_old:z,:,:] = cobj.POW[:,:,i]
+        z_old = z
+
+    return POW3
+
 
 def acc_weifun(x):
     if x <= 0.06:
@@ -26,6 +50,7 @@ def node_weight(z,naxial_nodes):
     f2 = acc_weifun(x2)
     wz = f1-f2
     return wz
+
 
 def rfact_axial(fuetype,POW):
     # Calculating axial R-factor
@@ -257,4 +282,4 @@ def calc_btf(fuetype):
 
 
 if __name__ == '__main__':
-    calc_btf(sys.argv[1])
+    pow3d(sys.argv[1])
