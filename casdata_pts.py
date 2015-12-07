@@ -21,6 +21,9 @@ import sys
 
 #from btf import btf
 
+class data:
+    pass
+
 class casdata:
 
     def __init__(self,caxfile):
@@ -214,6 +217,11 @@ class casdata:
         # Remove the last TIT card (only necessary if file is partially read)
         #iTIT = iTIT[0:-1]
 
+        self.data = {}
+        
+        #state.nstatepoints = len(iTIT)
+
+        #Tracer()()
         #Nburnpts = iTIT.size
         Nburnpts = len(iTIT)
         burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
@@ -247,7 +255,7 @@ class casdata:
             caxmap = flines[iXFL[i]+npst+3:iXFL[i]+npst+3+npst]
             XFL2[:,:,i] = self.__symtrans(self.__map2mat(caxmap,npst))
         print "Done."
-        
+
         # Calculate radial burnup distributions
         EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
         for i in range(Nburnpts):
@@ -263,8 +271,24 @@ class casdata:
         for i in range(Nburnpts):
             fint[i] = POW[:,:,i].max()
 
-
+        # Append state
+        self.data['statepts'] = []
+        for i in range(Nburnpts):
+            state = data()
+            state.burnup = burnup[i]
+            state.voi = voi[i]
+            state.vhi = vhi[i]
+            state.tfu = tfu[i]
+            state.tmo = tmo[i]
+            state.kinf = kinf[i]
+            state.fint = fint[i]
+            state.EXP = EXP[:,:,i]
+            state.XFL1 = XFL1[:,:,i]
+            state.XFL2 = XFL2[:,:,i]
+            state.POW = POW[:,:,i]
+            self.data["statepts"].append(state)
             
+
         self.caxfile = caxfile
         self.burnvec = burnup
         self.voivec = voi
