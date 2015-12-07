@@ -117,33 +117,47 @@ class casdata:
         iSTA = next(i for i,x in enumerate(flines) if reSTA.match(x))
         print "Done."
 
+        info = data()
         # Read title
-        self.title = flines[iTTL[0]]
+        #self.title = flines[iTTL[0]]
+        info.title = flines[iTTL[0]]
         # SIM
-        self.sim = flines[iSIM[0]]
+        #self.sim = flines[iSIM[0]]
+        info.sim = flines[iSIM[0]]
         # TFU
-        self.tfu = flines[iTFU]
+        #self.tfu = flines[iTFU]
+        info.tfu = flines[iTFU]
         # TMO
-        self.tmo = flines[iTMO]
+        #self.tmo = flines[iTMO]
+        info.tmo = flines[iTMO]
         # VOI
-        self.voi = flines[iVOI[0]]
+        #self.voi = flines[iVOI[0]]
+        info.voi = flines[iVOI[0]]
         # PDE
-        self.pde = flines[iPDE]
+        #self.pde = flines[iPDE]
+        info.pde = flines[iPDE]
         # BWR
-        self.bwr = flines[iBWR]
+        #self.bwr = flines[iBWR]
+        info.bwr = flines[iBWR]
         # SPA
-        self.spa = flines[iSPA[0]]
+        #self.spa = flines[iSPA[0]]
+        info.spa = flines[iSPA[0]]
         # DEP
-        self.dep = flines[iDEP[0]]
+        #self.dep = flines[iDEP[0]]
+        info.dep = flines[iDEP[0]]
         # GAM
-        self.gam = flines[iGAM[0]]
+        #self.gam = flines[iGAM[0]]
+        info.gam = flines[iGAM[0]]
         # WRI
-        self.wri = flines[iWRI]
+        #self.wri = flines[iWRI]
+        info.wri = flines[iWRI]
         # STA
-        self.sta = flines[iSTA]
+        #self.sta = flines[iSTA]
+        info.sta = flines[iSTA]
         # CRD
-        self.crd = flines[iCRD[0]]
-        
+        #self.crd = flines[iCRD[0]]
+        info.crd = flines[iCRD[0]]
+
         # Read fuel dimension
         npst = int(flines[iBWR][5:7])
         
@@ -204,12 +218,14 @@ class casdata:
             rlen = np.size(rvec)
             PIN[i,:rlen-1] = rvec[1:ncol+1]
 
-        self.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
-        
+        #self.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
+        info.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
+
         # Read SLA
         #Nsla = iSLA.size
         #self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
-        self.slalines = flines[iSLA]
+        #self.slalines = flines[iSLA]
+        info.slalines = flines[iSLA]
 
         # ------Step through the state points----------
         print "Step through state points..."
@@ -288,26 +304,36 @@ class casdata:
             state.POW = POW[:,:,i]
             self.data["statepts"].append(state)
             
+        # Saving geninfo
+        info.caxfile = caxfile
+        info.ENR = ENR
+        info.BA = BA
+        info.PIN = PIN
+        info.LPI = LPI
+        info.FUE = FUE
+        info.LFU = LFU
+        info.npst = npst
+        self.data['geninfo'] = info
 
-        self.caxfile = caxfile
-        self.burnvec = burnup
-        self.voivec = voi
-        self.vhivec = vhi
-        self.tfuvec = tfu
-        self.tmovec = tmo
-        self.kinf = kinf
-        self.fint = fint
-        self.EXP = EXP
-        self.ENR = ENR
-        self.BA = BA
-        self.PIN = PIN
-        self.LPI = LPI
-        self.FUE = FUE
-        self.LFU = LFU
-        self.npst = npst
-        self.POW = POW
-        self.XFL1 = XFL1
-        self.XFL2 = XFL2
+        #self.caxfile = caxfile
+        #self.burnvec = burnup
+        #self.voivec = voi
+        #self.vhivec = vhi
+        #self.tfuvec = tfu
+        #self.tmovec = tmo
+        #self.kinf = kinf
+        #self.fint = fint
+        #self.EXP = EXP
+        #self.ENR = ENR
+        #self.BA = BA
+        #self.PIN = PIN
+        #self.LPI = LPI
+        #self.FUE = FUE
+        #self.LFU = LFU
+        #self.npst = npst
+        #self.POW = POW
+        #self.XFL1 = XFL1
+        #self.XFL2 = XFL2
 
 #    def btfcalc(self):
 #        btf('SVEA-96','')
