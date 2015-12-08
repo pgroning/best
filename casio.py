@@ -21,6 +21,7 @@ class casio:
 
     def __init__(self):
         self.data = datastruct()
+        self.cases = []
         #self.readinpfile(inpfile)
         #self.readcas()
         #self.savecasobj()
@@ -54,7 +55,6 @@ class casio:
 
 
     def readcas(self):
-        self.cases = []
         for i,f in enumerate(self.data.caxfiles):
             case = casdata(f)
             case.data.topnode = self.data.nodes[i]
@@ -64,13 +64,15 @@ class casio:
     def savecas(self):
         pfile = os.path.splitext(self.data.inpfile)[0] + '.p'
         with open(pfile,'wb') as fp:
+            pickle.dump(self.data,fp,1)
             pickle.dump(self.cases,fp,1)
-        print "Saved cases to file " + pfile
+        print "Saved data to file " + pfile
         
 
     def loadpic(self,pfile):
-        print "Loading cases from file " + pfile
+        print "Loading data from file " + pfile
         with open(pfile,'rb') as fp:
+            self.data = pickle.load(fp)
             self.cases = pickle.load(fp)
         self.data.pfile = pfile
 

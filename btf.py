@@ -10,24 +10,24 @@ import libADDC
 #from addc import addc
 
 
-def pow3d(objlist):
+def pow3d(casobj):
     print "Constructing 3D pin power distribution for specific void and burnup"
     
-    casobjs = casio()
-    casobjs.loadcasobj('caxfiles.p')
+    casobj = casio()
+    casobj.loadpic('caxfiles.p')
     
-    i = 0
+    pts = 0
 
-    dim = casobjs.casobjlist[0].npst
-    nodes = casobjs.casobjlist[0].nodes
-    POW3 = np.zeros((nodes,dim,dim))
+    dim = casobj.cases[0].data.npst
+    nodes = casobj.data.nodes
+    POW3 = np.zeros((dim,dim,max(nodes)))
 
-    z_old = 0
-    for cobj in casobjs.casobjlist:
-        z = int(np.ceil(cobj.nodefrac*nodes))
-        print z_old,z
-        POW3[z_old:z,:,:] = cobj.POW[:,:,i]
-        z_old = z
+    z0 = 0
+    for obj in casobj.cases:
+        z1 = obj.data.topnode
+        for z in range(z0,z1):
+           POW3[:,:,z] = obj.statepts[pts].POW 
+        z0 = z1
 
     return POW3
 
