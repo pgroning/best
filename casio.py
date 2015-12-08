@@ -10,87 +10,70 @@ import numpy as np
 
 from casdata_pts import casdata
 
+
+class datastruct(object):
+    """Dummy class used to structure data"""
+    pass
+
+
 class casio:
+    """Read, save and load cases"""
 
     def __init__(self):
+        self.data = datastruct()
         #self.readinpfile(inpfile)
         #self.readcas()
         #self.savecasobj()
         #self.loadcasobj(inpfile)
-        pass
+        
 
-    def readinpfile(self,inpfile):
+    def readinp(self,inpfile):
         if not os.path.isfile(inpfile):
             print "Could not open file " + inpfile
             return
         else:
             print "Reading file " + inpfile
-
         
         with open(inpfile) as f:
             flines = f.read().splitlines() #exclude \n
 
         # Search for caxfiles
         reCAX = re.compile('.cax\s*$')
-        caxfiles = [x for x in flines if reCAX.search(x)]
+        caxfiles = []
+        for i,x in enumerate(flines):
+            if reCAX.search(x):
+                caxfiles.append(x)
+            else:
+                break
+        
+        nodes  = map(int,re.split('\s+',flines[i]))
 
-        seclens = np.zeros(len(caxfiles))
-        seclens[:]  = re.split('\s+',flines[len(caxfiles)])
-        nodes = int(flines[len(caxfiles)+1])
-
-        self.inpfile = inpfile
-        self.caxfiles = caxfiles
-        self.seclens = seclens
-        self.nodes = nodes
+        self.data.inpfile = inpfile
+        self.data.caxfiles = caxfiles
+        self.data.nodes = nodes
 
 
     def readcas(self):
-        casobjlist = []
-        for i,f in enumerate(self.caxfiles):
-            casobjlist.append(casdata(f))
-            casobjlist[i].nodefrac = self.seclens[i]
-            casobjlist[i].nodes = self.nodes
-     
-        self.casobjlist = casobjlist
-     
+        self.cases = []
+        for i,f in enumerate(self.data.caxfiles):
+            case = casdata(f)
+            case.data.topnode = self.data.nodes[i]
+            self.cases.append(case)
 
-    def savecasobj(self):
-        pfile = os.path.splitext(self.inpfile)[0] + '.p'
+
+    def savecas(self):
+        pfile = os.path.splitext(self.data.inpfile)[0] + '.p'
         with open(pfile,'wb') as fp:
-            pickle.dump(self.casobjlist,fp,1)
-        print "Saved object list to file " + pfile
+            pickle.dump(self.cases,fp,1)
+        print "Saved cases to file " + pfile
         
-        self.pfile = pfile
 
-    
-    def loadcasobj(self,pfile):
-        print "Loading object list from file " + pfile
+    def loadpic(self,pfile):
+        print "Loading cases from file " + pfile
         with open(pfile,'rb') as fp:
-            self.casobjlist = pickle.load(fp)
-        print "Object list loaded from file " + pfile
+            self.cases = pickle.load(fp)
+        self.data.pfile = pfile
 
-
-'''
-x = casdata('cax/e29OPT2-389-10g40mid-cas.cax')
-x2 = casdata('cax/e29OPT2-389-10g40mid-cas.cax')
-x3 = casdata('cax/e29OPT2-389-10g40mid-cas.cax')
-xlist = []
-xlist.append(x)
-xlist.append(x2)
-xlist.append(x3)
-
-fname = 'casobj.p'
-# Write object to file
-print "Write data to file..."
-with open(fname,'wb') as fp:
-    pickle.dump(xlist,fp,1)
-
-# Read object back from file
-print "Read data from file..."
-with open(fname,'rb') as fp:
-    xx=pickle.load(fp)
-
-'''
 
 
 if __name__ == '__main__':

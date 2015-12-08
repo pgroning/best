@@ -21,13 +21,16 @@ import sys
 
 #from btf import btf
 
-class datastruct: # dummy class used to structure data
+class datastruct:
+    """Dummy class used to structure data"""
     pass
 
 
 class casdata:
 
     def __init__(self,caxfile):
+        self.data = datastruct()
+        self.statepts = []
         self.readcax(caxfile)
         self.__ave_enr()
         #self.writecai()
@@ -118,7 +121,6 @@ class casdata:
         iSTA = next(i for i,x in enumerate(flines) if reSTA.match(x))
         print "Done."
 
-        self.data = datastruct()
         # Read title
         #self.title = flines[iTTL[0]]
         self.data.title = flines[iTTL[0]]
@@ -288,10 +290,7 @@ class casdata:
         for i in range(Nburnpts):
             fint[i] = POW[:,:,i].max()
 
-        # Append state
-        self.statepts = [] # statepts is a list
-        #self.data['statepts'] = []
-        #Tracer()()
+        # Append state instancies
         for i in range(Nburnpts):
             self.statepts.append(datastruct()) # append new instance to list
             #state = data()
