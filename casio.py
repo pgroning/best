@@ -77,6 +77,28 @@ class casio:
         self.data.pfile = pfile
 
 
+    def pow3(self,*args):
+        """Expanding a number of 2D pin power distributions into a 3D distribution.
+        Syntax: pow3(POW1,POW2,POW3,...)"""
+        print "Expanding a number of 2D pin power distributions into a 3D distribution"
+   
+        powlist = [arg for arg in args]
+
+        xdim = powlist[0].shape[0]
+        ydim = powlist[0].shape[1]
+        nodes = self.data.nodes
+        zdim = max(nodes)
+        POW3 = np.zeros((xdim,ydim,zdim))
+
+        z0 = 0
+        for i,POW in enumerate(powlist):
+            z1 = nodes[i]
+            for z in range(z0,z1):
+                POW3[:,:,z] = POW 
+            z0 = z1
+
+        return POW3
+        
 
 if __name__ == '__main__':
     casio(sys.argv[1])
