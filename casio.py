@@ -22,11 +22,12 @@ class casio:
     def __init__(self):
         self.data = datastruct()
         self.cases = []
+        
         #self.readinpfile(inpfile)
         #self.readcas()
         #self.savecasobj()
         #self.loadcasobj(inpfile)
-        
+        #self.interp2(P1,P2,x1,x2,x)
 
     def readinp(self,inpfile):
         if not os.path.isfile(inpfile):
@@ -79,7 +80,7 @@ class casio:
 
     def pow3(self,*args):
         """Expanding a number of 2D pin power distributions into a 3D distribution.
-        Syntax: pow3(POW1,POW2,POW3,...)"""
+        Syntax: POW3D = pow3(POW1,POW2,POW3,...)"""
         print "Expanding a number of 2D pin power distributions into a 3D distribution"
    
         powlist = [arg for arg in args]
@@ -100,5 +101,42 @@ class casio:
         return POW3
         
 
+    def interp2(self,P1,P2,x1,x2,x):
+        """Lagrange two point (P2) interpolation
+        Syntax: Pi = interp2(P1,P2,x1,x2,x)"""
+
+        # Lagrange P2 polynomial
+        L1 = (x-x2)/(x1-x2)
+        L2 = (x-x1)/(x2-x1)
+        Pi = L1*P1 + L2*P2
+        return Pi
+
+
+    def interp3(self,P1,P2,P3,x1,x2,x3,x):
+        """Lagrange three point (P3) interpolation
+        Syntax: Pi = interp3(P1,P2,P2,x1,x2,x3,x)"""
+
+        # Lagrange P3 polynomial
+        L1 = ((x-x2)*(x-x3))/((x1-x2)*(x1-x3))
+        L2 = ((x-x1)*(x-x3))/((x2-x1)*(x2-x3))
+        L3 = ((x-x1)*(x-x2))/((x3-x1)*(x3-x2))
+        Pi = L1*P1 + L2*P2 + L3*P3
+        return Pi
+
+
+    def findpoint(self,burnup,vhi,voi):
+        """Return statepoint index that correspond to specific burnup, void and void history
+        Syntax: pt = findpoint(burnup,voi,vhi)"""
+
+        print "Finding statepoints"
+
+
+
+
 if __name__ == '__main__':
-    casio(sys.argv[1])
+    P1 = sys.argv[1]
+    P2 = sys.argv[2]
+    x1 = sys.argv[3]
+    x2 = sys.argv[4]
+    x = sys.argv[5]
+    casio(P1,P2,x1,x2,x)

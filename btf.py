@@ -10,26 +10,26 @@ import libADDC
 #from addc import addc
 
 
-def pow3d(casobj):
-    print "Constructing 3D pin power distribution for specific void and burnup"
-    
-    casobj = casio()
-    casobj.loadpic('caxfiles.p')
-    
-    pts = 0
-
-    dim = casobj.cases[0].data.npst
-    nodes = casobj.data.nodes
-    POW3 = np.zeros((dim,dim,max(nodes)))
-
-    z0 = 0
-    for obj in casobj.cases:
-        z1 = obj.data.topnode
-        for z in range(z0,z1):
-           POW3[:,:,z] = obj.statepts[pts].POW 
-        z0 = z1
-
-    return POW3
+#def pow3d(casobj):
+#    print "Constructing 3D pin power distribution for specific void and burnup"
+#    
+#    casobj = casio()
+#    casobj.loadpic('caxfiles.p')
+#    
+#    pts = 0
+#
+#    dim = casobj.cases[0].data.npst
+#    nodes = casobj.data.nodes
+#    POW3 = np.zeros((dim,dim,max(nodes)))
+#
+#    z0 = 0
+#    for obj in casobj.cases:
+#        z1 = obj.data.topnode
+#        for z in range(z0,z1):
+#           POW3[:,:,z] = obj.statepts[pts].POW 
+#        z0 = z1
+#
+#    return POW3
 
 
 def acc_weifun(x):
