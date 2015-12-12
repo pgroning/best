@@ -124,13 +124,21 @@ class casio:
         return Pi
 
 
-    def findpoint(self,burnup,vhi,voi):
+    def findpoint(self,case,burnup,vhi,voi):
         """Return statepoint index that correspond to specific burnup, void and void history
-        Syntax: pt = findpoint(burnup,voi,vhi)"""
+        Syntax: pt = findpoint(case,burnup,vhi,voi)"""
 
         print "Finding statepoints"
 
+        #for i,p in enumerate(self.cases[case].statepts):
+        #    if p.burnup==burnup and p.vhi==vhi and p.voi==voi:
+        #        pindex = i
+        #        break
 
+        pindex = next(i for i,p in enumerate(self.cases[case].statepts)
+                      if p.burnup==burnup and p.vhi==vhi and p.voi==voi)
+
+        return pindex
 
 
 if __name__ == '__main__':
