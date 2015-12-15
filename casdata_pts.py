@@ -243,6 +243,7 @@ class casdata:
         #Tracer()()
         #Nburnpts = iTIT.size
         Nburnpts = len(iTIT)
+        titcrd = []
         burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
         voi = np.zeros(Nburnpts); voi.fill(np.nan)
         vhi = np.zeros(Nburnpts); vhi.fill(np.nan)
@@ -253,6 +254,8 @@ class casdata:
         XFL1 = np.zeros((npst,npst,Nburnpts)); XFL1.fill(np.nan)
         XFL2 = np.zeros((npst,npst,Nburnpts)); XFL2.fill(np.nan)
         for i in range(Nburnpts):
+            # Read title card
+            titcrd.append(flines[iTIT[i]])
             # Read burnup, voids, tfu and tmo
             rstr = flines[iTIT[i]+2]
             rvec = re.split('/',rstr.strip())
@@ -294,6 +297,7 @@ class casdata:
         for i in range(Nburnpts):
             self.statepts.append(datastruct()) # append new instance to list
             #state = data()
+            self.statepts[i].titcrd = titcrd[i]
             self.statepts[i].burnup = burnup[i]
             #state.burnup = burnup[i]
             self.statepts[i].voi = voi[i]
