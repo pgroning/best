@@ -23,16 +23,17 @@ class plotpar:
         #self.fig.show()
 
 
-    def plt_kinf(self,color,c):
+    def kinf(self):
         
         x = np.arange(0,60)
-        y = [xx**2+c for xx in x]
-        p = self.ax.plot(x, y, color)
+        y = [xx**2 for xx in x]
+        p = self.ax.plot(x, y, 'b')
         self.ax.set_xlabel('Burnup (MWd/kgU)')
         self.ax.set_ylabel('K-inf')
         #self.ax.set_title('XY point plot')
+        p = self.ax.plot(x, x**2+500, 'r')
         self.fig.show()
-
+        p = self.ax.plot(x, x**2+1000, 'g')
 
 
 if __name__ == '__main__':
