@@ -15,7 +15,7 @@ Last modified: 19.01.2009
 
 from IPython.core.debugger import Tracer
 
-import sys#, os, random
+import sys, os#, random
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 #from PyQt4 import QtGui, QtCore
@@ -36,16 +36,22 @@ class AppForm(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Plot Window')
 
+        # Retrieve initial data
+        self.data_init()
+        self.case_id_current = 0
+
         self.create_menu()
         self.create_main_frame()
         self.create_status_bar()
 
         #self.textbox.setText('1 2 3 4')
-        self.data_init()
+        #self.data_init()
         
-        self.case_cbox.setCurrentIndex(0) # Set default plot case
-        self.on_plot()
+        #self.case_cbox.setCurrentIndex(0) # Set default plot case
+        #self.case_id_current = 0
+        self.on_plot() # Init plot
         #self.on_draw()
+        #Tracer()()
 
     def data_init(self):
         self.cas = casio()
@@ -64,10 +70,15 @@ class AppForm(QMainWindow):
         y = [case.statepts[i].kinf for i in range(idx)]
         #self.axes.clear()
         #self.axes.grid(self.grid_cb.isChecked())
-        self.axes.plot(x,y,label=str(case_id+1))
+        labstr = self.cas.cases[case_id].data.caxfile
+        labstr = os.path.split(labstr)[1]
+        labstr = os.path.splitext(labstr)[0]
+
+        self.axes.plot(x,y,label=labstr)
+        #self.axes.plot(x,y,label=str(case_id+1))
         self.axes.set_xlabel('Burnup (MWd/kgU)')
         self.axes.set_ylabel('K-inf')
-        self.axes.legend(loc='best')
+        self.axes.legend(loc='best',prop={'size':8})
         #self.axes.set_xlim(0,70)
         #self.axes.hold(True)
         self.canvas.draw()
@@ -86,12 +97,24 @@ class AppForm(QMainWindow):
         y = [case.statepts[i].fint for i in range(idx)]
         #self.axes.clear()
         #self.axes.grid(self.grid_cb.isChecked())
-        self.axes.plot(x,y,label=str(case_id+1))
+        labstr = self.cas.cases[case_id].data.caxfile
+        labstr = os.path.split(labstr)[1]
+        labstr = os.path.splitext(labstr)[0]
+        
+        self.axes.plot(x,y,label=labstr)
+        #self.axes.plot(x,y,label=str(case_id+1))
         self.axes.set_xlabel('Burnup (MWd/kgU)')
         self.axes.set_ylabel('Fint')
-        self.axes.legend(loc='best')
+        self.axes.legend(loc='best',prop={'size':8})
         #self.axes.set_xlim(0,70)
         self.canvas.draw()
+        self.on_draw()
+
+    def plot_btf(self,case_id):
+        print "BTF"
+        
+        self.axes.set_xlabel('Burnup (MWd/kgU)')
+        self.axes.set_ylabel('BTF')
         self.on_draw()
 
     def save_plot(self):
@@ -162,8 +185,11 @@ class AppForm(QMainWindow):
     def on_plot(self):
 
         param_id = self.param_cbox.currentIndex()
-        case_id = self.case_cbox.currentIndex()
-        case_id_max = self.case_cbox.count()-1
+        case_id = self.case_id_current
+        case_id_max = len(self.cas.cases)
+        
+        #case_id = self.case_cbox.currentIndex()
+        #case_id_max = self.case_cbox.count()-1
         #print self.case_cbox.count()
         #par = self.param_cbox.currentText()
 
@@ -173,18 +199,41 @@ class AppForm(QMainWindow):
         #    self.plot_fint(case_id)
         self.axes.clear()
         if param_id is 0:
-            if case_id == case_id_max:
+            if self.case_cb.isChecked():
+            #if case_id == case_id_max:
                 for i in range(case_id_max):
                     self.plot_kinf(i)
             else:
                 self.plot_kinf(case_id)
+
         elif param_id is 1:
-            if case_id == case_id_max:
+            if self.case_cb.isChecked():
+             #if case_id == case_id_max:
                 for i in range(case_id_max):
-                    self.plot_fint(i) 
+                    self.plot_fint(i)
             else:
                 self.plot_fint(case_id)
+
+        elif param_id is 2:
+            if self.case_cb.isChecked():
+                for i in range(case_id_max):
+                    self.plot_btf(i)
+            else:
+                self.plot_btf(case_id)
+ 
+
+       #Tracer()()
+
+    def on_index(self):
+        print "Find index"
+        case = self.case_id_current
+        burnup = None
+        voi = int(self.voi_cbox.currentText())
+        vhi = int(self.vhi_cbox.currentText())
+        print voi,vhi
         
+        index = self.cas.findpoint(case,burnup,vhi,voi)
+        print index
 
     def create_main_frame(self):
         self.main_frame = QWidget()
@@ -221,7 +270,7 @@ class AppForm(QMainWindow):
         #self.draw_button = QPushButton("&Draw")
         #self.connect(self.draw_button, SIGNAL('clicked()'), self.on_draw)
         
-        self.grid_cb = QCheckBox("Show &Grid")
+        self.grid_cb = QCheckBox("Show Grid")
         self.grid_cb.setChecked(True)
         self.connect(self.grid_cb, SIGNAL('stateChanged(int)'), self.on_draw)
         
@@ -241,15 +290,18 @@ class AppForm(QMainWindow):
 
         self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
-        case_label = QLabel('Case:')
-        self.case_cbox = QComboBox()
-        caselist = ['1','2','3','All']
-        for i in caselist:
-            self.case_cbox.addItem(i)
+        #case_label = QLabel('All cases:')
+        self.case_cb = QCheckBox("All Cases")
+        self.case_cb.setChecked(False)
+        self.connect(self.case_cb, SIGNAL('stateChanged(int)'), self.on_plot)
+#       self.case_cbox = QComboBox()
+#        caselist = ['1','2','3','All']
+#        for i in caselist:
+#            self.case_cbox.addItem(i)
         
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
-        typelist = ['Hot', 'Hot CRD', 'Cold', 'Cold Crd']
+        typelist = ['Hot', 'HCr', 'CCl', 'CCr']
         for i in typelist:
             self.type_cbox.addItem(i)
 
@@ -258,24 +310,37 @@ class AppForm(QMainWindow):
         voilist = ['0', '40', '80']
         for i in voilist:
             self.voi_cbox.addItem(i)
-        
+        # Determine voi index
+        voi = self.cas.cases[self.case_id_current].statepts[0].voi
+        voi_index = [i for i,v in enumerate(voilist) if int(v) == voi]
+        voi_index = voi_index[0]
+        self.voi_cbox.setCurrentIndex(voi_index)
+        self.connect(self.voi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_index)
+
         vhi_label = QLabel('VHI:')
         self.vhi_cbox = QComboBox()
         vhilist = ['0', '40', '80']
         for i in vhilist:
             self.vhi_cbox.addItem(i)
+        # Determine vhi index
+        vhi = self.cas.cases[self.case_id_current].statepts[0].vhi
+        vhi_index = [i for i,v in enumerate(vhilist) if int(v) == vhi]
+        vhi_index = vhi_index[0]
+        self.vhi_cbox.setCurrentIndex(vhi_index)
+        self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_index)
 
-        tfu_label = QLabel('TFU:')
-        self.tfu_cbox = QComboBox()
-        tfulist = ['293', '333', '372', '423', '483', '539']
-        for i in tfulist:
-            self.tfu_cbox.addItem(i)
-
+        #tfu_label = QLabel('TFU:')
+        #self.tfu_cbox = QComboBox()
+        #tfulist = ['293', '333', '372', '423', '483', '539']
+        #for i in tfulist:
+        #    self.tfu_cbox.addItem(i)
+        # Determine tfu index
+        #Tracer()()
 
         #self.case_cbox.setWhatsThis("What is this?")
 
         #self.connect(self.case_cbox, SIGNAL('activated(QString)'), self.on_case)
-        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
+        #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
         #Tracer()()
 
         #
@@ -286,10 +351,10 @@ class AppForm(QMainWindow):
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
         
-        for w in [  self.grid_cb, slider_label, self.slider,
-                    param_label, self.param_cbox, case_label, self.case_cbox,
+        for w in [  self.grid_cb, slider_label, self.slider, self.case_cb,
+                    param_label, self.param_cbox,
                     type_label, self.type_cbox, voi_label, self.voi_cbox,
-                    vhi_label, self.vhi_cbox, tfu_label, self.tfu_cbox]:
+                    vhi_label, self.vhi_cbox]:
 
             hbox.addWidget(w)
             hbox.setAlignment(w, Qt.AlignVCenter)

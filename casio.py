@@ -134,8 +134,12 @@ class casio:
         #    if p.burnup==burnup and p.vhi==vhi and p.voi==voi:
         #        pindex = i
         #        break
-
-        pindex = next(i for i,p in enumerate(self.cases[case].statepts)
+        #Tracer()()
+        if burnup is None:
+            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
+                      if p.vhi==vhi and p.voi==voi)
+        else:
+            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
                       if p.burnup==burnup and p.vhi==vhi and p.voi==voi)
 
         return pindex
