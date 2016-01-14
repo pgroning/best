@@ -267,8 +267,8 @@ class AppForm(QMainWindow):
         #self.textbox.setMinimumWidth(200)
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
         
-        #self.draw_button = QPushButton("&Draw")
-        #self.connect(self.draw_button, SIGNAL('clicked()'), self.on_draw)
+        self.draw_button = QPushButton("Draw")
+        self.connect(self.draw_button, SIGNAL('clicked()'), self.on_draw)
         
         self.grid_cb = QCheckBox("Show Grid")
         self.grid_cb.setChecked(True)
@@ -351,7 +351,7 @@ class AppForm(QMainWindow):
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
         
-        for w in [  self.grid_cb, slider_label, self.slider, self.case_cb,
+        for w in [  self.draw_button, self.grid_cb, slider_label, self.slider, self.case_cb,
                     param_label, self.param_cbox,
                     type_label, self.type_cbox, voi_label, self.voi_cbox,
                     vhi_label, self.vhi_cbox]:
