@@ -124,25 +124,25 @@ class casio:
         return Pi
 
 
-    def findpoint(self,case,burnup,vhi,voi):
-        """Return statepoint index that correspond to specific burnup, void and void history
-        Syntax: pt = findpoint(case,burnup,vhi,voi)"""
-
-        print "Finding statepoints"
-
-        #for i,p in enumerate(self.cases[case].statepts):
-        #    if p.burnup==burnup and p.vhi==vhi and p.voi==voi:
-        #        pindex = i
-        #        break
-        #Tracer()()
-        if burnup is None:
-            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
-                      if p.vhi==vhi and p.voi==voi)
-        else:
-            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
-                      if p.burnup==burnup and p.vhi==vhi and p.voi==voi)
-
-        return pindex
+#    def findpoint(self,case,burnup=None,vhi=None,voi=None):
+#        """Return statepoint index that correspond to specific burnup, void and void history
+#        Syntax: pt = findpoint(case,burnup,vhi,voi)"""
+#
+#        #print "Finding statepoints"
+#
+#        #for i,p in enumerate(self.cases[case].statepts):
+#        #    if p.burnup==burnup and p.vhi==vhi and p.voi==voi:
+#        #        pindex = i
+#        #        break
+#        #Tracer()()
+#        
+#        if burnup is not None:
+#            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
+#                          if p.burnup==burnup and p.vhi==vhi and p.voi==voi)
+#        else:
+#            pindex = next(i for i,p in enumerate(self.cases[case].statepts)
+#                          if p.vhi==vhi and p.voi==voi)    
+#        return pindex
 
 
 if __name__ == '__main__':

@@ -60,14 +60,24 @@ class AppForm(QMainWindow):
     def plot_kinf(self,case_id):
 
         case = self.cas.cases[case_id]
+
+        voi_val = int(self.voi_cbox.currentText())
+        vhi_val = int(self.vhi_cbox.currentText())
+        idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
+        #idx0 = self.cas.findpoint(case_id,voi=voi_val,vhi=vhi_val)
+        statepts = case.statepts[idx0:]
+
         burnup_old = 0.0
-        for idx,p in enumerate(case.statepts):
+        for idx,p in enumerate(statepts):
+        #for idx,p in enumerate(case.statepts):
             if p.burnup < burnup_old:
                 break
             burnup_old = p.burnup
         
-        x = [case.statepts[i].burnup for i in range(idx)]
-        y = [case.statepts[i].kinf for i in range(idx)]
+        x = [statepts[i].burnup for i in range(idx)]
+        y = [statepts[i].kinf for i in range(idx)]
+        #x = [case.statepts[i].burnup for i in range(idx)]
+        #y = [case.statepts[i].kinf for i in range(idx)]
         #self.axes.clear()
         #self.axes.grid(self.grid_cb.isChecked())
         labstr = self.cas.cases[case_id].data.caxfile
@@ -87,14 +97,24 @@ class AppForm(QMainWindow):
     def plot_fint(self,case_id):
 
         case = self.cas.cases[case_id]
+        
+        voi_val = int(self.voi_cbox.currentText())
+        vhi_val = int(self.vhi_cbox.currentText())
+        idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
+        #idx0 = self.cas.findpoint(case_id,voi=voi_val,vhi=vhi_val)
+        statepts = case.statepts[idx0:]
+
         burnup_old = 0.0
-        for idx,p in enumerate(case.statepts):
+        for idx,p in enumerate(statepts):
+        #for idx,p in enumerate(case.statepts):
             if p.burnup < burnup_old:
                 break
             burnup_old = p.burnup
 
-        x = [case.statepts[i].burnup for i in range(idx)]
-        y = [case.statepts[i].fint for i in range(idx)]
+        x = [statepts[i].burnup for i in range(idx)]
+        y = [statepts[i].fint for i in range(idx)]
+        #x = [case.statepts[i].burnup for i in range(idx)]
+        #y = [case.statepts[i].fint for i in range(idx)]
         #self.axes.clear()
         #self.axes.grid(self.grid_cb.isChecked())
         labstr = self.cas.cases[case_id].data.caxfile
@@ -224,16 +244,18 @@ class AppForm(QMainWindow):
 
        #Tracer()()
 
-    def on_index(self):
-        print "Find index"
-        case = self.case_id_current
-        burnup = None
-        voi = int(self.voi_cbox.currentText())
-        vhi = int(self.vhi_cbox.currentText())
-        print voi,vhi
-        
-        index = self.cas.findpoint(case,burnup,vhi,voi)
-        print index
+#    def on_index(self):
+#        print "Find index"
+#        case = self.case_id_current
+#        #burnup = None
+#        voi_val = int(self.voi_cbox.currentText())
+#        vhi_val = int(self.vhi_cbox.currentText())
+#        print voi_val,vhi_val
+#        
+#        #index = self.cas.findpoint(case,burnup,vhi,voi)
+#        #index = self.cas.findpoint(case,vhi=vhi_val,voi=voi_val)
+#        index = self.cas.findpoint(case,voi=voi_val,vhi=vhi_val)
+#        print index
 
     def create_main_frame(self):
         self.main_frame = QWidget()
@@ -268,7 +290,7 @@ class AppForm(QMainWindow):
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
         
         self.draw_button = QPushButton("Draw")
-        self.connect(self.draw_button, SIGNAL('clicked()'), self.on_draw)
+        self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
         
         self.grid_cb = QCheckBox("Show Grid")
         self.grid_cb.setChecked(True)
@@ -287,8 +309,7 @@ class AppForm(QMainWindow):
         paramlist = ['Kinf','Fint','BTF']
         for i in paramlist:
             self.param_cbox.addItem(i)
-
-        self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
+        #self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
         #case_label = QLabel('All cases:')
         self.case_cb = QCheckBox("All Cases")
@@ -315,7 +336,7 @@ class AppForm(QMainWindow):
         voi_index = [i for i,v in enumerate(voilist) if int(v) == voi]
         voi_index = voi_index[0]
         self.voi_cbox.setCurrentIndex(voi_index)
-        self.connect(self.voi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_index)
+        #self.connect(self.voi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
         vhi_label = QLabel('VHI:')
         self.vhi_cbox = QComboBox()
@@ -327,7 +348,7 @@ class AppForm(QMainWindow):
         vhi_index = [i for i,v in enumerate(vhilist) if int(v) == vhi]
         vhi_index = vhi_index[0]
         self.vhi_cbox.setCurrentIndex(vhi_index)
-        self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_index)
+        #self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
         #tfu_label = QLabel('TFU:')
         #self.tfu_cbox = QComboBox()
