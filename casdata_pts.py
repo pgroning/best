@@ -487,11 +487,13 @@ class casdata:
 
         #Tracer()()
 
-    def findpoint(self,burnup=None,vhi=None,voi=None):
+    def findpoint(self,burnup=None,vhi=None,voi=None,tfu=None):
         """Return statepoint index that correspond to specific burnup, void and void history
-        Syntax: pt = findpoint(burnup=burnup_val,vhi=vhi_val,voi=voi_val)"""
+        Syntax: pt = findpoint(burnup=burnup_val,vhi=vhi_val,voi=voi_val,tfu=tfu_val)"""
 
-        if burnup is not None:
+        if tfu is not None:
+            pindex = next(i for i,p in enumerate(self.statepts) if p.tfu==tfu)
+        elif burnup is not None:
             pindex = next(i for i,p in enumerate(self.statepts)
                           if p.burnup==burnup and p.vhi==vhi and p.voi==voi)
         else:

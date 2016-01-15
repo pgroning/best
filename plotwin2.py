@@ -35,6 +35,7 @@ class AppForm(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Plot Window')
+        self.move(300,200)
 
         # Retrieve initial data
         self.data_init()
@@ -60,73 +61,52 @@ class AppForm(QMainWindow):
     def plot_kinf(self,case_id):
 
         case = self.cas.cases[case_id]
-
-        voi_val = int(self.voi_cbox.currentText())
-        vhi_val = int(self.vhi_cbox.currentText())
-        idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
-        #idx0 = self.cas.findpoint(case_id,voi=voi_val,vhi=vhi_val)
+        idx0 = self.startpoint(case_id)
         statepts = case.statepts[idx0:]
 
         burnup_old = 0.0
         for idx,p in enumerate(statepts):
-        #for idx,p in enumerate(case.statepts):
             if p.burnup < burnup_old:
                 break
             burnup_old = p.burnup
         
         x = [statepts[i].burnup for i in range(idx)]
         y = [statepts[i].kinf for i in range(idx)]
-        #x = [case.statepts[i].burnup for i in range(idx)]
-        #y = [case.statepts[i].kinf for i in range(idx)]
-        #self.axes.clear()
-        #self.axes.grid(self.grid_cb.isChecked())
+
         labstr = self.cas.cases[case_id].data.caxfile
         labstr = os.path.split(labstr)[1]
         labstr = os.path.splitext(labstr)[0]
 
         self.axes.plot(x,y,label=labstr)
-        #self.axes.plot(x,y,label=str(case_id+1))
         self.axes.set_xlabel('Burnup (MWd/kgU)')
         self.axes.set_ylabel('K-inf')
         self.axes.legend(loc='best',prop={'size':8})
-        #self.axes.set_xlim(0,70)
-        #self.axes.hold(True)
         self.canvas.draw()
         self.on_draw()
 
     def plot_fint(self,case_id):
 
         case = self.cas.cases[case_id]
-        
-        voi_val = int(self.voi_cbox.currentText())
-        vhi_val = int(self.vhi_cbox.currentText())
-        idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
-        #idx0 = self.cas.findpoint(case_id,voi=voi_val,vhi=vhi_val)
+        idx0 = self.startpoint(case_id)
         statepts = case.statepts[idx0:]
 
         burnup_old = 0.0
         for idx,p in enumerate(statepts):
-        #for idx,p in enumerate(case.statepts):
             if p.burnup < burnup_old:
                 break
             burnup_old = p.burnup
 
         x = [statepts[i].burnup for i in range(idx)]
         y = [statepts[i].fint for i in range(idx)]
-        #x = [case.statepts[i].burnup for i in range(idx)]
-        #y = [case.statepts[i].fint for i in range(idx)]
-        #self.axes.clear()
-        #self.axes.grid(self.grid_cb.isChecked())
-        labstr = self.cas.cases[case_id].data.caxfile
+
+        labstr = case.data.caxfile
         labstr = os.path.split(labstr)[1]
         labstr = os.path.splitext(labstr)[0]
         
         self.axes.plot(x,y,label=labstr)
-        #self.axes.plot(x,y,label=str(case_id+1))
         self.axes.set_xlabel('Burnup (MWd/kgU)')
         self.axes.set_ylabel('Fint')
         self.axes.legend(loc='best',prop={'size':8})
-        #self.axes.set_xlim(0,70)
         self.canvas.draw()
         self.on_draw()
 
@@ -202,39 +182,49 @@ class AppForm(QMainWindow):
         
         self.canvas.draw()
 
+    def startpoint(self,case_id):
+        voi_val = int(self.voi_cbox.currentText())
+        vhi_val = int(self.vhi_cbox.currentText())
+        type_val = str(self.type_cbox.currentText())
+
+        case = self.cas.cases[case_id]
+        if type_val == 'CCl':
+            idx0 = case.findpoint(tfu=293)
+            voi = case.statepts[idx0].voi
+            vhi = case.statepts[idx0].vhi
+            voi_index = [i for i,v in enumerate(self.voilist) if int(v) == voi][0]
+            vhi_index = [i for i,v in enumerate(self.vhilist) if int(v) == vhi][0]
+            self.voi_cbox.setCurrentIndex(voi_index)
+            self.vhi_cbox.setCurrentIndex(vhi_index)
+        else:
+            idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
+        return idx0
+
+
     def on_plot(self):
 
-        param_id = self.param_cbox.currentIndex()
         case_id = self.case_id_current
         case_id_max = len(self.cas.cases)
+        param = self.param_cbox.currentText()
         
-        #case_id = self.case_cbox.currentIndex()
-        #case_id_max = self.case_cbox.count()-1
-        #print self.case_cbox.count()
-        #par = self.param_cbox.currentText()
-
-        #if param_id is 0:
-        #    self.plot_kinf(case_id)
-        #elif param_id is 1:
-        #    self.plot_fint(case_id)
         self.axes.clear()
-        if param_id is 0:
+        if param == 'Kinf':
             if self.case_cb.isChecked():
-            #if case_id == case_id_max:
                 for i in range(case_id_max):
+                    #idx0 = self.startpoint(i)
                     self.plot_kinf(i)
             else:
+                #idx0 = self.startpoint(case_id)
                 self.plot_kinf(case_id)
-
-        elif param_id is 1:
+        
+        elif param == 'Fint':
             if self.case_cb.isChecked():
-             #if case_id == case_id_max:
                 for i in range(case_id_max):
                     self.plot_fint(i)
             else:
                 self.plot_fint(case_id)
 
-        elif param_id is 2:
+        elif param == 'BTF':
             if self.case_cb.isChecked():
                 for i in range(case_id_max):
                     self.plot_btf(i)
@@ -242,24 +232,28 @@ class AppForm(QMainWindow):
                 self.plot_btf(case_id)
  
 
-       #Tracer()()
-
 #    def on_index(self):
 #        print "Find index"
-#        case = self.case_id_current
-#        #burnup = None
+#        case_id = self.case_id_current
+#        case = self.cas.cases[case_id]
+##        #burnup = None
 #        voi_val = int(self.voi_cbox.currentText())
 #        vhi_val = int(self.vhi_cbox.currentText())
-#        print voi_val,vhi_val
-#        
-#        #index = self.cas.findpoint(case,burnup,vhi,voi)
-#        #index = self.cas.findpoint(case,vhi=vhi_val,voi=voi_val)
-#        index = self.cas.findpoint(case,voi=voi_val,vhi=vhi_val)
-#        print index
+#        type_val = str(self.type_cbox.currentText())
+#        print type_val,voi_val,vhi_val
+##        
+##        #index = self.cas.findpoint(case,burnup,vhi,voi)
+##        #index = self.cas.findpoint(case,vhi=vhi_val,voi=voi_val)
+##        index = self.cas.findpoint(case,voi=voi_val,vhi=vhi_val)
+#        #idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
+#
+#        if type_val == 'CCl':
+#            idx0 = case.findpoint(tfu=293)
+#            print idx0
 
     def create_main_frame(self):
         self.main_frame = QWidget()
-        
+
         # Create the mpl Figure and FigCanvas objects. 
         # 5x4 inches, 100 dots-per-inch
         #
@@ -267,7 +261,7 @@ class AppForm(QMainWindow):
         self.fig = Figure((7, 5), dpi=self.dpi)
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
-        
+
         # Since we have only one plot, we can use add_axes 
         # instead of add_subplot, but then the subplot
         # configuration tool in the navigation toolbar wouldn't
@@ -282,7 +276,7 @@ class AppForm(QMainWindow):
         # Create the navigation toolbar, tied to the canvas
         #
         self.mpl_toolbar = NavigationToolbar(self.canvas, self.main_frame)
-        
+
         # Other GUI controls
         # 
         #self.textbox = QLineEdit()
@@ -325,27 +319,28 @@ class AppForm(QMainWindow):
         typelist = ['Hot', 'HCr', 'CCl', 'CCr']
         for i in typelist:
             self.type_cbox.addItem(i)
+        #self.connect(self.type_cbox, SIGNAL('currentIndexChanged(int)'), self.on_index)
 
         voi_label = QLabel('VOI:')
         self.voi_cbox = QComboBox()
-        voilist = ['0', '40', '80']
-        for i in voilist:
+        self.voilist = ['0', '40', '80']
+        for i in self.voilist:
             self.voi_cbox.addItem(i)
         # Determine voi index
         voi = self.cas.cases[self.case_id_current].statepts[0].voi
-        voi_index = [i for i,v in enumerate(voilist) if int(v) == voi]
+        voi_index = [i for i,v in enumerate(self.voilist) if int(v) == voi]
         voi_index = voi_index[0]
         self.voi_cbox.setCurrentIndex(voi_index)
         #self.connect(self.voi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
         vhi_label = QLabel('VHI:')
         self.vhi_cbox = QComboBox()
-        vhilist = ['0', '40', '80']
-        for i in vhilist:
+        self.vhilist = ['0', '40', '80']
+        for i in self.vhilist:
             self.vhi_cbox.addItem(i)
         # Determine vhi index
         vhi = self.cas.cases[self.case_id_current].statepts[0].vhi
-        vhi_index = [i for i,v in enumerate(vhilist) if int(v) == vhi]
+        vhi_index = [i for i,v in enumerate(self.vhilist) if int(v) == vhi]
         vhi_index = vhi_index[0]
         self.vhi_cbox.setCurrentIndex(vhi_index)
         #self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
