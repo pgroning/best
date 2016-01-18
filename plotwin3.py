@@ -42,6 +42,7 @@ class AppForm(QMainWindow):
         self.case_id_current = 0
 
         self.create_menu()
+        self.create_toolbar()
         self.create_main_frame()
         self.create_status_bar()
 
@@ -67,7 +68,7 @@ class AppForm(QMainWindow):
             for j,x in enumerate(xlist):
                 pin = y + x
                 row = 10*i + j
-                print row,pin
+                #print row,pin
                 item = QTableWidgetItem(pin)
                 self.table.setItem(row,0,item)
                 self.table.setItem(row,1,QTableWidgetItem(str(0)))
@@ -302,6 +303,8 @@ class AppForm(QMainWindow):
         #self.textbox = QLineEdit()
         #self.textbox.setMinimumWidth(200)
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
+
+        
         
         self.draw_button = QPushButton("Draw")
         self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
@@ -454,6 +457,28 @@ class AppForm(QMainWindow):
             tip='About the demo')
         
         self.add_actions(self.help_menu, (about_action,))
+
+    def create_toolbar(self):
+        exitAction = QAction(QIcon('icons/exit-icon_32x32.png'), 'Exit', self)
+        #exitAction.setShortcut('Ctrl+Q')
+        exitAction.setStatusTip('Exit application')
+        exitAction.triggered.connect(self.close)
+
+        fileAction = QAction(QIcon('icons/open-file-icon_32x32.png'), 'Open file', self)
+        fileAction.setStatusTip('Open file')
+
+        settingsAction = QAction(QIcon('icons/preferences-icon_32x32.png'), 'Settings', self)
+        settingsAction.setStatusTip('Settings')
+
+        plotAction = QAction(QIcon('icons/diagram-icon_32x32.png'), 'Plot', self)
+        plotAction.setStatusTip('Open plot window')
+
+        toolbar = self.addToolBar('Toolbar')
+        toolbar.addAction(fileAction)
+        toolbar.addAction(settingsAction)
+        toolbar.addAction(plotAction)
+        toolbar.addAction(exitAction)
+
 
     def add_actions(self, target, actions):
         for action in actions:
