@@ -328,6 +328,10 @@ class AppForm(QMainWindow):
             self.param_cbox.addItem(i)
         #self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
+        param_hbox = QHBoxLayout()
+        param_hbox.addWidget(param_label)
+        param_hbox.addWidget(self.param_cbox)
+
         #case_label = QLabel('All cases:')
         self.case_cb = QCheckBox("All Cases")
         self.case_cb.setChecked(False)
@@ -394,12 +398,12 @@ class AppForm(QMainWindow):
         # Layout with box sizers
         # 
         vbox = QVBoxLayout()
-        
+        vbox.addLayout(param_hbox)
+
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
         
         for w in [  self.draw_button, self.grid_cb, slider_label, self.slider, self.case_cb,
-                    param_label, self.param_cbox,
                     type_label, self.type_cbox, voi_label, self.voi_cbox,
                     vhi_label, self.vhi_cbox]:
 
