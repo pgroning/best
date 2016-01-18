@@ -27,8 +27,9 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
 
-
 from casio import casio
+
+from pyDraw import Bundle
 
 
 class AppForm(QMainWindow):
@@ -304,8 +305,7 @@ class AppForm(QMainWindow):
         #self.textbox.setMinimumWidth(200)
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
 
-        
-        
+                
         self.draw_button = QPushButton("Draw")
         self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
         
@@ -368,13 +368,6 @@ class AppForm(QMainWindow):
         self.vhi_cbox.setCurrentIndex(vhi_index)
         #self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
-        #tfu_label = QLabel('TFU:')
-        #self.tfu_cbox = QComboBox()
-        #tfulist = ['293', '333', '372', '423', '483', '539']
-        #for i in tfulist:
-        #    self.tfu_cbox.addItem(i)
-        # Determine tfu index
-        #Tracer()()
 
         #self.case_cbox.setWhatsThis("What is this?")
 
@@ -413,11 +406,20 @@ class AppForm(QMainWindow):
             vbox.addWidget(w)
             vbox.setAlignment(w, Qt.AlignHCenter)
         
+
+        #self.bundle = Bundle()
+        #self.bundle.setParent(self.main_frame)
+        #Tracer()()
+
         hbox = QHBoxLayout()
+
+        #hbox.addWidget(self.bundle)
         #vbox.addLayout(hbox)
         #vbox.addWidget(self.canvas)
         #hbox2.addWidget(self.mpl_toolbar)
+        
         hbox.addLayout(vbox)
+        #hbox.addWidget(self.bundle)
         hbox.addWidget(self.canvas)
         hbox.addWidget(self.table)
 
@@ -431,16 +433,16 @@ class AppForm(QMainWindow):
     def create_menu(self):        
         self.file_menu = self.menuBar().addMenu("&File")
         
-        save_file_action = self.create_action("&Save plot",
+        save_settings_action = self.create_action("&Save settings...",
             shortcut="Ctrl+S", slot=self.save_plot, 
-            tip="Save the plot")
+            tip="Save settings")
         quit_action = self.create_action("&Quit", slot=self.close, 
             shortcut="Ctrl+Q", tip="Close the application")
         
-        export_action = self.create_action("&Export to ascii", tip="Export data to ascii file")
+        open_file_action = self.create_action("&Open file...", tip="Open file")
 
         self.add_actions(self.file_menu, 
-            (export_action, save_file_action, None, quit_action))
+            (open_file_action, save_settings_action, None, quit_action))
 
 
         self.edit_menu = self.menuBar().addMenu("&Edit") 
@@ -478,7 +480,6 @@ class AppForm(QMainWindow):
         toolbar.addAction(settingsAction)
         toolbar.addAction(plotAction)
         toolbar.addAction(exitAction)
-
 
     def add_actions(self, target, actions):
         for action in actions:
