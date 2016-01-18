@@ -50,13 +50,33 @@ class AppForm(QMainWindow):
         
         #self.case_cbox.setCurrentIndex(0) # Set default plot case
         #self.case_id_current = 0
-        self.on_plot() # Init plot
-        #self.on_draw()
+        #self.on_plot() # Init plot
+        self.on_draw()
         #Tracer()()
 
     def data_init(self):
         self.cas = casio()
         self.cas.loadpic('caxfiles.p')
+
+
+    def setpincoords(self):
+        xlist = ('01','02','03','04','05','06','07','08','09','10')
+        ylist  = ('A','B','C','D','E','F','G','H','I','J')
+
+        for i,y in enumerate(ylist):
+            for j,x in enumerate(xlist):
+                pin = y + x
+                row = 10*i + j
+                print row,pin
+                item = QTableWidgetItem(pin)
+                self.table.setItem(row,0,item)
+                self.table.setItem(row,1,QTableWidgetItem(str(0)))
+
+       #pinlist = ('A01','A02','A03','A04','A05','A06','A07','A08','A09','A10')
+       # for row,pin in enumerate(pinlist):
+       #     item = QTableWidgetItem(pin)
+       #     self.table.setItem(row,0,item)
+       #     self.table.setItem(row,1,QTableWidgetItem(str(0)))
 
     def plot_kinf(self,case_id):
 
@@ -359,6 +379,21 @@ class AppForm(QMainWindow):
         #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
         #Tracer()()
 
+        # Define table widget
+        self.table = QTableWidget()
+        self.table.setRowCount(100)
+        self.table.setColumnCount(2)
+        #self.table.verticalHeader().hide()
+        self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        self.table.setHorizontalHeaderLabels(('Pin','Value'))
+        self.table.setSortingEnabled(True)
+        #self.tableview = QTableView()
+
+        self.setpincoords()
+        #self.table.resizeColumnsToContents()
+        #Tracer()()
+
         #
         # Layout with box sizers
         # 
@@ -381,6 +416,7 @@ class AppForm(QMainWindow):
         #hbox2.addWidget(self.mpl_toolbar)
         hbox.addLayout(vbox)
         hbox.addWidget(self.canvas)
+        hbox.addWidget(self.table)
 
         self.main_frame.setLayout(hbox)
         self.setCentralWidget(self.main_frame)
