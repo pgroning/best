@@ -176,22 +176,26 @@ class AppForm(QMainWindow):
     def on_draw(self):
         """ Redraws the figure
         """
-        #str = unicode(self.textbox.text())
-        #self.data = map(int, str.split())
-        #self.data = np.array(map(int, str.split()))
-
-        #x = range(len(self.data))
-        #x = np.arange(len(self.data))
 
         # clear the axes and redraw the plot anew
         #
-        #self.axes.clear()        
-        self.axes.grid(self.grid_cb.isChecked())
+        self.axes.clear()
+        self.axes.axis('equal')
+        #self.axes.set_position([0,0,1,1])
+        #self.axes.set_visible(False)
+        #self.axes.set_frame_on(False)
+        #self.axes.get_xaxis().set_visible(False)
+        #self.axes.get_yaxis().set_visible(False)
+       
 
-        xmax = self.slider.value()
-        self.axes.set_xlim(0,xmax)
 
-        #Tracer()()
+
+        #self.axes.grid(self.grid_cb.isChecked())
+
+        #xmax = self.slider.value()
+        #self.axes.set_xlim(0,xmax)
+
+        Tracer()()
 
         #self.axes.plot(x,x**2,'r')
         #self.axes.bar(
@@ -280,7 +284,7 @@ class AppForm(QMainWindow):
         # 5x4 inches, 100 dots-per-inch
         #
         self.dpi = 100
-        self.fig = Figure((7, 5), dpi=self.dpi)
+        self.fig = Figure((5, 5), dpi=self.dpi, facecolor='white')
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
 
@@ -321,16 +325,34 @@ class AppForm(QMainWindow):
         self.slider.setTickPosition(QSlider.TicksBothSides)
         self.connect(self.slider, SIGNAL('valueChanged(int)'), self.on_draw)
  
-        param_label = QLabel('Param:')
+        param_label = QLabel('Parameter:')
         self.param_cbox = QComboBox()
-        paramlist = ['Kinf','Fint','BTF']
+        paramlist = ['ENR','FINT','EXP','BTF','BTFP','XFL1','XFL2','ROD','LOCK']
         for i in paramlist:
             self.param_cbox.addItem(i)
         #self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
-
         param_hbox = QHBoxLayout()
         param_hbox.addWidget(param_label)
         param_hbox.addWidget(self.param_cbox)
+
+        case_label = QLabel('Case number:')
+        self.case_cbox = QComboBox()
+        caselist = ['1', '2', '3']
+        for i in caselist:
+            self.case_cbox.addItem(i)
+        case_hbox = QHBoxLayout()
+        case_hbox.addWidget(case_label)
+        case_hbox.addWidget(self.case_cbox)
+
+        point_label = QLabel('Point number:')
+        self.point_sbox = QSpinBox()
+        self.point_sbox.setMinimum(0)
+        self.point_sbox.setMaximum(10000)
+        point_hbox = QHBoxLayout()
+        point_hbox.addWidget(point_label)
+        point_hbox.addWidget(self.point_sbox)
+        #Tracer()()
+
 
         #case_label = QLabel('All cases:')
         self.case_cb = QCheckBox("All Cases")
@@ -399,6 +421,8 @@ class AppForm(QMainWindow):
         # 
         vbox = QVBoxLayout()
         vbox.addLayout(param_hbox)
+        vbox.addLayout(case_hbox)
+        vbox.addLayout(point_hbox)
 
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
