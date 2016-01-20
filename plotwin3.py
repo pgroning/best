@@ -26,6 +26,8 @@ import matplotlib
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as NavigationToolbar
 from matplotlib.figure import Figure
+#from matplotlib.patches import FancyBboxPatch
+import matplotlib.patches as mpatches
 
 from casio import casio
 
@@ -54,6 +56,7 @@ class AppForm(QMainWindow):
         #self.case_id_current = 0
         #self.on_plot() # Init plot
         self.on_draw()
+        self.draw_fuelmap()
         #Tracer()()
 
     def data_init(self):
@@ -181,32 +184,38 @@ class AppForm(QMainWindow):
         #
         self.axes.clear()
         self.axes.axis('equal')
-        #self.axes.set_position([0,0,1,1])
+        self.axes.set_position([0,0,1,1])
         #self.axes.set_visible(False)
-        #self.axes.set_frame_on(False)
-        #self.axes.get_xaxis().set_visible(False)
-        #self.axes.get_yaxis().set_visible(False)
+        self.axes.set_frame_on(False)
+        self.axes.get_xaxis().set_visible(False)
+        self.axes.get_yaxis().set_visible(False)
        
-
-
-
         #self.axes.grid(self.grid_cb.isChecked())
 
         #xmax = self.slider.value()
         #self.axes.set_xlim(0,xmax)
 
-        Tracer()()
-
-        #self.axes.plot(x,x**2,'r')
-        #self.axes.bar(
-        #    left=x, 
-        #    height=self.data, 
-        #    width=self.slider.value() / 100.0, 
-        #    align='center', 
-        #    alpha=0.44,
-        #    picker=5)
+        #Tracer()()
         
         self.canvas.draw()
+
+    def draw_fuelmap(self):
+
+        # a fancy box with round corners. pad=0.1
+        p_fancy = mpatches.FancyBboxPatch((0.03, 0.1),
+                                 0.77, 0.77,
+                                 boxstyle="round,pad=0.04",
+                                 fc=(0.85,1,1),
+                                 ec=(0.3, 0.3, 0.3))
+        p_fancy.set_linewidth(4.0)
+        self.axes.add_patch(p_fancy)
+
+        # Draw circles
+        circle = mpatches.Circle((0.3,0.3), 0.04, fc=(0,1,0), ec=(0.3, 0.3, 0.3))
+        circle.set_linewidth(2.0)
+        self.axes.add_patch(circle)
+        #Tracer()()
+
 
     def startpoint(self,case_id):
         voi_val = int(self.voi_cbox.currentText())
@@ -284,7 +293,7 @@ class AppForm(QMainWindow):
         # 5x4 inches, 100 dots-per-inch
         #
         self.dpi = 100
-        self.fig = Figure((5, 5), dpi=self.dpi, facecolor='white')
+        self.fig = Figure((6, 5), dpi=self.dpi, facecolor='white')
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
 
@@ -310,20 +319,20 @@ class AppForm(QMainWindow):
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
 
                 
-        self.draw_button = QPushButton("Draw")
-        self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
+        #self.draw_button = QPushButton("Draw")
+        #self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
         
-        self.grid_cb = QCheckBox("Show Grid")
-        self.grid_cb.setChecked(True)
-        self.connect(self.grid_cb, SIGNAL('stateChanged(int)'), self.on_draw)
+        #self.grid_cb = QCheckBox("Show Grid")
+        #self.grid_cb.setChecked(True)
+        #self.connect(self.grid_cb, SIGNAL('stateChanged(int)'), self.on_draw)
         
-        slider_label = QLabel('X-max:')
-        self.slider = QSlider(Qt.Horizontal)
-        self.slider.setRange(1, 75)
-        self.slider.setValue(65)
-        self.slider.setTracking(True)
-        self.slider.setTickPosition(QSlider.TicksBothSides)
-        self.connect(self.slider, SIGNAL('valueChanged(int)'), self.on_draw)
+        #slider_label = QLabel('X-max:')
+        #self.slider = QSlider(Qt.Horizontal)
+        #self.slider.setRange(1, 75)
+        #self.slider.setValue(65)
+        #self.slider.setTracking(True)
+        #self.slider.setTickPosition(QSlider.TicksBothSides)
+        #self.connect(self.slider, SIGNAL('valueChanged(int)'), self.on_draw)
  
         param_label = QLabel('Parameter:')
         self.param_cbox = QComboBox()
@@ -351,13 +360,22 @@ class AppForm(QMainWindow):
         point_hbox = QHBoxLayout()
         point_hbox.addWidget(point_label)
         point_hbox.addWidget(self.point_sbox)
+
+        self.enr_plus_button = QPushButton("+ enr")
+        self.enr_minus_button = QPushButton("- enr")
+        enr_hbox = QHBoxLayout()
+        enr_hbox.addWidget(self.enr_plus_button)
+        enr_hbox.addWidget(self.enr_minus_button)
+
+
+
         #Tracer()()
 
 
         #case_label = QLabel('All cases:')
-        self.case_cb = QCheckBox("All Cases")
-        self.case_cb.setChecked(False)
-        self.connect(self.case_cb, SIGNAL('stateChanged(int)'), self.on_plot)
+        #self.case_cb = QCheckBox("All Cases")
+        #self.case_cb.setChecked(False)
+        #self.connect(self.case_cb, SIGNAL('stateChanged(int)'), self.on_plot)
 #       self.case_cbox = QComboBox()
 #        caselist = ['1','2','3','All']
 #        for i in caselist:
@@ -423,16 +441,20 @@ class AppForm(QMainWindow):
         vbox.addLayout(param_hbox)
         vbox.addLayout(case_hbox)
         vbox.addLayout(point_hbox)
+        vbox.addLayout(enr_hbox)
+
+        spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        vbox.addItem(spacerItem)
+
 
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
         
-        for w in [  self.draw_button, self.grid_cb, slider_label, self.slider, self.case_cb,
-                    type_label, self.type_cbox, voi_label, self.voi_cbox,
-                    vhi_label, self.vhi_cbox]:
-
-            vbox.addWidget(w)
-            vbox.setAlignment(w, Qt.AlignHCenter)
+        #for w in [  type_label, self.type_cbox, voi_label, self.voi_cbox,
+        #            vhi_label, self.vhi_cbox]:
+        #
+        #    vbox.addWidget(w)
+        #    vbox.setAlignment(w, Qt.AlignHCenter)
         
 
         #self.bundle = Bundle()
@@ -450,6 +472,7 @@ class AppForm(QMainWindow):
         #hbox.addWidget(self.bundle)
         hbox.addWidget(self.canvas)
         hbox.addWidget(self.table)
+        #hbox.addItem(spacerItemH)
 
         self.main_frame.setLayout(hbox)
         self.setCentralWidget(self.main_frame)
@@ -477,9 +500,18 @@ class AppForm(QMainWindow):
         preferences = self.create_action("Preferences...", tip="Preferences...")        
         self.add_actions(self.edit_menu, (None, preferences))
 
-        self.tools_menu = self.menuBar().addMenu("&Tools") 
-        options = self.create_action("Options...", tip="Options...")        
-        self.add_actions(self.tools_menu, (options,))
+        self.tools_menu = self.menuBar().addMenu("&Tools")
+        plot_action = self.create_action("Plot...", tip="Plot...")
+        btf_action = self.create_action("BTF...", tip="BTF...")
+        casmo_action = self.create_action("CASMO...", tip="CASMO...")
+        data_action = self.create_action("Fuel data...", tip="Fuel data...")
+        table_action = self.create_action("Point table...", tip="Point table...")
+        optim_action = self.create_action("Optimization...", tip="BTF optimization...")
+        egv_action = self.create_action("EGV...", tip="EGV...")
+        self.add_actions(self.tools_menu, 
+                         (plot_action, btf_action, casmo_action, data_action,
+                          table_action, optim_action, egv_action))
+        
         
         self.help_menu = self.menuBar().addMenu("&Help")
         about_action = self.create_action("&About", 
@@ -508,6 +540,11 @@ class AppForm(QMainWindow):
         toolbar.addAction(settingsAction)
         toolbar.addAction(plotAction)
         toolbar.addAction(exitAction)
+
+        toolbar.setMovable(False)
+        toolbar.setFloatable(True)
+        toolbar.setAutoFillBackground(False)
+
 
     def add_actions(self, target, actions):
         for action in actions:
