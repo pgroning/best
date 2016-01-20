@@ -184,7 +184,14 @@ class AppForm(QMainWindow):
         #
         self.axes.clear()
         self.axes.axis('equal')
-        self.axes.set_position([0,0,1,1])
+        #self.axes.set_xlim(0,1)
+        #self.axes.set_ylim(0,1)
+        #self.axes.axis('equal')
+        
+        #self.axes.set_position([0,0,1,1])
+        self.axes.set_xlim(0,1)
+        self.axes.set_ylim(0,1)
+        self.axes.set_position([0,0,0.8333,1])
         #self.axes.set_visible(False)
         self.axes.set_frame_on(False)
         self.axes.get_xaxis().set_visible(False)
@@ -195,6 +202,8 @@ class AppForm(QMainWindow):
         #xmax = self.slider.value()
         #self.axes.set_xlim(0,xmax)
 
+        #self.axes.axis('equal')
+
         #Tracer()()
         
         self.canvas.draw()
@@ -202,7 +211,7 @@ class AppForm(QMainWindow):
     def draw_fuelmap(self):
 
         # a fancy box with round corners. pad=0.1
-        p_fancy = mpatches.FancyBboxPatch((0.03, 0.1),
+        p_fancy = mpatches.FancyBboxPatch((0.1, 0.1),
                                  0.77, 0.77,
                                  boxstyle="round,pad=0.04",
                                  fc=(0.85,1,1),
@@ -214,7 +223,7 @@ class AppForm(QMainWindow):
         circle = mpatches.Circle((0.3,0.3), 0.04, fc=(0,1,0), ec=(0.3, 0.3, 0.3))
         circle.set_linewidth(2.0)
         self.axes.add_patch(circle)
-        #Tracer()()
+        Tracer()()
 
 
     def startpoint(self,case_id):
@@ -293,7 +302,7 @@ class AppForm(QMainWindow):
         # 5x4 inches, 100 dots-per-inch
         #
         self.dpi = 100
-        self.fig = Figure((6, 5), dpi=self.dpi, facecolor='white')
+        self.fig = Figure((6, 5), dpi=self.dpi, facecolor=(1,1,0.8784))
         self.canvas = FigureCanvas(self.fig)
         self.canvas.setParent(self.main_frame)
 
