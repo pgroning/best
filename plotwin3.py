@@ -189,9 +189,9 @@ class AppForm(QMainWindow):
         #self.axes.axis('equal')
         
         #self.axes.set_position([0,0,1,1])
-        self.axes.set_xlim(0,1)
+        self.axes.set_xlim(0,1.2)
         self.axes.set_ylim(0,1)
-        self.axes.set_position([0,0,0.8333,1])
+        self.axes.set_position([0,0,1,1])
         #self.axes.set_visible(False)
         self.axes.set_frame_on(False)
         self.axes.get_xaxis().set_visible(False)
@@ -210,8 +210,13 @@ class AppForm(QMainWindow):
 
     def draw_fuelmap(self):
 
+        # Draw a rectangle
+        rect = mpatches.Rectangle((0.035,0.035), 0.935, 0.935, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
+        self.axes.add_patch(rect)
+
+
         # a fancy box with round corners. pad=0.1
-        p_fancy = mpatches.FancyBboxPatch((0.1, 0.1),
+        p_fancy = mpatches.FancyBboxPatch((0.12, 0.12),
                                  0.77, 0.77,
                                  boxstyle="round,pad=0.04",
                                  fc=(0.85,1,1),
@@ -219,10 +224,82 @@ class AppForm(QMainWindow):
         p_fancy.set_linewidth(4.0)
         self.axes.add_patch(p_fancy)
 
-        # Draw circles
-        circle = mpatches.Circle((0.3,0.3), 0.04, fc=(0,1,0), ec=(0.3, 0.3, 0.3))
-        circle.set_linewidth(2.0)
-        self.axes.add_patch(circle)
+        # Draw water channel
+        #rect = mpatches.Rectangle((0,0), 0.2, 0.2, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
+
+        #rot45=mpatches.transforms.Affine2D().rotate_deg(-45) + self.axes.transData
+        #rect.set_transform(rot45)
+        #self.axes.add_patch(rect)
+        
+        # Draw water cross
+        pp = [[0.09, 0.503], [0.15, 0.515], [0.3, 0.515], [0.36, 0.503], [0.38, 0.503],
+              [0.38, 0.497], [0.36, 0.497], [0.3, 0.485], [0.15, 0.485], [0.09, 0.497]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+
+        pp = [[0.92, 0.503], [0.86, 0.515], [0.71, 0.515], [0.65, 0.503], [0.63, 0.503],
+              [0.63, 0.497], [0.65, 0.497], [0.71, 0.485], [0.86, 0.485], [0.92, 0.497]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+
+        pp = [[0.497, 0.09], [0.485, 0.15], [0.485, 0.3], [0.497, 0.36], [0.497, 0.38],
+              [0.503, 0.38], [0.503, 0.36], [0.515, 0.3], [0.515, 0.15], [0.503, 0.09]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+
+        pp = [[0.497, 0.92], [0.485, 0.86], [0.485, 0.71], [0.497, 0.65], [0.497, 0.63],
+              [0.503, 0.63], [0.503,0.65], [0.515, 0.71], [0.515, 0.86], [0.503, 0.92]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+
+        # Draw water channel
+        pp = [[0.38, 0.5], [0.5, 0.63], [0.63, 0.5], [0.5, 0.38]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(True)
+        self.axes.add_patch(poly)
+
+        cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,0,0]]
+        enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
+        enr_ba = [3.4, 5.0]
+
+        pin_radius = 0.028
+        pin_delta = 0.078
+
+        # Draw enrichment level circles
+        for i in range(8):
+            circle = mpatches.Circle((1.06,0.9-i*pin_delta), pin_radius, fc=cmap[i], ec=(0.1, 0.1, 0.1))
+            circle.set_linewidth(2.0)
+            self.axes.add_patch(circle)
+            self.axes.text(1.11,0.9-i*pin_delta,'0.71',fontsize=8)
+
+
+        # Draw pin circles
+        # Quadrant 3
+        for j in range(5):
+            for i in range(5):
+                if i < 4 or j < 4:
+                    circle = mpatches.Circle((0.13+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=(0,1,0), ec=(0.1, 0.1, 0.1))
+                    circle.set_linewidth(2.0)
+                    self.axes.add_patch(circle)
+                    self.axes.text(0.13+i*pin_delta,0.13+j*pin_delta,'2',ha='center',va='center',fontsize=10)
+
+ 
+
+
         Tracer()()
 
 
