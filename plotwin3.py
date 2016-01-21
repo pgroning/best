@@ -65,11 +65,11 @@ class AppForm(QMainWindow):
 
 
     def setpincoords(self):
-        xlist = ('01','02','03','04','05','06','07','08','09','10')
-        ylist  = ('A','B','C','D','E','F','G','H','I','J')
+        self.xlist = ('01','02','03','04','05','06','07','08','09','10')
+        self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
 
-        for i,y in enumerate(ylist):
-            for j,x in enumerate(xlist):
+        for i,y in enumerate(self.ylist):
+            for j,x in enumerate(self.xlist):
                 pin = y + x
                 row = 10*i + j
                 #print row,pin
@@ -164,18 +164,21 @@ class AppForm(QMainWindow):
         """
         QMessageBox.about(self, "About the demo", msg.strip())
     
-    def on_pick(self, event):
+    def on_click(self, event):
         # The event received here is of the type
         # matplotlib.backend_bases.PickEvent
         #
         # It carries lots of information, of which we're using
         # only a small amount here.
         # 
-        box_points = event.artist.get_bbox().get_points()
-        msg = "You've clicked on a bar with coords:\n %s" % box_points
+        #box_points = event.artist.get_bbox().get_points()
+        #msg = "You've clicked on a bar with coords:\n %s" % box_points
         
-        QMessageBox.information(self, "Click!", msg)
-    
+        #QMessageBox.information(self, "Click!", "You clicked me!")
+        #print event.x,event.y
+        if event.button is 1:
+            print event.xdata, event.ydata
+
     def on_draw(self):
         """ Redraws the figure
         """
@@ -292,13 +295,22 @@ class AppForm(QMainWindow):
         for j in range(5):
             for i in range(5):
                 if i < 4 or j < 4:
-                    circle = mpatches.Circle((0.13+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=(0,1,0), ec=(0.1, 0.1, 0.1))
+                    circle = mpatches.Circle((0.13+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=cmap[1], ec=(0.1, 0.1, 0.1))
                     circle.set_linewidth(2.0)
                     self.axes.add_patch(circle)
                     self.axes.text(0.13+i*pin_delta,0.13+j*pin_delta,'2',ha='center',va='center',fontsize=10)
 
- 
+        # Draw pin coordinates
+        for i in range(5):
+            self.axes.text(0.13+i*pin_delta,0.01,self.xlist[i],ha='center',va='center',fontsize=10)
+        for i in range(5,10):
+            self.axes.text(0.18+i*pin_delta,0.01,self.xlist[i],ha='center',va='center',fontsize=10)
 
+        # Draw pin coordinates
+        for i in range(5):
+            self.axes.text(0.99,0.87-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=10)
+        for i in range(5,10):
+            self.axes.text(0.99,0.82-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=10)
 
         Tracer()()
 
@@ -381,7 +393,9 @@ class AppForm(QMainWindow):
         self.dpi = 100
         self.fig = Figure((6, 5), dpi=self.dpi, facecolor=(1,1,0.8784))
         self.canvas = FigureCanvas(self.fig)
+        self.canvas.mpl_connect('button_press_event',self.on_click)
         self.canvas.setParent(self.main_frame)
+        
 
         # Since we have only one plot, we can use add_axes 
         # instead of add_subplot, but then the subplot
