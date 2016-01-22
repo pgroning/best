@@ -179,6 +179,9 @@ class AppForm(QMainWindow):
         if event.button is 1:
             print event.xdata, event.ydata
 
+        
+
+
     def on_draw(self):
         """ Redraws the figure
         """
@@ -226,54 +229,62 @@ class AppForm(QMainWindow):
                                  ec=(0.3, 0.3, 0.3))
         p_fancy.set_linewidth(4.0)
         self.axes.add_patch(p_fancy)
-
-        # Draw water channel
-        #rect = mpatches.Rectangle((0,0), 0.2, 0.2, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
-
-        #rot45=mpatches.transforms.Affine2D().rotate_deg(-45) + self.axes.transData
-        #rect.set_transform(rot45)
-        #self.axes.add_patch(rect)
         
         # Draw water cross
-        pp = [[0.09, 0.503], [0.15, 0.515], [0.3, 0.515], [0.36, 0.503], [0.38, 0.503],
-              [0.38, 0.497], [0.36, 0.497], [0.3, 0.485], [0.15, 0.485], [0.09, 0.497]]
+        # West
+        pp = [[0.088, 0.503], [0.15, 0.515], [0.3, 0.515], [0.36, 0.503], [0.38, 0.503],
+              [0.38, 0.497], [0.36, 0.497], [0.3, 0.485], [0.15, 0.485], [0.088, 0.497]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+        # East
+        pp = [[0.922, 0.503], [0.86, 0.515], [0.71, 0.515], [0.65, 0.503], [0.63, 0.503],
+              [0.63, 0.497], [0.65, 0.497], [0.71, 0.485], [0.86, 0.485], [0.922, 0.497]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+        # South
+        pp = [[0.497, 0.088], [0.485, 0.15], [0.485, 0.3], [0.497, 0.36], [0.497, 0.38],
+              [0.503, 0.38], [0.503, 0.36], [0.515, 0.3], [0.515, 0.15], [0.503, 0.088]]
+        poly = mpatches.Polygon(pp)
+        poly.set_facecolor((0.8,0.898,1))
+        poly.set_linewidth(1.5)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+        # North
+        pp = [[0.497, 0.922], [0.485, 0.86], [0.485, 0.71], [0.497, 0.65], [0.497, 0.63],
+              [0.503, 0.63], [0.503,0.65], [0.515, 0.71], [0.515, 0.86], [0.503, 0.922]]
         poly = mpatches.Polygon(pp)
         poly.set_facecolor((0.8,0.898,1))
         poly.set_linewidth(1.5)
         poly.set_closed(False)
         self.axes.add_patch(poly)
 
-        pp = [[0.92, 0.503], [0.86, 0.515], [0.71, 0.515], [0.65, 0.503], [0.63, 0.503],
-              [0.63, 0.497], [0.65, 0.497], [0.71, 0.485], [0.86, 0.485], [0.92, 0.497]]
-        poly = mpatches.Polygon(pp)
-        poly.set_facecolor((0.8,0.898,1))
-        poly.set_linewidth(1.5)
-        poly.set_closed(False)
-        self.axes.add_patch(poly)
-
-        pp = [[0.497, 0.09], [0.485, 0.15], [0.485, 0.3], [0.497, 0.36], [0.497, 0.38],
-              [0.503, 0.38], [0.503, 0.36], [0.515, 0.3], [0.515, 0.15], [0.503, 0.09]]
-        poly = mpatches.Polygon(pp)
-        poly.set_facecolor((0.8,0.898,1))
-        poly.set_linewidth(1.5)
-        poly.set_closed(False)
-        self.axes.add_patch(poly)
-
-        pp = [[0.497, 0.92], [0.485, 0.86], [0.485, 0.71], [0.497, 0.65], [0.497, 0.63],
-              [0.503, 0.63], [0.503,0.65], [0.515, 0.71], [0.515, 0.86], [0.503, 0.92]]
-        poly = mpatches.Polygon(pp)
-        poly.set_facecolor((0.8,0.898,1))
-        poly.set_linewidth(1.5)
-        poly.set_closed(False)
-        self.axes.add_patch(poly)
 
         # Draw water channel
-        pp = [[0.38, 0.5], [0.5, 0.63], [0.63, 0.5], [0.5, 0.38]]
-        poly = mpatches.Polygon(pp)
-        poly.set_facecolor((0.8,0.898,1))
-        poly.set_linewidth(1.5)
-        poly.set_closed(True)
-        self.axes.add_patch(poly)
+        # Rectangle center at origo
+        rect = mpatches.Rectangle((-0.095,-0.095), 0.19, 0.19, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
+        rect.set_linewidth(2.0)
+        # 1. Translate rectangle along x-axis a distance 1/sqrt(2).
+        # 2. Rotate 45 degrees
+        rot45=mpatches.transforms.Affine2D().rotate_deg(45) + self.axes.transData
+        transrot = mpatches.transforms.Affine2D().translate(0.70711,0.0) + rot45#self.axes.transData
+        rect.set_transform(transrot)
+
+        self.axes.add_patch(rect)
+
+
+        # Draw water channel
+        #pp = [[0.38, 0.5], [0.5, 0.63], [0.63, 0.5], [0.5, 0.38]]
+        #poly = mpatches.Polygon(pp)
+        #poly.set_facecolor((0.8,0.898,1))
+        #poly.set_linewidth(1.5)
+        #poly.set_closed(True)
+        ##self.axes.add_patch(poly)
 
         cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,0,0]]
         enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
@@ -291,6 +302,29 @@ class AppForm(QMainWindow):
 
 
         # Draw pin circles
+        self.circlelist = []
+
+        # Quadrant 1
+        for j in range(5):
+            for i in range(5):
+                if i < 4 or j < 4:
+                    circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
+                    circle.get_x = 0.13+i*pin_delta
+                    circle.get_y = 0.87-j*pin_delta
+                    circle.set_linewidth(2.0)
+                    self.axes.add_patch(circle)
+                    self.circlelist.append(circle)
+                    self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
+
+        # Quadrant 2
+        for j in range(5):
+            for i in range(5):
+                if i > 0 or j < 4:
+                    circle = mpatches.Circle((0.56+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[5], ec=(0.1, 0.1, 0.1))
+                    circle.set_linewidth(2.0)
+                    self.axes.add_patch(circle)
+                    self.axes.text(0.56+i*pin_delta,0.87-j*pin_delta,'2',ha='center',va='center',fontsize=10)
+
         # Quadrant 3
         for j in range(5):
             for i in range(5):
@@ -298,19 +332,31 @@ class AppForm(QMainWindow):
                     circle = mpatches.Circle((0.13+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=cmap[1], ec=(0.1, 0.1, 0.1))
                     circle.set_linewidth(2.0)
                     self.axes.add_patch(circle)
-                    self.axes.text(0.13+i*pin_delta,0.13+j*pin_delta,'2',ha='center',va='center',fontsize=10)
+                    self.axes.text(0.13+i*pin_delta,0.13+j*pin_delta,'3',ha='center',va='center',fontsize=10)
 
-        # Draw pin coordinates
-        for i in range(5):
-            self.axes.text(0.13+i*pin_delta,0.01,self.xlist[i],ha='center',va='center',fontsize=10)
-        for i in range(5,10):
-            self.axes.text(0.18+i*pin_delta,0.01,self.xlist[i],ha='center',va='center',fontsize=10)
+         # Quadrant 4
+        for j in range(5):
+            for i in range(5):
+                if i > 0 or j < 4:
+                    circle = mpatches.Circle((0.56+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=cmap[6], ec=(0.1, 0.1, 0.1))
+                    circle.get_xpos = 0.56+i*pin_delta
+                    circle.get_ypos = 0.13+j*pin_delta
+                    circle.set_linewidth(2.0)
+                    self.axes.add_patch(circle)
+                    self.axes.text(0.56+i*pin_delta,0.13+j*pin_delta,'4',ha='center',va='center',fontsize=10)
 
-        # Draw pin coordinates
+
+        # Draw pin coordinates x-axis
         for i in range(5):
-            self.axes.text(0.99,0.87-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=10)
+            self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
         for i in range(5,10):
-            self.axes.text(0.99,0.82-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=10)
+            self.axes.text(0.18+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
+
+        # Draw pin coordinates y-axis
+        for i in range(5):
+            self.axes.text(0.99,0.87-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
+        for i in range(5,10):
+            self.axes.text(0.99,0.82-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
 
         Tracer()()
 
