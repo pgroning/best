@@ -41,8 +41,8 @@ class AppForm(QMainWindow):
         self.move(300,200)
 
         # Retrieve initial data
-        self.data_init()
-        self.case_id_current = 0
+        #self.data_init()
+        #self.case_id_current = 0
 
         self.create_menu()
         self.create_toolbar()
@@ -83,65 +83,6 @@ class AppForm(QMainWindow):
        #     self.table.setItem(row,0,item)
        #     self.table.setItem(row,1,QTableWidgetItem(str(0)))
 
-    def plot_kinf(self,case_id):
-
-        case = self.cas.cases[case_id]
-        idx0 = self.startpoint(case_id)
-        statepts = case.statepts[idx0:]
-
-        burnup_old = 0.0
-        for idx,p in enumerate(statepts):
-            if p.burnup < burnup_old:
-                break
-            burnup_old = p.burnup
-        
-        x = [statepts[i].burnup for i in range(idx)]
-        y = [statepts[i].kinf for i in range(idx)]
-
-        labstr = self.cas.cases[case_id].data.caxfile
-        labstr = os.path.split(labstr)[1]
-        labstr = os.path.splitext(labstr)[0]
-
-        self.axes.plot(x,y,label=labstr)
-        self.axes.set_xlabel('Burnup (MWd/kgU)')
-        self.axes.set_ylabel('K-inf')
-        self.axes.legend(loc='best',prop={'size':8})
-        self.canvas.draw()
-        self.on_draw()
-
-    def plot_fint(self,case_id):
-
-        case = self.cas.cases[case_id]
-        idx0 = self.startpoint(case_id)
-        statepts = case.statepts[idx0:]
-
-        burnup_old = 0.0
-        for idx,p in enumerate(statepts):
-            if p.burnup < burnup_old:
-                break
-            burnup_old = p.burnup
-
-        x = [statepts[i].burnup for i in range(idx)]
-        y = [statepts[i].fint for i in range(idx)]
-
-        labstr = case.data.caxfile
-        labstr = os.path.split(labstr)[1]
-        labstr = os.path.splitext(labstr)[0]
-        
-        self.axes.plot(x,y,label=labstr)
-        self.axes.set_xlabel('Burnup (MWd/kgU)')
-        self.axes.set_ylabel('Fint')
-        self.axes.legend(loc='best',prop={'size':8})
-        self.canvas.draw()
-        self.on_draw()
-
-    def plot_btf(self,case_id):
-        print "BTF"
-        
-        self.axes.set_xlabel('Burnup (MWd/kgU)')
-        self.axes.set_ylabel('BTF')
-        self.on_draw()
-
     def save_plot(self):
         file_choices = "PNG (*.png)|*.png"
         
@@ -180,8 +121,6 @@ class AppForm(QMainWindow):
             print event.xdata, event.ydata
 
         
-
-
     def on_draw(self):
         """ Redraws the figure
         """
@@ -409,26 +348,7 @@ class AppForm(QMainWindow):
                     self.plot_btf(i)
             else:
                 self.plot_btf(case_id)
- 
-
-#    def on_index(self):
-#        print "Find index"
-#        case_id = self.case_id_current
-#        case = self.cas.cases[case_id]
-##        #burnup = None
-#        voi_val = int(self.voi_cbox.currentText())
-#        vhi_val = int(self.vhi_cbox.currentText())
-#        type_val = str(self.type_cbox.currentText())
-#        print type_val,voi_val,vhi_val
-##        
-##        #index = self.cas.findpoint(case,burnup,vhi,voi)
-##        #index = self.cas.findpoint(case,vhi=vhi_val,voi=voi_val)
-##        index = self.cas.findpoint(case,voi=voi_val,vhi=vhi_val)
-#        #idx0 = case.findpoint(voi=voi_val,vhi=vhi_val)
-#
-#        if type_val == 'CCl':
-#            idx0 = case.findpoint(tfu=293)
-#            print idx0
+       
 
     def create_main_frame(self):
         self.main_frame = QWidget()
@@ -513,19 +433,6 @@ class AppForm(QMainWindow):
         enr_hbox.addWidget(self.enr_plus_button)
         enr_hbox.addWidget(self.enr_minus_button)
 
-
-
-        #Tracer()()
-
-
-        #case_label = QLabel('All cases:')
-        #self.case_cb = QCheckBox("All Cases")
-        #self.case_cb.setChecked(False)
-        #self.connect(self.case_cb, SIGNAL('stateChanged(int)'), self.on_plot)
-#       self.case_cbox = QComboBox()
-#        caselist = ['1','2','3','All']
-#        for i in caselist:
-#            self.case_cbox.addItem(i)
         
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
@@ -540,10 +447,10 @@ class AppForm(QMainWindow):
         for i in self.voilist:
             self.voi_cbox.addItem(i)
         # Determine voi index
-        voi = self.cas.cases[self.case_id_current].statepts[0].voi
-        voi_index = [i for i,v in enumerate(self.voilist) if int(v) == voi]
-        voi_index = voi_index[0]
-        self.voi_cbox.setCurrentIndex(voi_index)
+        #voi = self.cas.cases[self.case_id_current].statepts[0].voi
+        #voi_index = [i for i,v in enumerate(self.voilist) if int(v) == voi]
+        #voi_index = voi_index[0]
+        #self.voi_cbox.setCurrentIndex(voi_index)
         #self.connect(self.voi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
         vhi_label = QLabel('VHI:')
@@ -552,10 +459,10 @@ class AppForm(QMainWindow):
         for i in self.vhilist:
             self.vhi_cbox.addItem(i)
         # Determine vhi index
-        vhi = self.cas.cases[self.case_id_current].statepts[0].vhi
-        vhi_index = [i for i,v in enumerate(self.vhilist) if int(v) == vhi]
-        vhi_index = vhi_index[0]
-        self.vhi_cbox.setCurrentIndex(vhi_index)
+        #vhi = self.cas.cases[self.case_id_current].statepts[0].vhi
+        #vhi_index = [i for i,v in enumerate(self.vhilist) if int(v) == vhi]
+        #vhi_index = vhi_index[0]
+        #self.vhi_cbox.setCurrentIndex(vhi_index)
         #self.connect(self.vhi_cbox, SIGNAL('currentIndexChanged(int)'), self.on_plot)
 
 
