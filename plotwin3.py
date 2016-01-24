@@ -49,7 +49,12 @@ class Circle(object):
         self.text.remove()
         self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=10)
 
-
+    def is_clicked(self,xc,yc):
+        r2 = (xc-self.x)**2 + (yc-self.y)**2
+        if r2 < self.circle.get_radius()**2: #Mouse click is within pin radius
+            return True
+        else:
+            return False
 
 class AppForm(QMainWindow):
     def __init__(self, parent=None):
@@ -134,10 +139,35 @@ class AppForm(QMainWindow):
         
         #QMessageBox.information(self, "Click!", "You clicked me!")
         #print event.x,event.y
-        if event.button is 1:
-            print event.xdata, event.ydata
+        #if qApp.keyboardModifiers() & Qt.ControlModifier: # ctrl+click
+        #    remove = False
+        #else:
+        #    remove = True
 
-        
+        if event.button is 1:
+            #print event.xdata, event.ydata
+            i = np.nan
+            try: # check if any circle is selected and return the index
+                i = next(i for i,cobj in enumerate(self.circlelist) 
+                         if cobj.is_clicked(event.xdata,event.ydata))
+            except:
+                pass
+            if i >= 0: # A Circle is selected
+                self.table.selectRow(i)
+                #print i,self.circlelist[i].x,self.circlelist[i].y
+                r = self.circlelist[i].circle.get_radius()*1.1
+                x = self.circlelist[i].x-r
+                y = self.circlelist[i].y-r
+                d = 2*r
+                if hasattr(self,'clickrect'): # Remove any previously selected circles
+                    self.clickrect.remove()
+                self.clickrect = mpatches.Rectangle((x,y), d, d,
+                                                fc=(1,1,1),alpha=0.5,ec=(0, 0, 0))
+                self.clickrect.set_linewidth(2.0)
+                self.axes.add_patch(self.clickrect)
+                self.canvas.draw()
+            
+
     def on_draw(self):
         """ Redraws the figure
         """
