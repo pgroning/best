@@ -34,6 +34,23 @@ from casio import casio
 from pyDraw import Bundle
 
 
+class Circle(object):
+    def __init__(self,axes,x,y,c=(1,1,1),text=''):
+        radius = 0.028
+        self.circle = mpatches.Circle((x,y), radius, fc=c, ec=(0.1, 0.1, 0.1))
+        self.circle.set_linewidth(2.0)
+        self.x = x
+        self.y = y
+        self.axes = axes
+        self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=10)
+        self.axes.add_patch(self.circle)
+        
+    def set_text(self,text):
+        self.text.remove()
+        self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=10)
+
+
+
 class AppForm(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
@@ -247,43 +264,45 @@ class AppForm(QMainWindow):
         for j in range(5):
             for i in range(5):
                 if i < 4 or j < 4:
-                    circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
-                    circle.get_x = 0.13+i*pin_delta
-                    circle.get_y = 0.87-j*pin_delta
-                    circle.set_linewidth(2.0)
-                    self.axes.add_patch(circle)
-                    self.circlelist.append(circle)
-                    self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
+                    x = 0.13+i*pin_delta
+                    y = 0.87-j*pin_delta
+                    circobj = Circle(self.axes,x,y,cmap[3],'1')
+                    #circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
+                    #circle.get_x = 0.13+i*pin_delta
+                    #circle.get_y = 0.87-j*pin_delta
+                    #circle.set_linewidth(2.0)
+                    #self.axes.add_patch(circle)
+                    self.circlelist.append(circobj)
+                    #self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
+
+        #self.circlelist[-1].set_text('1')
 
         # Quadrant 2
         for j in range(5):
             for i in range(5):
                 if i > 0 or j < 4:
-                    circle = mpatches.Circle((0.56+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[5], ec=(0.1, 0.1, 0.1))
-                    circle.set_linewidth(2.0)
-                    self.axes.add_patch(circle)
-                    self.axes.text(0.56+i*pin_delta,0.87-j*pin_delta,'2',ha='center',va='center',fontsize=10)
+                    x = 0.56+i*pin_delta
+                    y = 0.87-j*pin_delta
+                    circobj = Circle(self.axes,x,y,cmap[5],'2')
+                    self.circlelist.append(circobj)
 
         # Quadrant 3
         for j in range(5):
             for i in range(5):
                 if i < 4 or j < 4:
-                    circle = mpatches.Circle((0.13+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=cmap[1], ec=(0.1, 0.1, 0.1))
-                    circle.set_linewidth(2.0)
-                    self.axes.add_patch(circle)
-                    self.axes.text(0.13+i*pin_delta,0.13+j*pin_delta,'3',ha='center',va='center',fontsize=10)
+                    x = 0.13+i*pin_delta
+                    y = 0.13+j*pin_delta
+                    circobj = Circle(self.axes,x,y,cmap[1],'3')
+                    self.circlelist.append(circobj)
 
          # Quadrant 4
         for j in range(5):
             for i in range(5):
                 if i > 0 or j < 4:
-                    circle = mpatches.Circle((0.56+i*pin_delta,0.13+j*pin_delta), pin_radius, fc=cmap[6], ec=(0.1, 0.1, 0.1))
-                    circle.get_xpos = 0.56+i*pin_delta
-                    circle.get_ypos = 0.13+j*pin_delta
-                    circle.set_linewidth(2.0)
-                    self.axes.add_patch(circle)
-                    self.axes.text(0.56+i*pin_delta,0.13+j*pin_delta,'4',ha='center',va='center',fontsize=10)
-
+                    x = 0.56+i*pin_delta
+                    y = 0.13+j*pin_delta
+                    circobj = Circle(self.axes,x,y,cmap[6],'4')
+                    self.circlelist.append(circobj)
 
         # Draw pin coordinates x-axis
         for i in range(5):
