@@ -42,7 +42,7 @@ class Circle(object):
         self.x = x
         self.y = y
         self.axes = axes
-        self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=10)
+        self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=8)
         self.axes.add_patch(self.circle)
         
     def set_text(self,text):
@@ -126,6 +126,13 @@ class AppForm(QMainWindow):
          * Click on a bar to receive an informative message
         """
         QMessageBox.about(self, "About the demo", msg.strip())
+
+    def tableSelectRow(self,index):
+        i = next(i for i in range(self.table.rowCount())
+                 if str(self.table.item(i,0).text()) == self.circlelist[index].coord)
+        #print i
+        self.table.selectRow(i)
+
     
     def on_click(self, event):
         # The event received here is of the type
@@ -153,20 +160,21 @@ class AppForm(QMainWindow):
             except:
                 pass
             if i >= 0: # A Circle is selected
-                self.table.selectRow(i)
+                #print self.circlelist[i].coord
+                self.tableSelectRow(i)
+                #self.table.selectRow(i)
                 #print i,self.circlelist[i].x,self.circlelist[i].y
-                r = self.circlelist[i].circle.get_radius()*1.1
-                x = self.circlelist[i].x-r
-                y = self.circlelist[i].y-r
-                d = 2*r
+                d = self.circlelist[i].circle.get_radius()*2+0.005
+                x = self.circlelist[i].x-d/2
+                y = self.circlelist[i].y-d/2
                 if hasattr(self,'clickrect'): # Remove any previously selected circles
                     self.clickrect.remove()
                 self.clickrect = mpatches.Rectangle((x,y), d, d,
-                                                fc=(1,1,1),alpha=0.5,ec=(0, 0, 0))
+                                                fc=(1,1,1),alpha=0.5,ec=(1, 0, 0))
                 self.clickrect.set_linewidth(2.0)
                 self.axes.add_patch(self.clickrect)
                 self.canvas.draw()
-            
+    
 
     def on_draw(self):
         """ Redraws the figure
@@ -290,61 +298,91 @@ class AppForm(QMainWindow):
         # Draw pin circles
         self.circlelist = []
 
+        for j,yc in enumerate(self.ylist):
+            for i,xc in enumerate(self.xlist):
+                x = 0.13+i*pin_delta
+                y = 0.87-j*pin_delta
+                if i < 5 and j < 5:
+                    if i < 4 or j < 4:
+                        circobj = Circle(self.axes,x,y,cmap[3],'1')
+                        circobj.coord = yc+xc
+                        self.circlelist.append(circobj)
+                elif i > 4 and j < 5:
+                    x += 0.04
+                    if i > 5 or j < 4:
+                        circobj = Circle(self.axes,x,y,cmap[5],'2')
+                        circobj.coord = yc+xc
+                        self.circlelist.append(circobj)
+                elif i < 5 and j > 4:
+                    y -= 0.04
+                    if i < 4 or j > 5:
+                        circobj = Circle(self.axes,x,y,cmap[1],'3')
+                        circobj.coord = yc+xc
+                        self.circlelist.append(circobj)
+                elif i > 4 and j > 4:
+                    x += 0.04
+                    y -= 0.04
+                    if i > 5 or j > 5:
+                        circobj = Circle(self.axes,x,y,cmap[6],'4')
+                        circobj.coord = yc+xc
+                        self.circlelist.append(circobj)
+
+
         # Quadrant 1
-        for j in range(5):
-            for i in range(5):
-                if i < 4 or j < 4:
-                    x = 0.13+i*pin_delta
-                    y = 0.87-j*pin_delta
-                    circobj = Circle(self.axes,x,y,cmap[3],'1')
-                    #circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
-                    #circle.get_x = 0.13+i*pin_delta
-                    #circle.get_y = 0.87-j*pin_delta
-                    #circle.set_linewidth(2.0)
-                    #self.axes.add_patch(circle)
-                    self.circlelist.append(circobj)
-                    #self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
+        #for j in range(5):
+        #    for i in range(5):
+        #        if i < 4 or j < 4:
+        #            x = 0.13+i*pin_delta
+        #            y = 0.87-j*pin_delta
+        #            circobj = Circle(self.axes,x,y,cmap[3],'1')
+        #            #circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
+        #            #circle.get_x = 0.13+i*pin_delta
+        #            #circle.get_y = 0.87-j*pin_delta
+        #            #circle.set_linewidth(2.0)
+        #            #self.axes.add_patch(circle)
+        #            self.circlelist.append(circobj)
+        #            #self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
 
         #self.circlelist[-1].set_text('1')
 
         # Quadrant 2
-        for j in range(5):
-            for i in range(5):
-                if i > 0 or j < 4:
-                    x = 0.56+i*pin_delta
-                    y = 0.87-j*pin_delta
-                    circobj = Circle(self.axes,x,y,cmap[5],'2')
-                    self.circlelist.append(circobj)
+        #for j in range(5):
+        #    for i in range(5):
+        #        if i > 0 or j < 4:
+        #            x = 0.56+i*pin_delta
+        #            y = 0.87-j*pin_delta
+        #            circobj = Circle(self.axes,x,y,cmap[5],'2')
+        #            self.circlelist.append(circobj)
 
         # Quadrant 3
-        for j in range(5):
-            for i in range(5):
-                if i < 4 or j < 4:
-                    x = 0.13+i*pin_delta
-                    y = 0.13+j*pin_delta
-                    circobj = Circle(self.axes,x,y,cmap[1],'3')
-                    self.circlelist.append(circobj)
+        #for j in range(5):
+        #    for i in range(5):
+        #        if i < 4 or j < 4:
+        #            x = 0.13+i*pin_delta
+        #            y = 0.13+j*pin_delta
+        #            circobj = Circle(self.axes,x,y,cmap[1],'3')
+        #            self.circlelist.append(circobj)
 
          # Quadrant 4
-        for j in range(5):
-            for i in range(5):
-                if i > 0 or j < 4:
-                    x = 0.56+i*pin_delta
-                    y = 0.13+j*pin_delta
-                    circobj = Circle(self.axes,x,y,cmap[6],'4')
-                    self.circlelist.append(circobj)
+        #for j in range(5):
+        #    for i in range(5):
+        #        if i > 0 or j < 4:
+        #            x = 0.56+i*pin_delta
+        #            y = 0.13+j*pin_delta
+        #            circobj = Circle(self.axes,x,y,cmap[6],'4')
+        #            self.circlelist.append(circobj)
 
         # Draw pin coordinates x-axis
         for i in range(5):
             self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
         for i in range(5,10):
-            self.axes.text(0.18+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
+            self.axes.text(0.17+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
 
         # Draw pin coordinates y-axis
         for i in range(5):
             self.axes.text(0.99,0.87-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
         for i in range(5,10):
-            self.axes.text(0.99,0.82-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
+            self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
 
         Tracer()()
 
