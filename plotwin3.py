@@ -28,6 +28,7 @@ from matplotlib.backends.backend_qt4agg import NavigationToolbar2QTAgg as Naviga
 from matplotlib.figure import Figure
 #from matplotlib.patches import FancyBboxPatch
 import matplotlib.patches as mpatches
+import time
 
 from casio import casio
 
@@ -81,10 +82,40 @@ class AppForm(QMainWindow):
         self.draw_fuelmap()
         #Tracer()()
 
-    def data_init(self):
-        self.cas = casio()
-        self.cas.loadpic('caxfiles.p')
+    def openFile(self):
+        #file_choices = "inp (*.inp);;pickle (*.p)"
+        file_choices = "Data files (*.inp *.p)"
+        filename = unicode(QFileDialog.getOpenFileName(self, 'Open file', '', file_choices))
+        if filename:
+            filext = os.path.splitext(filename)[1]
+            if filext == ".p":
+                self.load_pickle(filename)
+            elif filext == ".inp":
+                self.read_cax(filename)
 
+    def load_pickle(self,filename):
+        self.statusBar().showMessage('Importing data from %s' % filename, 2000)
+        self.dataobj = casio()
+        self.dataobj.loadpic(filename)
+
+    def read_cax(self,filename):
+        msg = """ Click Yes to start importing data from cax files.
+         
+         This may take a while. Continue?
+        """
+        msgBox = QMessageBox()
+        ret = msgBox.information(self,"Importing data",msg.strip(),QMessageBox.Yes|QMessageBox.Cancel)
+        #ret = msgBox.question(self,"Importing data",msg.strip(),QMessageBox.Yes|QMessageBox.Cancel)
+        self.statusBar().showMessage('Importing data from %s' % filename, 2000)
+        if ret == QMessageBox.Yes:
+            self.dataobj = casio()
+            self.dataobj.readinp(filename)
+            self.dataobj.readcas()
+            #self.dataobj.savecas()
+        else: return
+
+    def plotWin(self):
+        print "Open plot window"
 
     def setpincoords(self):
         self.xlist = ('01','02','03','04','05','06','07','08','09','10')
@@ -357,50 +388,6 @@ class AppForm(QMainWindow):
                         self.circlelist.append(circobj)
 
 
-        # Quadrant 1
-        #for j in range(5):
-        #    for i in range(5):
-        #        if i < 4 or j < 4:
-        #            x = 0.13+i*pin_delta
-        #            y = 0.87-j*pin_delta
-        #            circobj = Circle(self.axes,x,y,cmap[3],'1')
-        #            #circle = mpatches.Circle((0.13+i*pin_delta,0.87-j*pin_delta), pin_radius, fc=cmap[3], ec=(0.1, 0.1, 0.1))
-        #            #circle.get_x = 0.13+i*pin_delta
-        #            #circle.get_y = 0.87-j*pin_delta
-        #            #circle.set_linewidth(2.0)
-        #            #self.axes.add_patch(circle)
-        #            self.circlelist.append(circobj)
-        #            #self.axes.text(0.13+i*pin_delta,0.87-j*pin_delta,'1',ha='center',va='center',fontsize=10)
-
-        #self.circlelist[-1].set_text('1')
-
-        # Quadrant 2
-        #for j in range(5):
-        #    for i in range(5):
-        #        if i > 0 or j < 4:
-        #            x = 0.56+i*pin_delta
-        #            y = 0.87-j*pin_delta
-        #            circobj = Circle(self.axes,x,y,cmap[5],'2')
-        #            self.circlelist.append(circobj)
-
-        # Quadrant 3
-        #for j in range(5):
-        #    for i in range(5):
-        #        if i < 4 or j < 4:
-        #            x = 0.13+i*pin_delta
-        #            y = 0.13+j*pin_delta
-        #            circobj = Circle(self.axes,x,y,cmap[1],'3')
-        #            self.circlelist.append(circobj)
-
-         # Quadrant 4
-        #for j in range(5):
-        #    for i in range(5):
-        #        if i > 0 or j < 4:
-        #            x = 0.56+i*pin_delta
-        #            y = 0.13+j*pin_delta
-        #            circobj = Circle(self.axes,x,y,cmap[6],'4')
-        #            self.circlelist.append(circobj)
-
         # Draw pin coordinates x-axis
         for i in range(5):
             self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
@@ -546,9 +533,8 @@ class AppForm(QMainWindow):
         self.enr_plus_button = QPushButton("+ enr")
         self.enr_minus_button = QPushButton("- enr")
         enr_hbox = QHBoxLayout()
-        enr_hbox.addWidget(self.enr_plus_button)
         enr_hbox.addWidget(self.enr_minus_button)
-
+        enr_hbox.addWidget(self.enr_plus_button)
         
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
@@ -659,7 +645,8 @@ class AppForm(QMainWindow):
         quit_action = self.create_action("&Quit", slot=self.close, 
             shortcut="Ctrl+Q", tip="Close the application")
         
-        open_file_action = self.create_action("&Open file...", tip="Open file")
+        open_file_action = self.create_action("&Open file...", slot=self.openFile, tip="Open file")
+
 
         self.add_actions(self.file_menu, 
             (open_file_action, save_settings_action, None, quit_action))
@@ -697,12 +684,14 @@ class AppForm(QMainWindow):
 
         fileAction = QAction(QIcon('icons/open-file-icon_32x32.png'), 'Open file', self)
         fileAction.setStatusTip('Open file')
+        fileAction.triggered.connect(self.openFile)
 
         settingsAction = QAction(QIcon('icons/preferences-icon_32x32.png'), 'Settings', self)
         settingsAction.setStatusTip('Settings')
 
         plotAction = QAction(QIcon('icons/diagram-icon_32x32.png'), 'Plot', self)
         plotAction.setStatusTip('Open plot window')
+        plotAction.triggered.connect(self.plotWin)
 
         toolbar = self.addToolBar('Toolbar')
         toolbar.addAction(fileAction)

@@ -86,7 +86,7 @@ class casdata:
         rePOW = re.compile('POW\s+')
         
         # Search for regexp matches
-        print "Scanning content..."
+        print "Scanning file content..."
         #iTITobj = (i for i,x in enumerate(flines) if reTIT.match(x))
         #iTIT=[]
         #for i in range(5):
@@ -231,7 +231,7 @@ class casdata:
         self.data.slalines = flines[iSLA]
 
         # ------Step through the state points----------
-        print "Step through state points..."
+        print "Stepping through state points..."
 
         # Remove the last TIT card (only necessary if file is partially read)
         #iTIT = iTIT[0:-1]
