@@ -33,7 +33,7 @@ import time
 from casio import casio
 
 #from pyDraw import Bundle
-from plotwin2 import AppForm
+from plotwin2 import PlotWin
 
 class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text=''):
@@ -117,8 +117,8 @@ class MainWin(QMainWindow):
         else: return
 
     def plotWin(self):
-        print "Open plot window"
-        plotwin = AppForm(self)
+        #print "Open plot window"
+        plotwin = PlotWin(self)
         plotwin.show()
 
     def setpincoords(self):

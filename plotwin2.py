@@ -30,7 +30,7 @@ from matplotlib.figure import Figure
 
 from casio import casio
 
-class AppForm(QMainWindow):
+class PlotWin(QMainWindow):
     def __init__(self, parent=None):
         #super(AppForm, self).__init__(parent)
         QMainWindow.__init__(self, parent)
@@ -38,6 +38,7 @@ class AppForm(QMainWindow):
         self.move(300,200)
         
         # Retrieve initial data
+        self.parent = parent
         self.data_init()
         self.case_id_current = 0
 
@@ -55,8 +56,9 @@ class AppForm(QMainWindow):
         #Tracer()()
 
     def data_init(self):
-        self.cas = casio()
-        self.cas.loadpic('caxfiles.p')
+        self.cas = self.parent.dataobj
+        #self.cas = casio()
+        #self.cas.loadpic('caxfiles.p')
 
     def plot_kinf(self,case_id):
 
@@ -446,7 +448,7 @@ class AppForm(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    window = AppForm()
+    window = PlotWin()
     window.show()
     #app.exec_()
     sys.exit(app.exec_())
