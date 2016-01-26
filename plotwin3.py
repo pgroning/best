@@ -32,8 +32,8 @@ import time
 
 from casio import casio
 
-from pyDraw import Bundle
-
+#from pyDraw import Bundle
+from plotwin2 import AppForm
 
 class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text=''):
@@ -46,6 +46,7 @@ class Circle(object):
         self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=8)
         self.axes.add_patch(self.circle)
         
+        
     def set_text(self,text):
         self.text.remove()
         self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=10)
@@ -57,7 +58,8 @@ class Circle(object):
         else:
             return False
 
-class AppForm(QMainWindow):
+class MainWin(QMainWindow):
+#class AppForm(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
@@ -116,6 +118,8 @@ class AppForm(QMainWindow):
 
     def plotWin(self):
         print "Open plot window"
+        plotwin = AppForm(self)
+        plotwin.show()
 
     def setpincoords(self):
         self.xlist = ('01','02','03','04','05','06','07','08','09','10')
@@ -657,7 +661,7 @@ class AppForm(QMainWindow):
         self.add_actions(self.edit_menu, (None, preferences))
 
         self.tools_menu = self.menuBar().addMenu("&Tools")
-        plot_action = self.create_action("Plot...", tip="Plot...")
+        plot_action = self.create_action("Plot...", tip="Plot...", slot=self.plotWin)
         btf_action = self.create_action("BTF...", tip="BTF...")
         casmo_action = self.create_action("CASMO...", tip="CASMO...")
         data_action = self.create_action("Fuel data...", tip="Fuel data...")
@@ -731,7 +735,8 @@ class AppForm(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    window = AppForm()
+    window = MainWin()
+    #window = AppForm()
     window.show()
     #app.exec_()
     sys.exit(app.exec_())
