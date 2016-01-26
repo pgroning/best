@@ -164,13 +164,14 @@ class AppForm(QMainWindow):
                 self.tableSelectRow(i)
                 #self.table.selectRow(i)
                 #print i,self.circlelist[i].x,self.circlelist[i].y
-                d = self.circlelist[i].circle.get_radius()*2+0.005
+                d = self.circlelist[i].circle.get_radius()*2+0.008
                 x = self.circlelist[i].x-d/2
                 y = self.circlelist[i].y-d/2
                 if hasattr(self,'clickrect'): # Remove any previously selected circles
                     self.clickrect.remove()
                 self.clickrect = mpatches.Rectangle((x,y), d, d,
-                                                fc=(1,1,1),alpha=0.5,ec=(1, 0, 0))
+                                                fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
+                self.clickrect.set_fill(False)
                 self.clickrect.set_linewidth(2.0)
                 self.axes.add_patch(self.clickrect)
                 self.canvas.draw()
@@ -208,11 +209,39 @@ class AppForm(QMainWindow):
         
         self.canvas.draw()
 
+
     def draw_fuelmap(self):
 
-        # Draw a rectangle
+        # Draw outer rectangle
         rect = mpatches.Rectangle((0.035,0.035), 0.935, 0.935, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
         self.axes.add_patch(rect)
+
+        # Draw control rods
+        rodrect_v = mpatches.Rectangle((0.011,0.13), 0.045, 0.77, ec=(0.3, 0.3, 0.3))
+        rodrect_v.set_fill(False)
+        self.axes.add_patch(rodrect_v)
+        #self.axes.hlines(0.17,0.011,0.056)
+        pp = [[0.011, 0.17], [0.056, 0.17]]
+        poly = mpatches.Polygon(pp)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+        pp = [[0.011, 0.86], [0.056, 0.86]]
+        poly = mpatches.Polygon(pp)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+
+
+        rodrect_h = mpatches.Rectangle((0.1,0.95), 0.77, 0.045, ec=(0.3, 0.3, 0.3))
+        rodrect_h.set_fill(False)
+        self.axes.add_patch(rodrect_h)
+        pp = [[0.14, 0.95], [0.14, 0.995]]
+        poly = mpatches.Polygon(pp)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
+        pp = [[0.83, 0.95], [0.83, 0.995]]
+        poly = mpatches.Polygon(pp)
+        poly.set_closed(False)
+        self.axes.add_patch(poly)
 
 
         # a fancy box with round corners. pad=0.1
