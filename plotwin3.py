@@ -157,8 +157,17 @@ class MainWin(QMainWindow):
                 if j != 5 and i !=5:
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
-                    self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
-                    self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
+                    expItem = QTableWidgetItem()
+                    expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
+                    fintItem = QTableWidgetItem()
+                    fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+
+                    self.table.setItem(row,1,expItem)
+                    self.table.setItem(row,2,fintItem)
+                    #item.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+                    #self.table.setItem(row,2,item)
+                    #self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
+                    #self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
                     self.table.setItem(row,3,QTableWidgetItem(str(0)))
                     row += 1
         
