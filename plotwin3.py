@@ -634,6 +634,8 @@ class MainWin(QMainWindow):
         self.table.setColumnHidden(0,True)
        #self.tableview = QTableView()
         #self.connect(self.table.horizontalHeader().sectionClicked(), SIGNAL('logicalIndex(int)'),self.openFile)
+        #self.connect(QHeaderView.sortIndicatorChanged(), SIGNAL('logicalIndex(int)'),self.openFile)
+        
 
         self.setpincoords()
         self.table.resizeColumnsToContents()
