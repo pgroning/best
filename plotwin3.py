@@ -136,7 +136,7 @@ class MainWin(QMainWindow):
         point_num = int(self.point_sbox.value())
         print param_str,case_num,point_num
 
-        self.table.setHorizontalHeaderItem(1,QTableWidgetItem(param_str))
+        #self.table.setHorizontalHeaderItem(1,QTableWidgetItem(param_str))
         if param_str == 'FINT': param_str = 'POW'
 
         if hasattr(self,'dataobj'): # data is loaded
@@ -144,18 +144,25 @@ class MainWin(QMainWindow):
                 pinvalues = getattr(self.dataobj.cases[case_num].data,param_str)
             else:
                 pinvalues = getattr(self.dataobj.cases[case_num].statepts[point_num],param_str)
-            print pinvalues
+            #print pinvalues
+
+        EXP = getattr(self.dataobj.cases[case_num].statepts[point_num],'EXP')
+        FINT = getattr(self.dataobj.cases[case_num].statepts[point_num],'POW')
+        
 
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
         row = 0
         for i in range(pinvalues.shape[0]):
             for j in range(pinvalues.shape[1]):
                 if j != 5 and i !=5:
-                    self.table.setItem(row,1,QTableWidgetItem(str(pinvalues[i,j])))
+                    #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
+                    #self.table.setItem(row,1,expval)
+                    self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
+                    self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
+                    self.table.setItem(row,3,QTableWidgetItem(str(0)))
                     row += 1
         
                 
-
         #self.circlelist[0].set_text(pinvalues[0,0])
 
 
@@ -172,7 +179,7 @@ class MainWin(QMainWindow):
                 self.table.setVerticalHeaderItem(row,item)
                 item2 = QTableWidgetItem(pin)
                 self.table.setItem(row,0,item2)
-                self.table.setItem(row,1,QTableWidgetItem(str(row)))
+                #self.table.setItem(row,1,QTableWidgetItem(str(row)))
 
        #pinlist = ('A01','A02','A03','A04','A05','A06','A07','A08','A09','A10')
        # for row,pin in enumerate(pinlist):
@@ -201,6 +208,12 @@ class MainWin(QMainWindow):
          * Click on a bar to receive an informative message
         """
         QMessageBox.about(self, "About the demo", msg.strip())
+
+    def tableHeaderSort(self):
+        print "Sort header"
+        for i in range(100):
+            item = QTableWidgetItem(str(self.table.item(i,0).text()))
+            self.table.setVerticalHeaderItem(i,item)
 
     def tableSelectRow(self,index):
         i = next(i for i in range(self.table.rowCount())
@@ -632,6 +645,12 @@ class MainWin(QMainWindow):
         self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)
         self.table.setColumnHidden(0,True)
+
+        #self.connect(self.table.horizontalHeader(),SIGNAL('QHeaderView.sortIndicatorChanged(int)'),self.openFile)
+        self.connect(self.table.horizontalHeader(),SIGNAL('sectionClicked(int)'),self.tableHeaderSort)
+        
+        #self.hview = QHeaderView
+
        #self.tableview = QTableView()
         #self.connect(self.table.horizontalHeader().sectionClicked(), SIGNAL('logicalIndex(int)'),self.openFile)
         #self.connect(QHeaderView.sortIndicatorChanged(), SIGNAL('logicalIndex(int)'),self.openFile)
