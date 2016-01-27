@@ -63,6 +63,7 @@ class MainWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
+        self.resize(1000,600)
         self.move(300,200)
 
         # Retrieve initial data
@@ -99,6 +100,7 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage('Importing data from %s' % filename, 2000)
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
+        self.setvalues()
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -114,12 +116,48 @@ class MainWin(QMainWindow):
             self.dataobj.readinp(filename)
             self.dataobj.readcas()
             #self.dataobj.savecas()
-        else: return
+        else:
+            return
 
     def plotWin(self):
         #print "Open plot window"
-        plotwin = PlotWin(self)
-        plotwin.show()
+        if hasattr(self,'dataobj'):
+            plotwin = PlotWin(self)
+            plotwin.show()
+        else:
+            msg = "There is no data to plot."
+            msgBox = QMessageBox()
+            msgBox.information(self,"No data",msg.strip(),QMessageBox.Close)
+
+    def setvalues(self):
+        print "Set values"
+        param_str = str(self.param_cbox.currentText())
+        case_num = int(self.case_cbox.currentIndex())
+        point_num = int(self.point_sbox.value())
+        print param_str,case_num,point_num
+
+        self.table.setHorizontalHeaderItem(1,QTableWidgetItem(param_str))
+        if param_str == 'FINT': param_str = 'POW'
+
+        if hasattr(self,'dataobj'): # data is loaded
+            if param_str == 'ENR':
+                pinvalues = getattr(self.dataobj.cases[case_num].data,param_str)
+            else:
+                pinvalues = getattr(self.dataobj.cases[case_num].statepts[point_num],param_str)
+            print pinvalues
+
+        self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
+        row = 0
+        for i in range(pinvalues.shape[0]):
+            for j in range(pinvalues.shape[1]):
+                if j != 5 and i !=5:
+                    self.table.setItem(row,1,QTableWidgetItem(str(pinvalues[i,j])))
+                    row += 1
+        
+                
+
+        #self.circlelist[0].set_text(pinvalues[0,0])
+
 
     def setpincoords(self):
         self.xlist = ('01','02','03','04','05','06','07','08','09','10')
@@ -131,8 +169,10 @@ class MainWin(QMainWindow):
                 row = 10*i + j
                 #print row,pin
                 item = QTableWidgetItem(pin)
-                self.table.setItem(row,0,item)
-                self.table.setItem(row,1,QTableWidgetItem(str(0)))
+                self.table.setVerticalHeaderItem(row,item)
+                item2 = QTableWidgetItem(pin)
+                self.table.setItem(row,0,item2)
+                self.table.setItem(row,1,QTableWidgetItem(str(row)))
 
        #pinlist = ('A01','A02','A03','A04','A05','A06','A07','A08','A09','A10')
        # for row,pin in enumerate(pinlist):
@@ -404,7 +444,7 @@ class MainWin(QMainWindow):
         for i in range(5,10):
             self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
 
-        Tracer()()
+        #Tracer()()
 
 
     def startpoint(self,case_id):
@@ -468,7 +508,8 @@ class MainWin(QMainWindow):
         self.canvas = FigureCanvas(self.fig)
         self.canvas.mpl_connect('button_press_event',self.on_click)
         self.canvas.setParent(self.main_frame)
-        
+        self.canvas.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
+        self.canvas.setMinimumWidth(500)
 
         # Since we have only one plot, we can use add_axes 
         # instead of add_subplot, but then the subplot
@@ -516,6 +557,7 @@ class MainWin(QMainWindow):
         param_hbox = QHBoxLayout()
         param_hbox.addWidget(param_label)
         param_hbox.addWidget(self.param_cbox)
+        self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.setvalues)
 
         case_label = QLabel('Case number:')
         self.case_cbox = QComboBox()
@@ -525,6 +567,7 @@ class MainWin(QMainWindow):
         case_hbox = QHBoxLayout()
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.setvalues)
 
         point_label = QLabel('Point number:')
         self.point_sbox = QSpinBox()
@@ -533,6 +576,7 @@ class MainWin(QMainWindow):
         point_hbox = QHBoxLayout()
         point_hbox.addWidget(point_label)
         point_hbox.addWidget(self.point_sbox)
+        self.connect(self.point_sbox, SIGNAL('valueChanged(int)'), self.setvalues)
 
         self.enr_plus_button = QPushButton("+ enr")
         self.enr_minus_button = QPushButton("- enr")
@@ -581,16 +625,18 @@ class MainWin(QMainWindow):
         # Define table widget
         self.table = QTableWidget()
         self.table.setRowCount(100)
-        self.table.setColumnCount(2)
+        self.table.setColumnCount(4)
         #self.table.verticalHeader().hide()
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
-        self.table.setHorizontalHeaderLabels(('Pin','Value'))
+        self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)
-        #self.tableview = QTableView()
+        self.table.setColumnHidden(0,True)
+       #self.tableview = QTableView()
+        #self.connect(self.table.horizontalHeader().sectionClicked(), SIGNAL('logicalIndex(int)'),self.openFile)
 
         self.setpincoords()
-        #self.table.resizeColumnsToContents()
+        self.table.resizeColumnsToContents()
         #Tracer()()
 
         #
@@ -627,14 +673,19 @@ class MainWin(QMainWindow):
         #vbox.addWidget(self.canvas)
         #hbox2.addWidget(self.mpl_toolbar)
         
+        spacerItemH = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
+
         hbox.addLayout(vbox)
         #hbox.addWidget(self.bundle)
+        hbox.addItem(spacerItemH)
         hbox.addWidget(self.canvas)
+        hbox.addItem(spacerItemH)
         hbox.addWidget(self.table)
         #hbox.addItem(spacerItemH)
 
         self.main_frame.setLayout(hbox)
         self.setCentralWidget(self.main_frame)
+        Tracer()()
     
     def create_status_bar(self):
         self.status_text = QLabel("Main window")

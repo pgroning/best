@@ -35,7 +35,7 @@ class PlotWin(QMainWindow):
         #super(AppForm, self).__init__(parent)
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Plot Window')
-        self.move(300,200)
+        self.move(600,300)
         
         # Retrieve initial data
         self.parent = parent
@@ -285,7 +285,7 @@ class PlotWin(QMainWindow):
         #self.textbox.setMinimumWidth(200)
         #self.connect(self.textbox, SIGNAL('editingFinished ()'), self.on_draw)
         
-        self.draw_button = QPushButton("Draw")
+        self.draw_button = QPushButton("Redraw")
         self.connect(self.draw_button, SIGNAL('clicked()'), self.on_plot)
         
         self.grid_cb = QCheckBox("Show Grid")
