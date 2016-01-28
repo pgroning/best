@@ -175,7 +175,18 @@ class MainWin(QMainWindow):
                     self.table.setItem(row,3,QTableWidgetItem(str(0)))
                     row += 1
         
-                
+        burnup = self.dataobj.cases[case_num].statepts[point_num].burnup
+        voi = self.dataobj.cases[case_num].statepts[point_num].voi
+        vhi = self.dataobj.cases[case_num].statepts[point_num].vhi
+        kinf = self.dataobj.cases[case_num].statepts[point_num].kinf
+        fint = self.dataobj.cases[case_num].statepts[point_num].fint
+        btf = 0.0
+        tfu = self.dataobj.cases[case_num].statepts[point_num].tfu
+        tmo = self.dataobj.cases[case_num].statepts[point_num].tmo
+
+        self.statusBar().showMessage("Burnup=%.3f : VOI=%.0f : VHI=%.0f : Kinf=%.5f : Fint=%.3f : BTF=%.4f : TFU=%.0f : TMO=%.0f" 
+                                     % (burnup,voi,vhi,kinf,fint,btf,tfu,tmo))
+
         #self.circlelist[0].set_text(pinvalues[0,0])
 
 
