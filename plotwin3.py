@@ -63,7 +63,7 @@ class MainWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
-        self.resize(1100,600)
+        self.resize(1100,610)
         self.move(200,200)
 
         # Retrieve initial data
@@ -539,6 +539,14 @@ class MainWin(QMainWindow):
         self.canvas.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         self.canvas.setMinimumWidth(500)
 
+        
+        cvbox = QVBoxLayout()
+        cvbox.addWidget(self.canvas)
+        canvasGbox = QGroupBox()
+        canvasGbox.setStyleSheet("QGroupBox { background-color: rgb(200, 200,\
+        200); border:1px solid gray; border-radius:5px;}")
+        canvasGbox.setLayout(cvbox)
+
         # Since we have only one plot, we can use add_axes 
         # instead of add_subplot, but then the subplot
         # configuration tool in the navigation toolbar wouldn't
@@ -664,6 +672,13 @@ class MainWin(QMainWindow):
 
         #self.connect(self.table.horizontalHeader(),SIGNAL('QHeaderView.sortIndicatorChanged(int)'),self.openFile)
         self.connect(self.table.horizontalHeader(),SIGNAL('sectionClicked(int)'),self.tableHeaderSort)
+
+        tvbox = QVBoxLayout()
+        tvbox.addWidget(self.table)
+        tableGbox = QGroupBox()
+        tableGbox.setStyleSheet("QGroupBox { background-color: rgb(200, 200,\
+        200); border:1px solid gray; border-radius:5px;}")
+        tableGbox.setLayout(tvbox)
         
         #self.hview = QHeaderView
 
@@ -690,7 +705,7 @@ class MainWin(QMainWindow):
 
         groupbox = QGroupBox()
         groupbox.setStyleSheet("QGroupBox { background-color: rgb(200, 200,\
-        200); border:1px solid rgb(150, 150, 150); }")
+        200); border:1px solid gray; border-radius:5px;}")
         groupbox.setLayout(vbox)
 
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
@@ -719,9 +734,11 @@ class MainWin(QMainWindow):
         #hbox.addLayout(vbox)
         hbox.addWidget(groupbox)
         hbox.addItem(spacerItemH)
-        hbox.addWidget(self.canvas)
+        #hbox.addWidget(self.canvas)
+        hbox.addWidget(canvasGbox)
         hbox.addItem(spacerItemH)
-        hbox.addWidget(self.table)
+        hbox.addWidget(tableGbox)
+        #hbox.addWidget(self.table)
         #hbox.addItem(spacerItemH)
 
         self.main_frame.setLayout(hbox)
