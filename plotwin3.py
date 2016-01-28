@@ -688,6 +688,10 @@ class MainWin(QMainWindow):
         spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         vbox.addItem(spacerItem)
 
+        groupbox = QGroupBox()
+        groupbox.setStyleSheet("QGroupBox { background-color: rgb(200, 200,\
+        200); border:1px solid rgb(150, 150, 150); }")
+        groupbox.setLayout(vbox)
 
         #for w in [  self.textbox, self.draw_button, self.grid_cb,
         #            slider_label, self.slider]:
@@ -712,8 +716,8 @@ class MainWin(QMainWindow):
         
         spacerItemH = QSpacerItem(40, 20, QSizePolicy.Expanding, QSizePolicy.Minimum)
 
-        hbox.addLayout(vbox)
-        #hbox.addWidget(self.bundle)
+        #hbox.addLayout(vbox)
+        hbox.addWidget(groupbox)
         hbox.addItem(spacerItemH)
         hbox.addWidget(self.canvas)
         hbox.addItem(spacerItemH)
