@@ -63,8 +63,8 @@ class MainWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
-        self.resize(1000,600)
-        self.move(300,200)
+        self.resize(1100,600)
+        self.move(200,200)
 
         # Retrieve initial data
         #self.data_init()
@@ -75,14 +75,17 @@ class MainWin(QMainWindow):
         self.create_main_frame()
         self.create_status_bar()
 
+        self.on_draw() # Init plot
+        #self.draw_fuelmap()
+
         #self.textbox.setText('1 2 3 4')
         #self.data_init()
         
         #self.case_cbox.setCurrentIndex(0) # Set default plot case
         #self.case_id_current = 0
         #self.on_plot() # Init plot
-        self.on_draw()
-        self.draw_fuelmap()
+        #self.on_draw()
+        #self.draw_fuelmap()
         #Tracer()()
 
     def openFile(self):
@@ -100,6 +103,7 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage('Importing data from %s' % filename, 2000)
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
+        self.draw_fuelmap()
         self.setvalues()
 
     def read_cax(self,filename):
@@ -305,14 +309,15 @@ class MainWin(QMainWindow):
         #Tracer()()
         
         self.canvas.draw()
-
+        
 
     def draw_fuelmap(self):
-
+        print "draw fuel map"
+        self.fig.set_facecolor((1,1,0.8784))
         # Draw outer rectangle
         rect = mpatches.Rectangle((0.035,0.035), 0.935, 0.935, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
         self.axes.add_patch(rect)
-
+        
         # Draw control rods
         rodrect_v = mpatches.Rectangle((0.011,0.13), 0.045, 0.77, ec=(0.3, 0.3, 0.3))
         rodrect_v.set_fill(False)
@@ -466,6 +471,7 @@ class MainWin(QMainWindow):
         for i in range(5,10):
             self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
 
+        self.canvas.draw()
         #Tracer()()
 
 
@@ -526,7 +532,7 @@ class MainWin(QMainWindow):
         # 5x4 inches, 100 dots-per-inch
         #
         self.dpi = 100
-        self.fig = Figure((6, 5), dpi=self.dpi, facecolor=(1,1,0.8784))
+        self.fig = Figure((6, 5), dpi=self.dpi, facecolor=(1,1,1))
         self.canvas = FigureCanvas(self.fig)
         self.canvas.mpl_connect('button_press_event',self.on_click)
         self.canvas.setParent(self.main_frame)
@@ -605,7 +611,8 @@ class MainWin(QMainWindow):
         enr_hbox = QHBoxLayout()
         enr_hbox.addWidget(self.enr_minus_button)
         enr_hbox.addWidget(self.enr_plus_button)
-        
+        #self.connect(self.enr_plus_button, SIGNAL('clicked()'), self.draw_fuelmap)
+
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
         typelist = ['Hot', 'HCr', 'CCl', 'CCr']
