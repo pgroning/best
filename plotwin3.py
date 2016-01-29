@@ -440,9 +440,10 @@ class MainWin(QMainWindow):
         x = 1.06
         for i in range(enr_levels.size):
             y = 0.9-i*pin_delta
-            Circle(self.axes,x,y,cmap[i],str(i+1))
+            circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
             self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
             if not np.isnan(enr_ba[i]):
+                circobj.set_text('Ba')
                 self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8) 
 
 
