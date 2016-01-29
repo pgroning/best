@@ -357,7 +357,7 @@ class MainWin(QMainWindow):
         self.axes.add_patch(poly)
 
 
-        # a fancy box with round corners. pad=0.1
+        # a fancy box with round corners (pad).
         p_fancy = mpatches.FancyBboxPatch((0.12, 0.12),
                                  0.77, 0.77,
                                  boxstyle="round,pad=0.04",
@@ -422,19 +422,28 @@ class MainWin(QMainWindow):
         #poly.set_closed(True)
         ##self.axes.add_patch(poly)
 
-        cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,0,0]]
-        enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
-        enr_ba = [3.4, 5.0]
+        # Draw enrichment levels
+        FUE = self.dataobj.cases[0].data.FUE
+        enr_levels  = FUE[:,2]
+        enr_ba = FUE[:,4]
+        print enr_levels, enr_ba
+ 
+        cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333"]
+        #cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,1,1], [1,0,0]]
+        #enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
+        #enr_ba = [3.4, 5.0]
 
         pin_radius = 0.028
         pin_delta = 0.078
 
         # Draw enrichment level circles
-        for i in range(8):
-            circle = mpatches.Circle((1.06,0.9-i*pin_delta), pin_radius, fc=cmap[i], ec=(0.1, 0.1, 0.1))
-            circle.set_linewidth(2.0)
-            self.axes.add_patch(circle)
-            self.axes.text(1.11,0.9-i*pin_delta,'0.71',fontsize=8)
+        x = 1.06
+        for i in range(enr_levels.size):
+            y = 0.9-i*pin_delta
+            Circle(self.axes,x,y,cmap[i],str(i+1))
+            self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
+            if not np.isnan(enr_ba[i]):
+                self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8) 
 
 
         # Draw pin circles
