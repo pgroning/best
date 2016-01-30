@@ -51,6 +51,7 @@ class Circle(object):
         self.text.remove()
         self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=10)
 
+
     def is_clicked(self,xc,yc):
         r2 = (xc-self.x)**2 + (yc-self.y)**2
         if r2 < self.circle.get_radius()**2: #Mouse click is within pin radius
@@ -104,7 +105,7 @@ class MainWin(QMainWindow):
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
         self.draw_fuelmap()
-        self.setvalues()
+        self.set_pinvalues()
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -133,7 +134,7 @@ class MainWin(QMainWindow):
             msgBox = QMessageBox()
             msgBox.information(self,"No data",msg.strip(),QMessageBox.Close)
 
-    def setvalues(self):
+    def set_pinvalues(self):
         print "Set values"
         param_str = str(self.param_cbox.currentText())
         case_num = int(self.case_cbox.currentIndex())
@@ -141,38 +142,48 @@ class MainWin(QMainWindow):
         print param_str,case_num,point_num
 
         #self.table.setHorizontalHeaderItem(1,QTableWidgetItem(param_str))
-        if param_str == 'FINT': param_str = 'POW'
+        #if param_str == 'FINT': param_str = 'POW'
 
-        if hasattr(self,'dataobj'): # data is loaded
-            if param_str == 'ENR':
-                pinvalues = getattr(self.dataobj.cases[case_num].data,param_str)
-            else:
-                pinvalues = getattr(self.dataobj.cases[case_num].statepts[point_num],param_str)
-            #print pinvalues
+        #if hasattr(self,'dataobj'): # data is loaded
+        #    if param_str == 'ENR':
+        #        pinvalues = getattr(self.dataobj.cases[case_num].data,param_str)
+        #    else:
+        #        pinvalues = getattr(self.dataobj.cases[case_num].statepts[point_num],param_str)
+        #    #print pinvalues
 
+        ENR = getattr(self.dataobj.cases[case_num].data,'ENR')
         EXP = getattr(self.dataobj.cases[case_num].statepts[point_num],'EXP')
         FINT = getattr(self.dataobj.cases[case_num].statepts[point_num],'POW')
-        
 
+        npst = self.dataobj.cases[case_num].data.npst
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
         row = 0
-        for i in range(pinvalues.shape[0]):
-            for j in range(pinvalues.shape[1]):
+        k = 0
+        for i in range(npst):
+            for j in range(npst):
                 if j != 5 and i !=5:
+                    if not ((i==4 and j==4) or (i==4 and j==6) or (i==6 and j==4) or (i==6 and j==6)):
+                        #print i,j
+                        #print self.circlelist[k].text.get_text()
+                        self.circlelist[k].ENR = ENR[i,j]
+                        self.circlelist[k].EXP = EXP[i,j]
+                        self.circlelist[k].FINT = FINT[i,j]
+                        self.circlelist[k].BTF = 0.0
+                        k += 1
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
-                    expItem = QTableWidgetItem()
-                    expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
-                    fintItem = QTableWidgetItem()
-                    fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
-
-                    self.table.setItem(row,1,expItem)
-                    self.table.setItem(row,2,fintItem)
-                    #item.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
-                    #self.table.setItem(row,2,item)
-                    #self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
-                    #self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
-                    self.table.setItem(row,3,QTableWidgetItem(str(0)))
+                        expItem = QTableWidgetItem()
+                        expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
+                        fintItem = QTableWidgetItem()
+                        fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+                        
+                        self.table.setItem(row,1,expItem)
+                        self.table.setItem(row,2,fintItem)
+                        #item.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+                        #self.table.setItem(row,2,item)
+                        #self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
+                        #self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
+                        self.table.setItem(row,3,QTableWidgetItem(str(0)))
                     row += 1
         
         burnup = self.dataobj.cases[case_num].statepts[point_num].burnup
@@ -234,7 +245,7 @@ class MainWin(QMainWindow):
         QMessageBox.about(self, "About the demo", msg.strip())
 
     def tableHeaderSort(self):
-        print "Sort header"
+        #print "Sort header"
         for i in range(100):
             item = QTableWidgetItem(str(self.table.item(i,0).text()))
             self.table.setVerticalHeaderItem(i,item)
@@ -437,15 +448,18 @@ class MainWin(QMainWindow):
         pin_delta = 0.078
 
         # Draw enrichment level circles
+        self.enrpinlist = []
         x = 1.06
         for i in range(enr_levels.size):
             y = 0.9-i*pin_delta
             circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
             self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
+            circobj.enr_levels = enr_levels[i]
             if not np.isnan(enr_ba[i]):
                 circobj.set_text('Ba')
-                self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8) 
-
+                self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8)
+                circobj.enr_ba = enr_ba[i]
+            self.enrpinlist.append(circobj)
 
         # Draw pin circles
         self.circlelist = []
@@ -614,7 +628,7 @@ class MainWin(QMainWindow):
         param_hbox = QHBoxLayout()
         param_hbox.addWidget(param_label)
         param_hbox.addWidget(self.param_cbox)
-        self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.setvalues)
+        self.connect(self.param_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
 
         case_label = QLabel('Case number:')
         self.case_cbox = QComboBox()
@@ -624,7 +638,7 @@ class MainWin(QMainWindow):
         case_hbox = QHBoxLayout()
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
-        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.setvalues)
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
 
         point_label = QLabel('Point number:')
         self.point_sbox = QSpinBox()
@@ -633,7 +647,7 @@ class MainWin(QMainWindow):
         point_hbox = QHBoxLayout()
         point_hbox.addWidget(point_label)
         point_hbox.addWidget(self.point_sbox)
-        self.connect(self.point_sbox, SIGNAL('valueChanged(int)'), self.setvalues)
+        self.connect(self.point_sbox, SIGNAL('valueChanged(int)'), self.set_pinvalues)
 
         self.enr_plus_button = QPushButton("+ enr")
         self.enr_minus_button = QPushButton("- enr")
