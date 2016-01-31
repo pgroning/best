@@ -461,6 +461,11 @@ class MainWin(QMainWindow):
                 circobj.enr_ba = enr_ba[i]
             self.enrpinlist.append(circobj)
 
+        # Print average enrichment
+        ave_enr = self.dataobj.cases[0].data.ave_enr
+        print ave_enr
+        self.axes.text(1.02,0.05,"%.3f %%U235" % ave_enr,fontsize=8)
+
         # Draw pin circles
         self.circlelist = []
 
