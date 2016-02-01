@@ -157,6 +157,7 @@ class MainWin(QMainWindow):
 
         npst = self.dataobj.cases[case_num].data.npst
         LFU = self.dataobj.cases[case_num].data.LFU
+        BA = self.dataobj.cases[case_num].data.BA
 
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
         self.setpincoords()
@@ -173,6 +174,7 @@ class MainWin(QMainWindow):
                     self.circlelist[k].ENR = ENR[i,j]
                     self.circlelist[k].EXP = EXP[i,j]
                     self.circlelist[k].FINT = FINT[i,j]
+                    self.circlelist[k].BA = BA[i,j]
                     self.circlelist[k].BTF = 0.0
                     k += 1
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
@@ -208,16 +210,21 @@ class MainWin(QMainWindow):
         
         # Print pin ENR
         npins = len(self.circlelist)
+        
         for i in range(npins):
  
         #print self.circlelist[i].text.get_text()
-            
-            j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
-        
+            if self.circlelist[i].BA == 0:
+                j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
+            else:
+                j = next(j for j,cobj in enumerate(self.enrpinlist)
+                         if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
+
             fc = self.enrpinlist[j].circle.get_facecolor()
             text = self.enrpinlist[j].text.get_text()
             self.circlelist[i].set_text(text)
             self.circlelist[i].circle.set_facecolor(fc)
+            
         self.canvas.draw()
 
 
@@ -489,10 +496,11 @@ class MainWin(QMainWindow):
             circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
             self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
             circobj.ENR = enr_levels[i]
+            circobj.BA = enr_ba[i]
             if not np.isnan(enr_ba[i]):
                 circobj.set_text('Ba')
                 self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8)
-                circobj.BA = enr_ba[i]
+                
             self.enrpinlist.append(circobj)
 
         # Print average enrichment
