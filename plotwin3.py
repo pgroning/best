@@ -36,9 +36,9 @@ from casio import casio
 from plotwin2 import PlotWin
 
 class Circle(object):
-    def __init__(self,axes,x,y,c=(1,1,1),text=''):
-        radius = 0.028
-        self.circle = mpatches.Circle((x,y), radius, fc=c, ec=(0.1, 0.1, 0.1))
+    def __init__(self,axes,x,y,c=(1,1,1),text='',r=0.028):
+        #radius = 0.028
+        self.circle = mpatches.Circle((x,y), r, fc=c, ec=(0.1, 0.1, 0.1))
         self.circle.set_linewidth(2.0)
         self.x = x
         self.y = y
@@ -156,34 +156,41 @@ class MainWin(QMainWindow):
         FINT = getattr(self.dataobj.cases[case_num].statepts[point_num],'POW')
 
         npst = self.dataobj.cases[case_num].data.npst
+        LFU = self.dataobj.cases[case_num].data.LFU
+
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
+        self.setpincoords()
+        
         row = 0
         k = 0
         for i in range(npst):
             for j in range(npst):
-                if j != 5 and i !=5:
-                    if not ((i==4 and j==4) or (i==4 and j==6) or (i==6 and j==4) or (i==6 and j==6)):
+                if LFU[i,j] > 0:
+                #if j != 5 and i !=5:
+                #    if not ((i==4 and j==4) or (i==4 and j==6) or (i==6 and j==4) or (i==6 and j==6)):
                         #print i,j
                         #print self.circlelist[k].text.get_text()
-                        self.circlelist[k].ENR = ENR[i,j]
-                        self.circlelist[k].EXP = EXP[i,j]
-                        self.circlelist[k].FINT = FINT[i,j]
-                        self.circlelist[k].BTF = 0.0
-                        k += 1
+                    self.circlelist[k].ENR = ENR[i,j]
+                    self.circlelist[k].EXP = EXP[i,j]
+                    self.circlelist[k].FINT = FINT[i,j]
+                    self.circlelist[k].BTF = 0.0
+                    k += 1
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
-                        expItem = QTableWidgetItem()
-                        expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
-                        fintItem = QTableWidgetItem()
-                        fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+                    expItem = QTableWidgetItem()
+                    expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
+                    fintItem = QTableWidgetItem()
+                    fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
                         
-                        self.table.setItem(row,1,expItem)
-                        self.table.setItem(row,2,fintItem)
+                    self.table.setItem(row,1,expItem)
+                    self.table.setItem(row,2,fintItem)
                         #item.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
                         #self.table.setItem(row,2,item)
                         #self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
                         #self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
-                        self.table.setItem(row,3,QTableWidgetItem(str(0)))
+                    self.table.setItem(row,3,QTableWidgetItem(str(0)))
+                #if j != 5 and i !=5: # Ignore water cross
+                if not (np.all(LFU[i,:]==0) or np.all(LFU[:,j]==0)): # Ignore water cross
                     row += 1
         
         burnup = self.dataobj.cases[case_num].statepts[point_num].burnup
@@ -198,10 +205,27 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage("Burnup=%.3f : VOI=%.0f : VHI=%.0f : Kinf=%.5f : Fint=%.3f : BTF=%.4f : TFU=%.0f : TMO=%.0f" 
                                      % (burnup,voi,vhi,kinf,fint,btf,tfu,tmo))
 
+        
+        # Print pin ENR
+        npins = len(self.circlelist)
+        for i in range(npins):
+ 
+        #print self.circlelist[i].text.get_text()
+            
+            j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
+        
+            fc = self.enrpinlist[j].circle.get_facecolor()
+            text = self.enrpinlist[j].text.get_text()
+            self.circlelist[i].set_text(text)
+            self.circlelist[i].circle.set_facecolor(fc)
+        self.canvas.draw()
+
+
         #self.circlelist[0].set_text(pinvalues[0,0])
 
 
     def setpincoords(self):
+        self.table.clearContents()
         self.xlist = ('01','02','03','04','05','06','07','08','09','10')
         self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
 
@@ -300,12 +324,20 @@ class MainWin(QMainWindow):
                 self.canvas.draw()
     
 
+    def fig_update(self):
+        """ Redraw figure and update values
+        """
+        self.on_draw()
+        self.draw_fuelmap()
+        self.set_pinvalues()
+
     def on_draw(self):
-        """ Redraws the figure
+        """ Setup the figure axis
         """
 
         # clear the axes and redraw the plot anew
         #
+        #self.fig.clf()
         self.axes.clear()
         self.axes.axis('equal')
         #self.axes.set_xlim(0,1)
@@ -330,11 +362,12 @@ class MainWin(QMainWindow):
 
         #Tracer()()
         
-        self.canvas.draw()
-        
+        #self.canvas.draw()
 
     def draw_fuelmap(self):
-        print "draw fuel map"
+        """ Draw fuel map
+        """
+        #print "draw fuel map"
         self.fig.set_facecolor((1,1,0.8784))
         # Draw outer rectangle
         rect = mpatches.Rectangle((0.035,0.035), 0.935, 0.935, fc=(0.8,0.898,1),ec=(0.3, 0.3, 0.3))
@@ -434,12 +467,13 @@ class MainWin(QMainWindow):
         ##self.axes.add_patch(poly)
 
         # Draw enrichment levels
-        FUE = self.dataobj.cases[0].data.FUE
+        case_num = int(self.case_cbox.currentIndex())
+        FUE = self.dataobj.cases[case_num].data.FUE
         enr_levels  = FUE[:,2]
         enr_ba = FUE[:,4]
         print enr_levels, enr_ba
  
-        cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333"]
+        cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333","#FF3399"]
         #cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,1,1], [1,0,0]]
         #enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
         #enr_ba = [3.4, 5.0]
@@ -454,49 +488,67 @@ class MainWin(QMainWindow):
             y = 0.9-i*pin_delta
             circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
             self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
-            circobj.enr_levels = enr_levels[i]
+            circobj.ENR = enr_levels[i]
             if not np.isnan(enr_ba[i]):
                 circobj.set_text('Ba')
                 self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8)
-                circobj.enr_ba = enr_ba[i]
+                circobj.BA = enr_ba[i]
             self.enrpinlist.append(circobj)
 
         # Print average enrichment
-        ave_enr = self.dataobj.cases[0].data.ave_enr
-        print ave_enr
-        self.axes.text(1.02,0.05,"%.3f %%U235" % ave_enr,fontsize=8)
+        ave_enr = self.dataobj.cases[case_num].data.ave_enr
+        self.axes.text(1.02,0.05,"%.3f %%U-235" % ave_enr,fontsize=8)
 
         # Draw pin circles
-        self.circlelist = []
+        npst = self.dataobj.cases[case_num].data.npst
+        LFU = self.dataobj.cases[case_num].data.LFU
+        # Remove water cross
+        LFU = np.delete(LFU, (5), axis=0) # Delete row 6
+        LFU = np.delete(LFU, (5), axis=1) # Delete col 6
+        #i = [i for i in range(LFU.shape[0]) if np.all(LFU[i,:]==0)][0]
+        #j = [j for j in range(LFU.shape[1]) if np.all(LFU[:,j]==0)][0]
 
-        for j,yc in enumerate(self.ylist):
-            for i,xc in enumerate(self.xlist):
-                x = 0.13+i*pin_delta
-                y = 0.87-j*pin_delta
-                if i < 5 and j < 5:
-                    if i < 4 or j < 4:
-                        circobj = Circle(self.axes,x,y,cmap[3],'1')
-                        circobj.coord = yc+xc
-                        self.circlelist.append(circobj)
-                elif i > 4 and j < 5:
-                    x += 0.04
-                    if i > 5 or j < 4:
-                        circobj = Circle(self.axes,x,y,cmap[5],'2')
-                        circobj.coord = yc+xc
-                        self.circlelist.append(circobj)
-                elif i < 5 and j > 4:
-                    y -= 0.04
-                    if i < 4 or j > 5:
-                        circobj = Circle(self.axes,x,y,cmap[1],'3')
-                        circobj.coord = yc+xc
-                        self.circlelist.append(circobj)
-                elif i > 4 and j > 4:
-                    x += 0.04
-                    y -= 0.04
-                    if i > 5 or j > 5:
-                        circobj = Circle(self.axes,x,y,cmap[6],'4')
-                        circobj.coord = yc+xc
-                        self.circlelist.append(circobj)
+        self.circlelist = []
+        for i in range(LFU.shape[0]):
+            for j in range(LFU.shape[1]):
+                x = 0.13+j*pin_delta
+                y = 0.87-i*pin_delta
+                if j > 4: x += 0.04
+                if i > 4: y -= 0.04
+                if LFU[i,j] > 0:
+                    circobj = Circle(self.axes,x,y,(1,1,1),'')
+                    circobj.coord = self.ylist[i] + self.xlist[j]
+                    self.circlelist.append(circobj)
+
+
+#        for j,yc in enumerate(self.ylist):
+#            for i,xc in enumerate(self.xlist):
+#                x = 0.13+i*pin_delta
+#                y = 0.87-j*pin_delta
+#                if i < 5 and j < 5:
+#                    if i < 4 or j < 4:
+#                        circobj = Circle(self.axes,x,y,cmap[3],'1')
+#                        circobj.coord = yc+xc
+#                        self.circlelist.append(circobj)
+#                elif i > 4 and j < 5:
+#                    x += 0.04
+#                    if i > 5 or j < 4:
+#                        circobj = Circle(self.axes,x,y,cmap[5],'2')
+#                        circobj.coord = yc+xc
+#                        self.circlelist.append(circobj)
+#                elif i < 5 and j > 4:
+#                    y -= 0.04
+#                    if i < 4 or j > 5:
+#                        circobj = Circle(self.axes,x,y,cmap[1],'3')
+#                        circobj.coord = yc+xc
+#                        self.circlelist.append(circobj)
+#                elif i > 4 and j > 4:
+#                    x += 0.04
+#                    y -= 0.04
+#                    if i > 5 or j > 5:
+#                        circobj = Circle(self.axes,x,y,cmap[6],'4')
+#                        circobj.coord = yc+xc
+#                        self.circlelist.append(circobj)
 
 
         # Draw pin coordinates x-axis
@@ -511,7 +563,7 @@ class MainWin(QMainWindow):
         for i in range(5,10):
             self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
 
-        self.canvas.draw()
+        #self.canvas.draw()
         #Tracer()()
 
 
@@ -534,35 +586,35 @@ class MainWin(QMainWindow):
         return idx0
 
 
-    def on_plot(self):
-
-        case_id = self.case_id_current
-        case_id_max = len(self.cas.cases)
-        param = self.param_cbox.currentText()
-        
-        self.axes.clear()
-        if param == 'Kinf':
-            if self.case_cb.isChecked():
-                for i in range(case_id_max):
-                    #idx0 = self.startpoint(i)
-                    self.plot_kinf(i)
-            else:
-                #idx0 = self.startpoint(case_id)
-                self.plot_kinf(case_id)
-        
-        elif param == 'Fint':
-            if self.case_cb.isChecked():
-                for i in range(case_id_max):
-                    self.plot_fint(i)
-            else:
-                self.plot_fint(case_id)
-
-        elif param == 'BTF':
-            if self.case_cb.isChecked():
-                for i in range(case_id_max):
-                    self.plot_btf(i)
-            else:
-                self.plot_btf(case_id)
+#    def on_plot(self):
+#
+#        case_id = self.case_id_current
+#        case_id_max = len(self.cas.cases)
+#        param = self.param_cbox.currentText()
+#        
+#        self.axes.clear()
+#        if param == 'Kinf':
+#            if self.case_cb.isChecked():
+#                for i in range(case_id_max):
+#                    #idx0 = self.startpoint(i)
+#                    self.plot_kinf(i)
+#            else:
+#                #idx0 = self.startpoint(case_id)
+#                self.plot_kinf(case_id)
+#        
+#        elif param == 'Fint':
+#            if self.case_cb.isChecked():
+#                for i in range(case_id_max):
+#                    self.plot_fint(i)
+#            else:
+#                self.plot_fint(case_id)
+#
+#        elif param == 'BTF':
+#            if self.case_cb.isChecked():
+#                for i in range(case_id_max):
+#                    self.plot_btf(i)
+#            else:
+#                self.plot_btf(case_id)
        
 
     def create_main_frame(self):
@@ -643,7 +695,8 @@ class MainWin(QMainWindow):
         case_hbox = QHBoxLayout()
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
-        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
+        #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
 
         point_label = QLabel('Point number:')
         self.point_sbox = QSpinBox()
