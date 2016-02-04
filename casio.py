@@ -9,7 +9,7 @@ import sys, os.path, re
 import numpy as np
 
 from multiprocessing import Pool
-from casdata_pts import casdata
+from casdata_pts_2 import casdata
 
 
 class datastruct(object):
@@ -56,7 +56,7 @@ class casio:
         self.data.nodes = nodes
 
 
-    def readcas(self):
+    def readcax(self):
         n = len(self.data.caxfiles) # Number of threads
         p = Pool(n) # Make the Pool of workers
         # Start processes in their own threads and return the results
@@ -70,7 +70,7 @@ class casio:
         #    self.cases.append(case)
 
 
-    def savecas(self):
+    def savecax(self):
         pfile = os.path.splitext(self.data.inpfile)[0] + '.p'
         with open(pfile,'wb') as fp:
             pickle.dump(self.data,fp,1)

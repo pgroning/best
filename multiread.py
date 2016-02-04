@@ -1,6 +1,7 @@
 from multiprocessing import Pool
 import time
-from casdata_pts import casdata
+from casdata_pts_2 import casdata
+#from casdata_pts_3 import casdata
 
 files = []
 files.append('cax/10g40bot/e29OPT2-382-10g40bot-cas.cax')
