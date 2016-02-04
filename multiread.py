@@ -3,9 +3,9 @@ import time
 from casdata_pts import casdata
 
 files = []
-files.append('filepath1')
-files.append('filepath2')
-files.append('filepath3')
+files.append('cax/10g40bot/e29OPT2-382-10g40bot-cas.cax')
+files.append('cax/10g40mid/e29OPT2-389-10g40mid-cas.cax')
+files.append('cax/10g40top/e29OPT2-384-10g40top-cas.cax')
 
 start = time.time()
 #for f in files:
@@ -13,6 +13,7 @@ start = time.time()
 
 # Make the Pool of workers
 n = len(files)
+#n=1
 p = Pool(n)
 
 # Start processes in their own threads

@@ -8,6 +8,7 @@ except:
 import sys, os.path, re
 import numpy as np
 
+from multiprocessing import Pool
 from casdata_pts import casdata
 
 
@@ -56,10 +57,17 @@ class casio:
 
 
     def readcas(self):
-        for i,f in enumerate(self.data.caxfiles):
-            case = casdata(f)
-            case.data.topnode = self.data.nodes[i]
-            self.cases.append(case)
+        n = len(self.data.caxfiles) # Number of threads
+        p = Pool(n) # Make the Pool of workers
+        # Start processes in their own threads and return the results
+        self.cases = p.map(casdata, self.data.caxfiles)
+        for i,node in enumerate(self.data.nodes):
+            self.cases[i].data.topnode = node
+
+        #for i,f in enumerate(self.data.caxfiles):
+        #    case = casdata(f)
+        #    case.data.topnode = self.data.nodes[i]
+        #    self.cases.append(case)
 
 
     def savecas(self):
