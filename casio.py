@@ -113,10 +113,14 @@ class casio:
         """Lagrange two point (P2) interpolation
         Syntax: Pi = interp2(P1,P2,x1,x2,x)"""
 
+        r = x1/x2
+        print r
+
         # Lagrange P2 polynomial
-        L1 = (x-x2)/(x1-x2)
-        L2 = (x-x1)/(x2-x1)
+        L1 = (x-x2)/float(x1-x2)
+        L2 = (x-x1)/float(x2-x1)
         Pi = L1*P1 + L2*P2
+        print L1,L2
         return Pi
 
 

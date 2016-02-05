@@ -4,13 +4,36 @@ import numpy as np
 import sys
 
 from casio import casio
+#from casdata_pts_2 import casdata
 
 sys.path.append('lib/')
 import libADDC
 #from addc import addc
 
 
-#def pow3d(casobj):
+def pow3d():
+    """Construct a 3D pin power distribution for specific void and burnup"""
+    print "Constructing 3D pin power distribution for specific void and burnup"
+
+    casobj = casio()
+    casobj.loadpic('caxfiles.p')
+    
+    voi = 50
+    burnup = 0
+    
+    # Initiate array
+    i1 = casobj.cases[0].findpoint(burnup=burnup,vhi=40,voi=40)
+    i2 = casobj.cases[0].findpoint(burnup=burnup,vhi=80,voi=80)
+    print i1,i2
+
+    POW1 = casobj.cases[0].statepts[i1].POW
+    POW2 = casobj.cases[0].statepts[i2].POW
+
+    POW12 = casobj.interp2(POW1,POW2,40,80,voi)
+
+
+    Tracer()()
+
 #    print "Constructing 3D pin power distribution for specific void and burnup"
 #    
 #    casobj = casio()
@@ -282,4 +305,4 @@ def calc_btf(fuetype):
 
 
 if __name__ == '__main__':
-    pow3d(sys.argv[1])
+    pow3d()

@@ -270,7 +270,6 @@ class casdata:
         print "Done."
         #Tracer()()
         # -----------------------------------------------------------------------
-
         # Calculate radial burnup distributions
         EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
         for i in range(Nburnpts):
