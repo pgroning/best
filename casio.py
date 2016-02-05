@@ -1,3 +1,4 @@
+from __future__ import division
 from IPython.core.debugger import Tracer
 
 try:
@@ -85,25 +86,26 @@ class casio:
             self.cases = pickle.load(fp)
         self.data.pfile = pfile
 
-
-    def pow3(self,*args):
+    def pow3(self,POW):
+    #def pow3(self,*args):
         """Expanding a number of 2D pin power distributions into a 3D distribution.
         Syntax: POW3D = pow3(POW1,POW2,POW3,...)"""
         print "Expanding a number of 2D pin power distributions into a 3D distribution"
    
-        powlist = [arg for arg in args]
-
-        xdim = powlist[0].shape[0]
-        ydim = powlist[0].shape[1]
+        xdim = POW.shape[1]
+        ydim = POW.shape[2]
+        #powlist = [arg for arg in args]
+        #xdim = powlist[0].shape[0]
+        #ydim = powlist[0].shape[1]
         nodes = self.data.nodes
         zdim = max(nodes)
-        POW3 = np.zeros((xdim,ydim,zdim))
-
+        POW3 = np.zeros((zdim,xdim,ydim))
         z0 = 0
-        for i,POW in enumerate(powlist):
+        for i,P in enumerate(POW):
+        #for i,POW in enumerate(powlist):
             z1 = nodes[i]
             for z in range(z0,z1):
-                POW3[:,:,z] = POW 
+                POW3[z,:,:] = P 
             z0 = z1
 
         return POW3
@@ -113,14 +115,10 @@ class casio:
         """Lagrange two point (P2) interpolation
         Syntax: Pi = interp2(P1,P2,x1,x2,x)"""
 
-        r = x1/x2
-        print r
-
         # Lagrange P2 polynomial
-        L1 = (x-x2)/float(x1-x2)
-        L2 = (x-x1)/float(x2-x1)
+        L1 = (x-x2)/(x1-x2)
+        L2 = (x-x1)/(x2-x1)
         Pi = L1*P1 + L2*P2
-        print L1,L2
         return Pi
 
 

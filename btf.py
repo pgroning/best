@@ -21,38 +21,24 @@ def pow3d():
     voi = 50
     burnup = 0
     
-    # Initiate array
-    i1 = casobj.cases[0].findpoint(burnup=burnup,vhi=40,voi=40)
-    i2 = casobj.cases[0].findpoint(burnup=burnup,vhi=80,voi=80)
-    print i1,i2
+    ncases = len(casobj.cases)
+    npst = casobj.cases[0].data.npst
+    P12 = np.zeros((ncases,npst,npst))
+    for i in range(ncases):
+        # Initiate array 2D array
+        i1 = casobj.cases[i].findpoint(burnup=burnup,vhi=40,voi=40)
+        i2 = casobj.cases[i].findpoint(burnup=burnup,vhi=80,voi=80)
+        print i1,i2
 
-    POW1 = casobj.cases[0].statepts[i1].POW
-    POW2 = casobj.cases[0].statepts[i2].POW
+        P1 = casobj.cases[i].statepts[i1].POW
+        P2 = casobj.cases[i].statepts[i2].POW
+        P12[i,:,:] = casobj.interp2(P1,P2,40,80,voi)
 
-    POW12 = casobj.interp2(POW1,POW2,40,80,voi)
-
+    # Expand to 3D array
+    POW3 = casobj.pow3(P12)
+    #POW3 = casobj.pow3(P12[:,:,0],P12[:,:,1],P12[:,:,2])
 
     Tracer()()
-
-#    print "Constructing 3D pin power distribution for specific void and burnup"
-#    
-#    casobj = casio()
-#    casobj.loadpic('caxfiles.p')
-#    
-#    pts = 0
-#
-#    dim = casobj.cases[0].data.npst
-#    nodes = casobj.data.nodes
-#    POW3 = np.zeros((dim,dim,max(nodes)))
-#
-#    z0 = 0
-#    for obj in casobj.cases:
-#        z1 = obj.data.topnode
-#        for z in range(z0,z1):
-#           POW3[:,:,z] = obj.statepts[pts].POW 
-#        z0 = z1
-#
-#    return POW3
 
 
 def acc_weifun(x):
