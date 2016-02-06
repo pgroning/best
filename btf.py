@@ -28,7 +28,7 @@ def pow3d():
         # Initiate array 2D array
         i1 = casobj.cases[i].findpoint(burnup=burnup,vhi=40,voi=40)
         i2 = casobj.cases[i].findpoint(burnup=burnup,vhi=80,voi=80)
-        print i1,i2
+        #print i1,i2
 
         P1 = casobj.cases[i].statepts[i1].POW
         P2 = casobj.cases[i].statepts[i2].POW
@@ -38,6 +38,9 @@ def pow3d():
     POW3 = casobj.pow3(P12)
     #POW3 = casobj.pow3(P12[:,:,0],P12[:,:,1],P12[:,:,2])
 
+    DOX = calc_btf('SVEA-96',POW3)
+    DOXmax = DOX.max()
+    imax = np.where(DOX == DOX.max())
     Tracer()()
 
 
@@ -168,7 +171,7 @@ def rfact_axial(fuetype,POW):
     return DOW
 
 
-def calc_btf(fuetype):
+def calc_btf(fuetype,POW3):
 
     naxial_nodes = 25
     naxial_nodes_plr1 = 8  # number of full axial_nodes for 1/3 PLRs
@@ -183,42 +186,42 @@ def calc_btf(fuetype):
     Mplr2[4,7]=Mplr2[7,4]=Mplr2[6,7]=Mplr2[7,6]=1
 
     Mflr = 1-Mplr1-Mplr2 # FLR map
-
-    # read power dist
-    POW = np.loadtxt('./powdist.txt')
+    
+    ## read power dist
+    #POW = np.loadtxt('./powdist.txt')
     MF = np.zeros((naxial_nodes,4))
-    DOW = np.zeros((naxial_nodes,POW[0].size,POW[1].size))
+    #DOW = np.zeros((naxial_nodes,POW[0].size,POW[1].size))
+    DOW = np.zeros((naxial_nodes,POW3.shape[1],POW3.shape[2]))
     WZ = np.zeros(naxial_nodes)
-    Raxw = np.zeros(POW.shape)
+    Raxw = np.zeros(POW3.shape[1:])
     MFpl = np.zeros(4)
-
+    
     for z in range(naxial_nodes):
-
+        
         # Calculate number of hot rods (POW[i,j] > 0)
         Ntotrods = 96 # Total number of rods for SVEA-96
-        Nhotrods = sum(sum(POW>0)) # Number of hot rods
+        Nhotrods = sum(sum(POW3[z,:,:]>0)) # Number of hot rods
         
-
         # *****Mismatch factor calculation*****
         
         # Determine total power for each sub bundle
         FSUB = np.zeros(4)
-        FSUB[0] = sum(sum(POW[:5,:5])) # North-West quarter
-        FSUB[1] = sum(sum(POW[6:,:5])) # South-West
-        FSUB[2] = sum(sum(POW[:5,6:])) # North-East
-        FSUB[3] = sum(sum(POW[6:,6:])) # South-East
+        FSUB[0] = sum(sum(POW3[z,:5,:5])) # North-West quarter
+        FSUB[1] = sum(sum(POW3[z,6:,:5])) # South-West
+        FSUB[2] = sum(sum(POW3[z,:5,6:])) # North-East
+        FSUB[3] = sum(sum(POW3[z,6:,6:])) # South-East
         # Normalize sub-bundle power
         FSUB = FSUB/FSUB.mean()
         
         # Calculate mismatch-factor for each sub-bundle
         MF[z,:] = -0.14 + 1.5*FSUB - 0.36*FSUB**2
-
+        
         # Part length rods (PLR) (Sum over nodes)
         #MFpl += MF
 
-        DOW[z,:,:] = rfact_axial(fuetype,POW)
+        DOW[z,:,:] = rfact_axial(fuetype,POW3[z,:,:])
         WZ[z] = node_weight(z+1,naxial_nodes)
-        
+    
         
     # Apply mismatch-factor to FLRs only (PLRs are taken care of separately)
     for z in range(naxial_nodes):
@@ -231,7 +234,6 @@ def calc_btf(fuetype):
                     elif i<11 and j<11: mf = MF[z,3]
                     DOW[z,i,j] = DOW[z,i,j] * mf
     
-
         # Apply axial weight function
         #WZ[z-1] = node_weight(z,naxial_nodes)
         #Raxw += DOW*WZ
@@ -250,7 +252,7 @@ def calc_btf(fuetype):
                     elif i<5 and j<11 : mf = MFpl[2]
                     elif i<11 and j<11: mf = MFpl[3]
                     DOW[z,i,j] = DOW[z,i,j] * mf
-
+    
     # Integrate along z-direction and apply axial weight function to get pinwise R-factors
     DOX = np.zeros(DOW[0].shape)
     frac1 = 0.337*naxial_nodes - naxial_nodes_plr1
@@ -284,11 +286,7 @@ def calc_btf(fuetype):
                     if Mplr2[i,j]:
                         DOX[i,j] += DOW[z,i,j]*WZ[z]*frac2
 
-
-    Tracer()()
-
-
-
+    return DOX
 
 if __name__ == '__main__':
     pow3d()
