@@ -6,9 +6,9 @@ from casio import casio
 class btf:
     """Calculate BTF values"""
 
-    def __init__(self,casobj):
+    def __init__(self,casobj,burnup):
         if casobj.data.fuetype == 'SVEA-96':
-            self.svea96(casobj)
+            self.svea96(casobj,burnup)
 
 
 
@@ -47,17 +47,21 @@ class btf:
 
 
 
-    def svea96(self,casobj):
+    def svea96(self,casobj,burnup):
         print 'Calculating SVEA-96'
         #from btf_s96 import pow3d
         from btf_s96 import calc_btf
-        self.pow3d(casobj,50,0)
+        voi = 50
+        self.pow3d(casobj,voi,burnup)
         self.DOX = calc_btf(casobj.data.fuetype,self.POW3)
         Tracer()()
+
+
 
 if __name__ == '__main__':
     casobj = casio()
     casobj.loadpic('caxfiles.p')
     casobj.data.fuetype = 'SVEA-96'
-    btf(casobj)
+    burnup = 0
+    btf(casobj,burnup)
     #Tracer()()
