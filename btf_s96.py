@@ -10,40 +10,6 @@ sys.path.append('lib/')
 import libADDC
 #from addc import addc
         
-"""        
-def pow3d(casobj):
-    """Construct a 3D pin power distribution for specific void and burnup"""
-    print "Constructing 3D pin power distribution for specific void and burnup"
-
-    #casobj = casio()
-    #casobj.loadpic('caxfiles.p')
-    
-    voi = 50
-    burnup = 0
-    
-    ncases = len(casobj.cases)
-    npst = casobj.cases[0].data.npst
-    P12 = np.zeros((ncases,npst,npst))
-    for i in range(ncases):
-        # Initiate array 2D array
-        i1 = casobj.cases[i].findpoint(burnup=burnup,vhi=40,voi=40)
-        i2 = casobj.cases[i].findpoint(burnup=burnup,vhi=80,voi=80)
-        #print i1,i2
-        
-        P1 = casobj.cases[i].statepts[i1].POW
-        P2 = casobj.cases[i].statepts[i2].POW
-        P12[i,:,:] = casobj.interp2(P1,P2,40,80,voi)
-        
-    # Expand to 3D array
-    POW3 = casobj.pow3(P12)
-    #POW3 = casobj.pow3(P12[:,:,0],P12[:,:,1],P12[:,:,2])
-    
-    #Tracer()()
-    #DOX = calc_btf('SVEA-96',POW3)
-    #DOXmax = DOX.max()
-    #imax = np.where(DOX == DOX.max())
-    return POW3
-"""
 
 def acc_weifun(x):
     if x <= 0.06:

@@ -90,7 +90,7 @@ class casio:
     #def pow3(self,*args):
         """Expanding a number of 2D pin power distributions into a 3D distribution.
         Syntax: POW3D = pow3(POW1,POW2,POW3,...)"""
-        print "Expanding a number of 2D pin power distributions into a 3D distribution"
+        #print "Expanding a number of 2D pin power distributions into a 3D distribution"
    
         xdim = POW.shape[1]
         ydim = POW.shape[2]
