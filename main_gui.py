@@ -40,7 +40,7 @@ class Circle(object):
         
     def set_text(self,text):
         self.text.remove()
-        self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=10)
+        self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=8)
 
 
     def is_clicked(self,xc,yc):
@@ -208,24 +208,40 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage("Burnup=%.3f : VOI=%.0f : VHI=%.0f : Kinf=%.5f : Fint=%.3f : BTF=%.4f : TFU=%.0f : TMO=%.0f" 
                                      % (burnup,voi,vhi,kinf,fint,btf,tfu,tmo))
 
-        
-        # Print pin ENR
+        #if param_str == 'ENR':
+            # Print pin ENR
         npins = len(self.circlelist)
         
         for i in range(npins):
             
         #print self.circlelist[i].text.get_text()
-            if self.circlelist[i].BA == 0:
-                j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
-            else:
-                j = next(j for j,cobj in enumerate(self.enrpinlist)
-                         if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
+            if param_str == 'ENR' or param_str == 'BTF':
+                if self.circlelist[i].BA == 0:
+                    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
+                else:
+                    j = next(j for j,cobj in enumerate(self.enrpinlist)
+                             if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
                 
-            fc = self.enrpinlist[j].circle.get_facecolor()
-            text = self.enrpinlist[j].text.get_text()
-            self.circlelist[i].set_text(text)
-            self.circlelist[i].circle.set_facecolor(fc)
+                fc = self.enrpinlist[j].circle.get_facecolor()
+                text = self.enrpinlist[j].text.get_text()
+                self.circlelist[i].set_text(text)
+                self.circlelist[i].circle.set_facecolor(fc)
             
+            elif param_str == 'EXP':
+                if self.circlelist[i].EXP < 10:
+                    text =  ('%.1f' % (self.circlelist[i].EXP))
+                else:
+                    text =  ('%.0f' % (self.circlelist[i].EXP))
+                self.circlelist[i].set_text(text)
+
+            elif param_str == 'FINT':
+                if self.circlelist[i].FINT < 10:
+                    text =  ('%.1f' % (self.circlelist[i].FINT))
+                else:
+                    text =  ('%.0f' % (self.circlelist[i].FINT))
+                self.circlelist[i].set_text(text)
+
+
         self.canvas.draw()
 
 
