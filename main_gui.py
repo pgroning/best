@@ -116,7 +116,13 @@ class MainWin(QMainWindow):
         if ret == QMessageBox.Yes:
             self.dataobj = casio()
             self.dataobj.readinp(filename)
-            self.dataobj.readcas()
+            self.dataobj.readcax()
+
+            fuetype = 'SVEA-96'
+            self.dataobj.btf = btf(self.dataobj,fuetype)
+
+            self.draw_fuelmap()
+            self.set_pinvalues()
             #self.dataobj.savecas()
         else:
             return
