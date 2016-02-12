@@ -311,12 +311,11 @@ class MainWin(QMainWindow):
         self.table.selectRow(i)
 
     def pinSelect(self,index):
-        print "pinselect"
-        print index
-        print str(self.table.item(index,0).text())
+        #print str(self.table.item(index,0).text())
         i = next(i for i in range(len(self.circlelist))
                  if str(self.table.item(index,0).text()) == self.circlelist[i].coord)
-        print i
+        self.mark_pin(i)
+
 
     def on_click(self, event):
         # The event received here is of the type
@@ -348,18 +347,29 @@ class MainWin(QMainWindow):
                 self.tableSelectRow(i)
                 #self.table.selectRow(i)
                 #print i,self.circlelist[i].x,self.circlelist[i].y
-                d = self.circlelist[i].circle.get_radius()*2+0.008
-                x = self.circlelist[i].x-d/2
-                y = self.circlelist[i].y-d/2
-                if hasattr(self,'clickrect'): # Remove any previously selected circles
-                    self.clickrect.remove()
-                self.clickrect = mpatches.Rectangle((x,y), d, d,
-                                                fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
-                self.clickrect.set_fill(False)
-                self.clickrect.set_linewidth(2.0)
-                self.axes.add_patch(self.clickrect)
-                self.canvas.draw()
+                self.mark_pin(i)
     
+    def mark_pin(self,i):
+        d = self.circlelist[i].circle.get_radius()*2*1.25
+        x = self.circlelist[i].x-d/2
+        y = self.circlelist[i].y-d/2
+        if hasattr(self,'clickrect'): # Remove any previously selected circles
+            try:
+                self.clickrect.remove()
+            except:
+                pass
+        self.clickrect = mpatches.Rectangle((x,y), d, d,
+                                            fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
+        #r = self.circlelist[i].circle.get_radius()*1.3
+        #x = self.circlelist[i].x
+        #y = self.circlelist[i].y
+        #self.clickrect = mpatches.Circle((x,y), r, fc=(1,1,1), alpha=1.0, ec=(1, 0, 0))
+
+        self.clickrect.set_fill(False)
+        self.clickrect.set_linewidth(3.0)
+        self.axes.add_patch(self.clickrect)
+        self.canvas.draw()
+
 
     def fig_update(self):
         """ Redraw figure and update values
@@ -804,9 +814,8 @@ class MainWin(QMainWindow):
         
         #self.connect(self.table.horizontalHeader(),SIGNAL('QHeaderView.sortIndicatorChanged(int)'),self.openFile)
         self.connect(self.table.horizontalHeader(),SIGNAL('sectionClicked(int)'),self.tableHeaderSort)
-
         self.connect(self.table.verticalHeader(),SIGNAL('sectionClicked(int)'),self.pinSelect)
-
+        self.connect(self.table,SIGNAL('cellClicked(int,int)'),self.pinSelect)
 
         tvbox = QVBoxLayout()
         tvbox.addWidget(self.table)
