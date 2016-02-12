@@ -310,7 +310,14 @@ class MainWin(QMainWindow):
         #print i
         self.table.selectRow(i)
 
-    
+    def pinSelect(self,index):
+        print "pinselect"
+        print index
+        print str(self.table.item(index,0).text())
+        i = next(i for i in range(len(self.circlelist))
+                 if str(self.table.item(index,0).text()) == self.circlelist[i].coord)
+        print i
+
     def on_click(self, event):
         # The event received here is of the type
         # matplotlib.backend_bases.PickEvent
@@ -794,9 +801,12 @@ class MainWin(QMainWindow):
         self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)
         self.table.setColumnHidden(0,True)
-
+        
         #self.connect(self.table.horizontalHeader(),SIGNAL('QHeaderView.sortIndicatorChanged(int)'),self.openFile)
         self.connect(self.table.horizontalHeader(),SIGNAL('sectionClicked(int)'),self.tableHeaderSort)
+
+        self.connect(self.table.verticalHeader(),SIGNAL('sectionClicked(int)'),self.pinSelect)
+
 
         tvbox = QVBoxLayout()
         tvbox.addWidget(self.table)
