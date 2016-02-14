@@ -58,11 +58,13 @@ class MainWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
-        #self.resize(1100,610)
+        self.resize(1100,620)
         #self.move(200,200)
 
-        screenShape = QDesktopWidget().screenGeometry()
-        self.resize( screenShape.width()*0.8,screenShape.width()*0.445 )
+        #screenShape = QDesktopWidget().screenGeometry()
+        #self.resize( screenShape.width()*0.8,screenShape.width()*0.445 )
+        #self.setMinimumWidth(1100)
+        #self.setMinimumHeight(610)
         #Tracer()()
 
         self.resizeEvent = self.on_resize
@@ -112,9 +114,9 @@ class MainWin(QMainWindow):
         fuetype = 'SVEA-96'
         self.dataobj.btf = btf(self.dataobj,fuetype)
 
+        self.setpincoords()
         self.draw_fuelmap()
         self.set_pinvalues()
-
 
 
     def read_cax(self,filename):
@@ -134,6 +136,7 @@ class MainWin(QMainWindow):
             fuetype = 'SVEA-96'
             self.dataobj.btf = btf(self.dataobj,fuetype)
 
+            self.setpincoords()
             self.draw_fuelmap()
             self.set_pinvalues()
             #self.dataobj.savecas()
@@ -197,11 +200,11 @@ class MainWin(QMainWindow):
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
                     expItem = QTableWidgetItem()
-                    expItem.setData(Qt.EditRole, QVariant(float(EXP[i,j])))
+                    expItem.setData(Qt.EditRole, QVariant(float(np.round(EXP[i,j],3))))
                     fintItem = QTableWidgetItem()
-                    fintItem.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
+                    fintItem.setData(Qt.EditRole, QVariant(float(np.round(FINT[i,j],3))))
                     btfItem = QTableWidgetItem()
-                    btfItem.setData(Qt.EditRole, QVariant(float(BTF[i,j])))    
+                    btfItem.setData(Qt.EditRole, QVariant(float(np.round(BTF[i,j],3))))    
                     
                     self.table.setItem(row,1,expItem)
                     self.table.setItem(row,2,fintItem)
@@ -405,8 +408,8 @@ class MainWin(QMainWindow):
         #self.axes.axis('equal')
         
         #self.axes.set_position([0,0,1,1])
-        self.axes.set_xlim(0,1.2)
-        self.axes.set_ylim(0,1)
+        #self.axes.set_xlim(0,1.2)
+        #self.axes.set_ylim(0,1)
         self.axes.set_position([0,0,1,1])
         #self.axes.set_visible(False)
         self.axes.set_frame_on(False)
@@ -472,8 +475,6 @@ class MainWin(QMainWindow):
         self.axes.add_patch(p_fancy)
         
         s96o2(self)
-        
-
         
 
         
@@ -640,6 +641,7 @@ class MainWin(QMainWindow):
         #self.table.verticalHeader().hide()
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        self.table.setMinimumWidth(180)
         self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)
         self.table.setColumnHidden(0,True)
@@ -663,7 +665,7 @@ class MainWin(QMainWindow):
         #self.connect(QHeaderView.sortIndicatorChanged(), SIGNAL('logicalIndex(int)'),self.openFile)
         
 
-        self.setpincoords()
+        #self.setpincoords()
         self.table.resizeColumnsToContents()
         #Tracer()()
 
@@ -709,10 +711,10 @@ class MainWin(QMainWindow):
 
         #hbox.addLayout(vbox)
         hbox.addWidget(groupbox)
-        hbox.addItem(spacerItemH)
+        #hbox.addItem(spacerItemH)
         #hbox.addWidget(self.canvas)
         hbox.addWidget(canvasGbox)
-        hbox.addItem(spacerItemH)
+        #hbox.addItem(spacerItemH)
         hbox.addWidget(tableGbox)
         #hbox.addWidget(self.table)
         #hbox.addItem(spacerItemH)
