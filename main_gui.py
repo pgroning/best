@@ -50,13 +50,22 @@ class Circle(object):
         else:
             return False
 
+#def on_resize(event):
+#    Tracer()()
+
 class MainWin(QMainWindow):
 #class AppForm(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
-        self.resize(1100,610)
-        self.move(200,200)
+        #self.resize(1100,610)
+        #self.move(200,200)
+
+        screenShape = QDesktopWidget().screenGeometry()
+        self.resize( screenShape.width()*0.8,screenShape.width()*0.445 )
+        #Tracer()()
+
+        self.resizeEvent = self.on_resize
 
         # Retrieve initial data
         #self.data_init()
@@ -79,6 +88,10 @@ class MainWin(QMainWindow):
         #self.on_draw()
         #self.draw_fuelmap()
         #Tracer()()
+
+    def on_resize(self,event):
+        self.axes.set_xlim(0,1.2)
+        self.axes.set_ylim(0,1)
 
     def openFile(self):
         #file_choices = "inp (*.inp);;pickle (*.p)"
@@ -399,7 +412,7 @@ class MainWin(QMainWindow):
         self.axes.set_frame_on(False)
         self.axes.get_xaxis().set_visible(False)
         self.axes.get_yaxis().set_visible(False)
-       
+        #Tracer()()
         #self.axes.grid(self.grid_cb.isChecked())
 
         #xmax = self.slider.value()
@@ -435,7 +448,6 @@ class MainWin(QMainWindow):
         poly = mpatches.Polygon(pp)
         poly.set_closed(False)
         self.axes.add_patch(poly)
-
 
         rodrect_h = mpatches.Rectangle((0.1,0.95), 0.77, 0.045, ec=(0.3, 0.3, 0.3))
         rodrect_h.set_fill(False)
@@ -484,36 +496,6 @@ class MainWin(QMainWindow):
         return idx0
 
 
-#    def on_plot(self):
-#
-#        case_id = self.case_id_current
-#        case_id_max = len(self.cas.cases)
-#        param = self.param_cbox.currentText()
-#        
-#        self.axes.clear()
-#        if param == 'Kinf':
-#            if self.case_cb.isChecked():
-#                for i in range(case_id_max):
-#                    #idx0 = self.startpoint(i)
-#                    self.plot_kinf(i)
-#            else:
-#                #idx0 = self.startpoint(case_id)
-#                self.plot_kinf(case_id)
-#        
-#        elif param == 'Fint':
-#            if self.case_cb.isChecked():
-#                for i in range(case_id_max):
-#                    self.plot_fint(i)
-#            else:
-#                self.plot_fint(case_id)
-#
-#        elif param == 'BTF':
-#            if self.case_cb.isChecked():
-#                for i in range(case_id_max):
-#                    self.plot_btf(i)
-#            else:
-#                self.plot_btf(case_id)
-       
 
     def create_main_frame(self):
         self.main_frame = QWidget()
@@ -529,7 +511,7 @@ class MainWin(QMainWindow):
         self.canvas.setParent(self.main_frame)
         self.canvas.setSizePolicy(QSizePolicy.Expanding,QSizePolicy.Expanding)
         self.canvas.setMinimumWidth(500)
-
+        self.canvas.setMinimumHeight(416)
         
         cvbox = QVBoxLayout()
         cvbox.addWidget(self.canvas)
