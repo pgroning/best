@@ -143,6 +143,11 @@ class MainWin(QMainWindow):
         else:
             return
 
+    def saveData(self):
+        file_choices = "Data files (*.p)"
+        filename = unicode(QFileDialog.getSaveFileName(self, 'Open file', '', file_choices))
+        self.dataobj.savepic(filename)
+
     def plotWin(self):
         #print "Open plot window"
         if hasattr(self,'dataobj'):
@@ -374,15 +379,17 @@ class MainWin(QMainWindow):
                 self.clickrect.remove()
             except:
                 pass
+        #self.clickrect = mpatches.Rectangle((x,y), d, d,hatch='.',
+        #                                    fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
         self.clickrect = mpatches.Rectangle((x,y), d, d,
-                                            fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
+                                            fc=(1,1,1),Fill=False,ec=(0, 0, 0))
         #r = self.circlelist[i].circle.get_radius()*1.3
         #x = self.circlelist[i].x
         #y = self.circlelist[i].y
         #self.clickrect = mpatches.Circle((x,y), r, fc=(1,1,1), alpha=1.0, ec=(1, 0, 0))
 
         self.clickrect.set_fill(False)
-        self.clickrect.set_linewidth(3.0)
+        self.clickrect.set_linewidth(2.0)
         self.axes.add_patch(self.clickrect)
         self.canvas.draw()
 
@@ -475,7 +482,7 @@ class MainWin(QMainWindow):
         self.axes.add_patch(p_fancy)
         
         s96o2(self)
-        
+ 
 
         
     def startpoint(self,case_id):
@@ -732,7 +739,7 @@ class MainWin(QMainWindow):
         self.file_menu = self.menuBar().addMenu("&File")
         
         save_settings_action = self.create_action("&Save settings...",
-            shortcut="Ctrl+S", slot=self.save_plot, 
+            shortcut="Ctrl+E", slot=self.save_plot, 
             tip="Save settings")
         quit_action = self.create_action("&Quit", slot=self.close, 
                                          shortcut="Ctrl+Q", tip="Close the application")
@@ -740,9 +747,11 @@ class MainWin(QMainWindow):
         open_file_action = self.create_action("&Open file...", slot=self.openFile,
                                               shortcut="Ctrl+L", tip="Open file")
 
+        save_data_action = self.create_action("&Save data...", slot=self.saveData,
+                                              shortcut="Ctrl+S", tip="Save data to file")
 
         self.add_actions(self.file_menu, 
-            (open_file_action, save_settings_action, None, quit_action))
+            (open_file_action, save_data_action, save_settings_action, None, quit_action))
 
 
         self.edit_menu = self.menuBar().addMenu("&Edit") 

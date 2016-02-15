@@ -71,8 +71,8 @@ class casio:
         #    self.cases.append(case)
 
 
-    def savecax(self):
-        pfile = os.path.splitext(self.data.inpfile)[0] + '.p'
+    def savepic(self,pfile):
+        #pfile = os.path.splitext(self.data.inpfile)[0] + '.p'
         with open(pfile,'wb') as fp:
             pickle.dump(self.data,fp,1)
             pickle.dump(self.cases,fp,1)
