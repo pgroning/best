@@ -59,7 +59,7 @@ class MainWin(QMainWindow):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
         self.resize(1100,620)
-        #self.move(200,200)
+        self.move(200,200)
 
         #screenShape = QDesktopWidget().screenGeometry()
         #self.resize( screenShape.width()*0.8,screenShape.width()*0.445 )
