@@ -641,6 +641,7 @@ class MainWin(QMainWindow):
         #self.table.verticalHeader().hide()
         self.table.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
+        self.table.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.table.setMinimumWidth(180)
         self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)

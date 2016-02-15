@@ -5,8 +5,8 @@ from PyQt4 import QtGui, QtCore
 
 class Bundle(QtGui.QWidget):
        
-    def __init__(self):
-        super(Bundle, self).__init__()
+    def __init__(self,parent=None):
+        super(Bundle, self).__init__(parent)
         
         self.initUI()
 
@@ -27,9 +27,9 @@ class Bundle(QtGui.QWidget):
         """
 
         
-    def initUI(self):      
-
-        self.setGeometry(0, 0, 800, 600)
+    def initUI(self):
+        self.setGeometry(0, 0, 580, 500)
+        #self.setGeometry(0, 0, 800, 600)
         #self.setWindowTitle('Bundle')
         self.show()
 
