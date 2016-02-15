@@ -111,8 +111,8 @@ class MainWin(QMainWindow):
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
  
-        fuetype = 'SVEA-96'
-        self.dataobj.btf = btf(self.dataobj,fuetype)
+        #fuetype = 'SVEA-96'
+        #self.dataobj.btf = btf(self.dataobj,fuetype)
 
         self.setpincoords()
         self.draw_fuelmap()
@@ -133,8 +133,9 @@ class MainWin(QMainWindow):
             self.dataobj.readinp(filename)
             self.dataobj.readcax()
 
-            fuetype = 'SVEA-96'
-            self.dataobj.btf = btf(self.dataobj,fuetype)
+            self.dataobj.calcbtf()
+            #fuetype = 'SVEA-96'
+            #self.dataobj.btf = btf(self.dataobj,fuetype)
 
             self.setpincoords()
             self.draw_fuelmap()

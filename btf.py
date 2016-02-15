@@ -1,7 +1,7 @@
 from IPython.core.debugger import Tracer
 
 import numpy as np
-from casio import casio
+#from casio import casio
 
 class btf:
     """Calculate BTF values"""
@@ -101,6 +101,7 @@ class btf:
 
 
 if __name__ == '__main__':
+    from casio import casio
     casobj = casio()
     casobj.loadpic('caxfiles.p')
     fuetype = 'SVEA-96'

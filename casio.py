@@ -12,6 +12,8 @@ import numpy as np
 from multiprocessing import Pool
 from casdata_pts_2 import casdata
 
+from btf import btf
+
 
 class datastruct(object):
     """Dummy class used to structure data"""
@@ -76,6 +78,7 @@ class casio:
         with open(pfile,'wb') as fp:
             pickle.dump(self.data,fp,1)
             pickle.dump(self.cases,fp,1)
+            pickle.dump(self.btf,fp,1)
         print "Saved data to file " + pfile
         
 
@@ -84,7 +87,13 @@ class casio:
         with open(pfile,'rb') as fp:
             self.data = pickle.load(fp)
             self.cases = pickle.load(fp)
+            self.btf = pickle.load(fp)
         self.data.pfile = pfile
+
+
+    def calcbtf(self):
+        fuetype = 'SVEA-96'
+        self.btf = btf(self,fuetype)
 
     def pow3(self,POW):
     #def pow3(self,*args):
