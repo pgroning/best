@@ -658,7 +658,12 @@ class MainWin(QMainWindow):
         #self.connect(self.table.horizontalHeader(),SIGNAL('QHeaderView.sortIndicatorChanged(int)'),self.openFile)
         self.connect(self.table.horizontalHeader(),SIGNAL('sectionClicked(int)'),self.tableHeaderSort)
         self.connect(self.table.verticalHeader(),SIGNAL('sectionClicked(int)'),self.pinSelect)
-        self.connect(self.table,SIGNAL('cellClicked(int,int)'),self.pinSelect)
+        #self.connect(self.table,SIGNAL('cellClicked(int,int)'),self.pinSelect)
+        #self.connect(self.table,SIGNAL('currentChanged(int)'),self.pinSelect)
+        #Tracer()()
+        self.table.cellActivated.connect(self.pinSelect)
+        self.table.cellClicked.connect(self.pinSelect)
+        #self.table.selectionModel().selectionChanged.connect(self.pinSelect)
 
         tvbox = QVBoxLayout()
         tvbox.addWidget(self.table)
