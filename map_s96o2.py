@@ -95,6 +95,9 @@ def s96o2(self):
     #i = [i for i in range(LFU.shape[0]) if np.all(LFU[i,:]==0)][0]
     #j = [j for j in range(LFU.shape[1]) if np.all(LFU[:,j]==0)][0]
 
+    self.xlist = ('1','2','3','4','5','6','7','8','9','10')
+    self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
+
     self.circlelist = []
     for i in range(LFU.shape[0]):
         for j in range(LFU.shape[1]):

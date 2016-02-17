@@ -114,7 +114,7 @@ class MainWin(QMainWindow):
         #fuetype = 'SVEA-96'
         #self.dataobj.btf = btf(self.dataobj,fuetype)
 
-        self.setpincoords()
+        #self.setpincoords()
         self.draw_fuelmap()
         self.set_pinvalues()
 
@@ -137,7 +137,7 @@ class MainWin(QMainWindow):
             #fuetype = 'SVEA-96'
             #self.dataobj.btf = btf(self.dataobj,fuetype)
 
-            self.setpincoords()
+            #self.setpincoords()
             self.draw_fuelmap()
             self.set_pinvalues()
             #self.dataobj.savecas()
@@ -188,7 +188,7 @@ class MainWin(QMainWindow):
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
         self.setpincoords()
         
-        row = 0
+        #row = 0
         k = 0
         for i in range(npst):
             for j in range(npst):
@@ -202,7 +202,7 @@ class MainWin(QMainWindow):
                     self.circlelist[k].FINT = FINT[i,j]
                     self.circlelist[k].BA = BA[i,j]
                     self.circlelist[k].BTF = BTF[i,j]
-                    k += 1
+                    #k += 1
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
                     expItem = QTableWidgetItem()
@@ -211,18 +211,24 @@ class MainWin(QMainWindow):
                     fintItem.setData(Qt.EditRole, QVariant(float(np.round(FINT[i,j],3))))
                     btfItem = QTableWidgetItem()
                     btfItem.setData(Qt.EditRole, QVariant(float(np.round(BTF[i,j],3))))    
+
+                    self.table.setItem(k,1,expItem)
+                    self.table.setItem(k,2,fintItem)
+                    self.table.setItem(k,3,btfItem)
+                    k += 1
                     
-                    self.table.setItem(row,1,expItem)
-                    self.table.setItem(row,2,fintItem)
-                    self.table.setItem(row,3,btfItem)
+                    #self.table.setItem(row,1,expItem)
+                    #self.table.setItem(row,2,fintItem)
+                    #self.table.setItem(row,3,btfItem)
+
                         #item.setData(Qt.EditRole, QVariant(float(FINT[i,j])))
                         #self.table.setItem(row,2,item)
                         #self.table.setItem(row,1,QTableWidgetItem(str(EXP[i,j])))
                         #self.table.setItem(row,2,QTableWidgetItem(str(FINT[i,j])))
                     #self.table.setItem(row,3,QTableWidgetItem(str(0)))
                 #if j != 5 and i !=5: # Ignore water cross
-                if not (np.all(LFU[i,:]==0) or np.all(LFU[:,j]==0)): # Ignore water cross
-                    row += 1
+                #if not (np.all(LFU[i,:]==0) or np.all(LFU[:,j]==0)): # Ignore water cross
+                #    row += 1
         
         burnup = self.dataobj.cases[case_num].statepts[point_num].burnup
         voi = self.dataobj.cases[case_num].statepts[point_num].voi
@@ -278,25 +284,18 @@ class MainWin(QMainWindow):
 
     def setpincoords(self):
         self.table.clearContents()
-        self.xlist = ('01','02','03','04','05','06','07','08','09','10')
-        self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
+        #self.xlist = ('01','02','03','04','05','06','07','08','09','10')
+        #self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
+        npin = len(self.circlelist)
+        self.table.setRowCount(npin)
+        
+        for i,pinobj in enumerate(self.circlelist):
+            coord_item = QTableWidgetItem(pinobj.coord)
+            self.table.setVerticalHeaderItem(i,coord_item)
+            i_item = QTableWidgetItem()
+            i_item.setData(Qt.EditRole, QVariant(int(i)))
+            self.table.setItem(i,0,i_item)
 
-        for i,y in enumerate(self.ylist):
-            for j,x in enumerate(self.xlist):
-                pin = y + x
-                row = 10*i + j
-                #print row,pin
-                item = QTableWidgetItem(pin)
-                self.table.setVerticalHeaderItem(row,item)
-                item2 = QTableWidgetItem(pin)
-                self.table.setItem(row,0,item2)
-                #self.table.setItem(row,1,QTableWidgetItem(str(row)))
-
-       #pinlist = ('A01','A02','A03','A04','A05','A06','A07','A08','A09','A10')
-       # for row,pin in enumerate(pinlist):
-       #     item = QTableWidgetItem(pin)
-       #     self.table.setItem(row,0,item)
-       #     self.table.setItem(row,1,QTableWidgetItem(str(0)))
 
     def save_plot(self):
         file_choices = "PNG (*.png)|*.png"
@@ -322,21 +321,22 @@ class MainWin(QMainWindow):
 
     def tableHeaderSort(self):
         #print "Sort header"
-        for i in range(100):
-            item = QTableWidgetItem(str(self.table.item(i,0).text()))
+        for i,pinobj in enumerate(self.circlelist):
+            #item = QTableWidgetItem(str(self.table.item(i,0).text()))
+            index = int(self.table.item(i,0).text())
+            item = QTableWidgetItem(str(self.circlelist[index].coord))
             self.table.setVerticalHeaderItem(i,item)
 
-    def tableSelectRow(self,index):
-        i = next(i for i in range(self.table.rowCount())
-                 if str(self.table.item(i,0).text()) == self.circlelist[index].coord)
-        #print i
-        self.table.selectRow(i)
 
-    def pinSelect(self,index):
-        #print str(self.table.item(index,0).text())
-        i = next(i for i in range(len(self.circlelist))
-                 if str(self.table.item(index,0).text()) == self.circlelist[i].coord)
-        self.mark_pin(i)
+    def tableSelectRow(self,i):
+        index = next(j for j in range(self.table.rowCount()) 
+                     if int(self.table.item(j,0).text()) == i)
+        self.table.selectRow(index)
+
+
+    def pinSelect(self,i):
+        index = int(self.table.item(i,0).text())
+        self.mark_pin(index)
 
 
     def on_click(self, event):
@@ -651,7 +651,7 @@ class MainWin(QMainWindow):
         self.table.horizontalHeader().setResizeMode(QHeaderView.Stretch)
         self.table.setSizePolicy(QSizePolicy.Minimum,QSizePolicy.Minimum)
         self.table.setMinimumWidth(180)
-        self.table.setHorizontalHeaderLabels(('Coord','EXP','FINT','BTF'))
+        self.table.setHorizontalHeaderLabels(('Index','EXP','FINT','BTF'))
         self.table.setSortingEnabled(True)
         self.table.setColumnHidden(0,True)
         
