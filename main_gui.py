@@ -19,6 +19,7 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 #from matplotlib.patches import FancyBboxPatch
 import matplotlib.patches as mpatches
+import matplotlib.patheffects as path_effects
 import time
 
 from casio import casio
@@ -31,6 +32,7 @@ class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text='',r=0.028):
         #radius = 0.028
         self.circle = mpatches.Circle((x,y), r, fc=c, ec=(0.1, 0.1, 0.1))
+        self.circle.set_path_effects([path_effects.withSimplePatchShadow()])
         self.circle.set_linewidth(2.0)
         self.x = x
         self.y = y
