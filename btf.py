@@ -1,4 +1,5 @@
 from IPython.core.debugger import Tracer
+from pyqt_trace import pyqt_trace
 
 import numpy as np
 #from casio import casio
@@ -17,10 +18,8 @@ class btf:
         np.savetxt('btf.txt',self.DOX,fmt='%.4f',delimiter=' ')
 
 
-
     def lastindex(self,case_id):
         """Iterate over burnup points"""
-        print "Calculating BTF vs burnup"
         statepoints = self.casobj.cases[case_id].statepts
         burnup_old = 0.0
         for idx,p in enumerate(statepoints):
@@ -71,10 +70,15 @@ class btf:
         
         voi = 50
 
-        case_id = 1
-        idx = self.lastindex(case_id)
-        x = [self.casobj.cases[case_id].statepts[i].burnup for i in range(idx)]
-        #Tracer()()
+        # Find intersection burnup points for all cases
+        idx = self.lastindex(0)
+        x = [self.casobj.cases[0].statepts[i].burnup for i in range(idx)]
+        ncases = len(self.casobj.cases)
+        for case_id in range(1,ncases):
+            idx = self.lastindex(case_id)
+            x2 = [self.casobj.cases[case_id].statepts[i].burnup for i in range(idx)]
+            x = [val for val in x if val in x2]
+
         npst = self.casobj.cases[case_id].data.npst
         self.DOX = np.zeros((len(x),npst,npst))
 
