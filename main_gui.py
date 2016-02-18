@@ -4,6 +4,7 @@ This window embeds a matplotlib (mpl) plot into a PyQt4 GUI application
 """
 
 from IPython.core.debugger import Tracer
+from pyqt_trace import pyqt_trace
 
 import sys, os#, random
 from PyQt4.QtCore import *
@@ -179,7 +180,15 @@ class MainWin(QMainWindow):
         ENR = getattr(self.dataobj.cases[case_num].data,'ENR')
         EXP = getattr(self.dataobj.cases[case_num].statepts[point_num],'EXP')
         FINT = getattr(self.dataobj.cases[case_num].statepts[point_num],'POW')
-        BTF = self.dataobj.btf.DOX[point_num,:,:]
+        #BTF = self.dataobj.btf.DOX[point_num,:,:]
+
+        burnup = self.dataobj.cases[case_num].statepts[point_num].burnup
+        try:
+            btf_num = next(i for i,x in enumerate(self.dataobj.btf.burnpoints) if x == burnup)
+            BTF = self.dataobj.btf.DOX[btf_num,:,:]
+        except:
+            BTF = np.zeros(np.shape(self.dataobj.btf.DOX)[1:])
+            BTF.fill(np.nan)
 
         npst = self.dataobj.cases[case_num].data.npst
         LFU = self.dataobj.cases[case_num].data.LFU
