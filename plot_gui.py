@@ -21,8 +21,8 @@ from casio import casio
 
 class PlotWin(QMainWindow):
     def __init__(self, parent=None):
-        #super(AppForm, self).__init__(parent)
-        QMainWindow.__init__(self, parent)
+        super(PlotWin, self).__init__(parent)
+        #QMainWindow.__init__(self, parent)
         self.setWindowTitle('Plot Window')
         self.move(600,300)
 

@@ -43,17 +43,20 @@ class casio:
         with open(inpfile) as f:
             flines = f.read().splitlines() #exclude \n
 
+        # Read fuel type
+        fuetype = flines[0].strip()
         # Search for caxfiles
         reCAX = re.compile('.cax\s*$')
         caxfiles = []
-        for i,x in enumerate(flines):
+        for i,x in enumerate(flines[1:]):
             if reCAX.search(x):
                 caxfiles.append(x)
             else:
                 break
-        
+        i+=1
         nodes  = map(int,re.split('\s+',flines[i]))
 
+        self.data.fuetype = fuetype
         self.data.inpfile = inpfile
         self.data.caxfiles = caxfiles
         self.data.nodes = nodes
@@ -92,8 +95,10 @@ class casio:
 
 
     def calcbtf(self):
-        fuetype = 'SVEA-96'
-        self.btf = btf(self,fuetype)
+        self.btf = btf(self)
+        #fuetype = 'SVEA-96'
+        #self.btf = btf(self,fuetype)
+
 
     def pow3(self,POW):
     #def pow3(self,*args):

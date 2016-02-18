@@ -6,11 +6,11 @@ import numpy as np
 class btf:
     """Calculate BTF values"""
 
-    def __init__(self,casobj,fuetype):
+    def __init__(self,casobj):
         self.casobj = casobj
 
-        if fuetype == 'SVEA-96':
-            self.svea96(fuetype)
+        if self.casobj.data.fuetype == 'SVEA-96':
+            self.svea96()
 
 
     def export2ascii(self):
@@ -65,8 +65,8 @@ class btf:
 
 
 
-    def svea96(self,fuetype):
-        print 'Calculating SVEA-96'
+    def svea96(self):
+        print 'Calculating SVEA96OPT2'
         from btf_s96 import calc_btf
         
         voi = 50
@@ -81,7 +81,7 @@ class btf:
         for i,burnup in enumerate(x):
             #print burnup
             POW3 = self.pow3d(voi,burnup)
-            self.DOX[i,:,:] = calc_btf(fuetype,POW3)
+            self.DOX[i,:,:] = calc_btf(self.casobj.data.fuetype,POW3)
 
         self.burnpoints = x
 
@@ -103,7 +103,7 @@ class btf:
 if __name__ == '__main__':
     from casio import casio
     casobj = casio()
-    casobj.loadpic('caxfiles.p')
-    fuetype = 'SVEA-96'
-    btf(casobj,fuetype)
+    casobj.loadpic('caxfiles_2.p')
+    #fuetype = 'SVEA96OPT2'
+    btf(casobj)
     #Tracer()()
