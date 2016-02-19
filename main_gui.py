@@ -19,7 +19,8 @@ from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 #from matplotlib.patches import FancyBboxPatch
 import matplotlib.patches as mpatches
-import matplotlib.patheffects as path_effects
+try: import matplotlib.patheffects as path_effects
+except: pass
 import time
 
 from casio import casio
@@ -30,13 +31,16 @@ from plot_gui import PlotWin
 
 class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text='',r=0.028):
+        self.axes = axes
         #radius = 0.028
         self.circle = mpatches.Circle((x,y), r, fc=c, ec=(0.1, 0.1, 0.1))
-        self.circle.set_path_effects([path_effects.withSimplePatchShadow()])
+        self.circle.set_linestyle('solid')
+        try:
+            self.circle.set_path_effects([path_effects.withSimplePatchShadow()])
+        except: pass
         self.circle.set_linewidth(2.0)
         self.x = x
         self.y = y
-        self.axes = axes
         self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=8)
         self.axes.add_patch(self.circle)
         
@@ -357,10 +361,7 @@ class MainWin(QMainWindow):
         # It carries lots of information, of which we're using
         # only a small amount here.
         # 
-        #box_points = event.artist.get_bbox().get_points()
-        #msg = "You've clicked on a bar with coords:\n %s" % box_points
-        
-        #QMessageBox.information(self, "Click!", "You clicked me!")
+
         #print event.x,event.y
         #if qApp.keyboardModifiers() & Qt.ControlModifier: # ctrl+click
         #    remove = False
@@ -386,23 +387,23 @@ class MainWin(QMainWindow):
         d = self.circlelist[i].circle.get_radius()*2*1.25
         x = self.circlelist[i].x-d/2
         y = self.circlelist[i].y-d/2
-        if hasattr(self,'clickrect'): # Remove any previously selected circles
+        if hasattr(self,'clickpatch'): # Remove any previously selected circles
             try:
-                self.clickrect.remove()
+                self.clickpatch.remove()
             except:
                 pass
         #self.clickrect = mpatches.Rectangle((x,y), d, d,hatch='.',
         #                                    fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
-        self.clickrect = mpatches.Rectangle((x,y), d, d,
-                                            fc=(1,1,1),Fill=False,ec=(0, 0, 0))
-        #r = self.circlelist[i].circle.get_radius()*1.3
-        #x = self.circlelist[i].x
-        #y = self.circlelist[i].y
-        #self.clickrect = mpatches.Circle((x,y), r, fc=(1,1,1), alpha=1.0, ec=(1, 0, 0))
-
-        self.clickrect.set_fill(False)
-        self.clickrect.set_linewidth(2.0)
-        self.axes.add_patch(self.clickrect)
+        #self.clickrect = mpatches.Rectangle((x,y), d, d,
+        #                                    fc=(1,1,1),Fill=False,ec=(0, 0, 0))
+        r = self.circlelist[i].circle.get_radius()*1.3
+        x = self.circlelist[i].x
+        y = self.circlelist[i].y
+        self.clickpatch = mpatches.Circle((x,y), r, fc=(1,1,1), alpha=1.0, ec=(0.2, 0.2, 0.2))
+        self.clickpatch.set_linestyle('dotted')
+        self.clickpatch.set_fill(False)
+        self.clickpatch.set_linewidth(2.0)
+        self.axes.add_patch(self.clickpatch)
         self.canvas.draw()
 
 
