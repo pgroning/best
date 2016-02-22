@@ -107,11 +107,14 @@ class casdata:
         iTFU = self.__matchcontent(flines,'^\s*TFU','next')
         iTMO = self.__matchcontent(flines,'^\s*TMO','next')
         iPDE = self.__matchcontent(flines,'^\s*PDE','next')
-        iSLA = self.__matchcontent(flines,'^\s*SLA','next')
+        try: # Card for water cross (valid for OPT2/3)
+            iSLA = self.__matchcontent(flines,'^\s*SLA','next')
+        except:
+            iSLA = None
+            print "Could not find SLA card"
         iWRI = self.__matchcontent(flines,'^\s*WRI','next')
         iSTA = self.__matchcontent(flines,'^\s*STA','next')
         print "Done."
-        #Tracer()()
         # Read title
         #self.title = flines[iTTL[0]]
         self.data.title = flines[iTTL[0]]
@@ -219,8 +222,8 @@ class casdata:
         #Nsla = iSLA.size
         #self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
         #self.slalines = flines[iSLA]
-        self.data.slalines = flines[iSLA]
-
+        if iSLA is not None:
+            self.data.slalines = flines[iSLA]
         # ------Step through the state points----------
         print "Stepping through state points..."
 
