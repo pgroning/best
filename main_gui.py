@@ -29,6 +29,21 @@ from btf import btf
 #from pyDraw import Bundle
 from plot_gui import PlotWin
 
+class dataThread(QThread):
+    def __init__(self,parent):
+        QThread.__init__(self)
+        self.parent = parent
+
+    def __del__(self):
+        self.wait()
+
+    def run(self):
+        self.dataobj = casio()
+        self.dataobj.readinp(self.parent._filename)
+        self.emit(SIGNAL('dataobj(PyQT_PyObject)'),self.dataobj)
+        #self.parent.dataobj.data = self.dataobj.data
+
+
 class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text='',r=0.028):
         self.axes = axes
@@ -125,6 +140,8 @@ class MainWin(QMainWindow):
         self.draw_fuelmap()
         self.set_pinvalues()
 
+    def get_dataobj(self):
+        print "get dataobject"
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -135,7 +152,17 @@ class MainWin(QMainWindow):
         ret = msgBox.information(self,"Importing data",msg.strip(),QMessageBox.Yes|QMessageBox.Cancel)
         #ret = msgBox.question(self,"Importing data",msg.strip(),QMessageBox.Yes|QMessageBox.Cancel)
         self.statusBar().showMessage('Importing data from %s' % filename, 2000)
+        self._filename = filename
         if ret == QMessageBox.Yes:
+
+            #self.thread = dataThread(self)
+            #self.connect(self.thread,SIGNAL('dataobj(PyQT_PyObject)'),self.get_dataobj)
+            #self.thread.start()
+
+            #pyqt_trace()
+
+            #print self.dataobj.data.caxfiles
+
             self.dataobj = casio()
             self.dataobj.readinp(filename)
             self.dataobj.readcax()
