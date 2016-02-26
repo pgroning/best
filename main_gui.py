@@ -147,10 +147,12 @@ class MainWin(QMainWindow):
         self.draw_fuelmap()
         self.set_pinvalues()
 
-    def get_dataobj(self):
+    def dataobj_finished(self):
         print "dataobject constructed"
+        #self.thread.quit()
         self.draw_fuelmap()
         self.set_pinvalues()
+        QMessageBox.information(self,"Done!","All data imported!")
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -166,10 +168,11 @@ class MainWin(QMainWindow):
 
             #self.dataobj = casio()
             self.thread = dataThread(self)
-            self.connect(self.thread,SIGNAL('finished()'),self.get_dataobj)
+            self.connect(self.thread,SIGNAL('finished()'),self.dataobj_finished)
             #self.connect(self.thread,SIGNAL('dataobj(PyQT_PyObject)'),self.get_dataobj)
             self.thread.start()
-            #time.sleep(60)
+            #time.sleep(20)
+            #self.thread.terminate()
             #pyqt_trace()
 
             #print self.dataobj.data.caxfiles
