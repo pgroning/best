@@ -38,9 +38,16 @@ class dataThread(QThread):
         self.wait()
 
     def run(self):
-        self.dataobj = casio()
-        self.dataobj.readinp(self.parent._filename)
-        self.emit(SIGNAL('dataobj(PyQT_PyObject)'),self.dataobj)
+        self.parent.dataobj = casio()
+        self.parent.dataobj.readinp(self.parent._filename)
+        self.parent.dataobj.readcax()
+        self.parent.dataobj.calcbtf()
+
+        #self.dataobj = casio()
+        #self.dataobj.readinp(self.parent._filename)
+        #self.dataobj.readcax()
+        #self.parent.dataobj = self.dataobj
+        #self.emit(SIGNAL('dataobj(PyQT_PyObject)'),self.dataobj)
         #self.parent.dataobj.data = self.dataobj.data
 
 
@@ -141,7 +148,9 @@ class MainWin(QMainWindow):
         self.set_pinvalues()
 
     def get_dataobj(self):
-        print "get dataobject"
+        print "dataobject constructed"
+        self.draw_fuelmap()
+        self.set_pinvalues()
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -155,25 +164,27 @@ class MainWin(QMainWindow):
         self._filename = filename
         if ret == QMessageBox.Yes:
 
-            #self.thread = dataThread(self)
+            #self.dataobj = casio()
+            self.thread = dataThread(self)
+            self.connect(self.thread,SIGNAL('finished()'),self.get_dataobj)
             #self.connect(self.thread,SIGNAL('dataobj(PyQT_PyObject)'),self.get_dataobj)
-            #self.thread.start()
-
+            self.thread.start()
+            #time.sleep(60)
             #pyqt_trace()
 
             #print self.dataobj.data.caxfiles
 
-            self.dataobj = casio()
-            self.dataobj.readinp(filename)
-            self.dataobj.readcax()
+            #self.dataobj = casio()
+            #self.dataobj.readinp(filename)
+            #self.dataobj.readcax()
 
-            self.dataobj.calcbtf()
+            #self.dataobj.calcbtf()
             #fuetype = 'SVEA-96'
             #self.dataobj.btf = btf(self.dataobj,fuetype)
 
             #self.setpincoords()
-            self.draw_fuelmap()
-            self.set_pinvalues()
+            #self.draw_fuelmap()
+            #self.set_pinvalues()
             #self.dataobj.savecas()
         else:
             return
