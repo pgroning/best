@@ -28,6 +28,7 @@ from btf import btf
 
 #from pyDraw import Bundle
 from plot_gui import PlotWin
+from progbar import ProgressBar
 
 class dataThread(QThread):
     def __init__(self,parent):
@@ -152,7 +153,10 @@ class MainWin(QMainWindow):
         #self.thread.quit()
         self.draw_fuelmap()
         self.set_pinvalues()
-        QMessageBox.information(self,"Done!","All data imported!")
+        self.progressbar.update(100)
+        self.progressbar.setWindowTitle('All data imported')
+        self.progressbar.button.setText('Ok')
+        #QMessageBox.information(self,"Done!","All data imported!")
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -166,11 +170,20 @@ class MainWin(QMainWindow):
         self._filename = filename
         if ret == QMessageBox.Yes:
 
+            #self.progressbar = ProgressBar()
+
             #self.dataobj = casio()
             self.thread = dataThread(self)
             self.connect(self.thread,SIGNAL('finished()'),self.dataobj_finished)
             #self.connect(self.thread,SIGNAL('dataobj(PyQT_PyObject)'),self.get_dataobj)
             self.thread.start()
+
+            self.progressbar = ProgressBar()
+            self.progressbar.show()
+            for i in range(99):
+                self.progressbar.update(i)
+                time.sleep(0.4)
+
             #time.sleep(20)
             #self.thread.terminate()
             #pyqt_trace()

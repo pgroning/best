@@ -4,8 +4,8 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-
-class ProgressBar(QWidget):
+class ProgressBar(QDialog):
+#class ProgressBar(QWidget):
     def __init__(self, parent=None, total=100):
         super(ProgressBar, self).__init__(parent)
         self.progressbar = QProgressBar()
@@ -16,10 +16,11 @@ class ProgressBar(QWidget):
         main_layout.addWidget(self.progressbar, 0, 0)
         main_layout.addWidget(self.button, 1, 0)
         self.setLayout(main_layout)
-        self.setWindowTitle('Progress')
-        self.resize(200,50)
+        self.setWindowTitle('Importing data...')
+        self.resize(300,50)
         self.move(500,500)
-        self.setWindowModality(True)
+        self.setModal(True)
+        #self.setWindowModality(True)
         #Tracer()()
 
     def update(self,val):
