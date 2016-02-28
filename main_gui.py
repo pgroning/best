@@ -39,10 +39,10 @@ class dataThread(QThread):
         self.wait()
 
     def run(self):
-        self.emit(SIGNAL('progressbar_update(int)'),30)
         self.parent.dataobj = casio()
         self.parent.dataobj.readinp(self.parent._filename)
         self.parent.dataobj.readcax()
+        self.emit(SIGNAL('progressbar_update(int)'),90)
         self.parent.dataobj.calcbtf()
 
         #self.dataobj = casio()
@@ -154,14 +154,18 @@ class MainWin(QMainWindow):
         #self.thread.quit()
         self.draw_fuelmap()
         self.set_pinvalues()
+        self.timer.stop()
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
         self.progressbar.button.clicked.connect(self.progressbar.close)
         #QMessageBox.information(self,"Done!","All data imported!")
 
-    def progressbar_update(self,val):
-        self.progressbar.update(val)
+    def progressbar_update(self,val=None):
+        if val is not None:
+            self.progressbar._value = max(val,self.progressbar._value)
+        self.progressbar.update(self.progressbar._value)
+        self.progressbar._value += 1
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -185,9 +189,11 @@ class MainWin(QMainWindow):
 
             self.progressbar = ProgressBar()
             self.progressbar.show()
-            #for i in range(99):
-            #    self.progressbar.update(i)
-            #    time.sleep(0.4)
+
+            self.timer = QTimer()
+            self.connect(self.timer,SIGNAL('timeout()'),self.progressbar_update)
+            self.progressbar._value = 1
+            self.timer.start(500)
 
             #time.sleep(20)
             #self.thread.terminate()
