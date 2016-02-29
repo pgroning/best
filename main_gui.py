@@ -158,6 +158,7 @@ class MainWin(QMainWindow):
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
+        self.progressbar.button.setEnabled(True)
         self.progressbar.button.clicked.connect(self.progressbar.close)
         #QMessageBox.information(self,"Done!","All data imported!")
 
@@ -189,6 +190,8 @@ class MainWin(QMainWindow):
 
             self.progressbar = ProgressBar()
             self.progressbar.show()
+            self.progressbar.button.setEnabled(False)
+            #self.progressbar.button.clicked.connect(self.progressbar.close)
 
             self.timer = QTimer()
             self.connect(self.timer,SIGNAL('timeout()'),self.progressbar_update)

@@ -30,7 +30,7 @@ class ProgressBar(QDialog):
         self.move(500,500)
         self.setModal(True)
         #self.setWindowModality(True)
-        Tracer()()
+        #Tracer()()
 
     def update(self,val):
         self.progressbar.setValue(val)
