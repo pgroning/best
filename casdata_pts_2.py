@@ -280,7 +280,10 @@ class casdata:
                 EXP[:,:,i] = 0
             else:
                 dburn = burnup[i] - burnup[i-1]
-                EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
+                if dburn < 0:
+                    EXP[:,:,i] = POW[:,:,i]*burnup[i]
+                else:
+                    EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
 
 
         # Calculate Fint:
