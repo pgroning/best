@@ -29,7 +29,6 @@ class ProgressBar(QDialog):
         self.setMaximumHeight(50)
         self.move(500,500)
         self.setModal(True)
-        #self.setWindowModality(True)
         #Tracer()()
 
     def update(self,val):

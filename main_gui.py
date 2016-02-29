@@ -34,23 +34,27 @@ class dataThread(QThread):
     def __init__(self,parent):
         QThread.__init__(self)
         self.parent = parent
+        self._kill = False
 
     def __del__(self):
         self.wait()
 
     def run(self):
-        self.parent.dataobj = casio()
-        self.parent.dataobj.readinp(self.parent._filename)
-        self.parent.dataobj.readcax()
-        self.emit(SIGNAL('progressbar_update(int)'),90)
-        self.parent.dataobj.calcbtf()
+        if not self._kill:
+            self.dataobj = casio()
+            self.dataobj.readinp(self.parent._filename)
+            self.dataobj.readcax()
+            self.emit(SIGNAL('progressbar_update(int)'),90)
+        if not self._kill:
+            self.dataobj.calcbtf()
+        if not self._kill:
+            self.parent.dataobj = self.dataobj
 
-        #self.dataobj = casio()
-        #self.dataobj.readinp(self.parent._filename)
-        #self.dataobj.readcax()
-        #self.parent.dataobj = self.dataobj
-        #self.emit(SIGNAL('dataobj(PyQT_PyObject)'),self.dataobj)
-        #self.parent.dataobj.data = self.dataobj.data
+        #self.parent.dataobj = casio()
+        #self.parent.dataobj.readinp(self.parent._filename)
+        #self.parent.dataobj.readcax()
+        #self.emit(SIGNAL('progressbar_update(int)'),90)
+        #self.parent.dataobj.calcbtf()
 
 
 class Circle(object):
@@ -158,8 +162,10 @@ class MainWin(QMainWindow):
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
-        self.progressbar.button.setEnabled(True)
+        self.progressbar.button.clicked.disconnect(self.killThread)
         self.progressbar.button.clicked.connect(self.progressbar.close)
+        self.progressbar.button.setEnabled(True)
+        
         #QMessageBox.information(self,"Done!","All data imported!")
 
     def progressbar_update(self,val=None):
@@ -167,6 +173,17 @@ class MainWin(QMainWindow):
             self.progressbar._value = max(val,self.progressbar._value)
         self.progressbar.update(self.progressbar._value)
         self.progressbar._value += 1
+
+    def killThread(self):
+        print 'killThread'
+        self.disconnect(self.timer,SIGNAL('timeout()'),self.progressbar_update)
+        self.disconnect(self.thread,SIGNAL('finished()'),self.dataobj_finished)
+        self.disconnect(self.thread,SIGNAL('progressbar_update(int)'),self.progressbar_update)
+        self.thread._kill = True
+        self.progressbar.close()
+        #self.progressbar.close
+#        self.thread.wait()
+#        print 'killed'
 
     def read_cax(self,filename):
         msg = """ Click Yes to start importing data from cax files.
@@ -189,8 +206,12 @@ class MainWin(QMainWindow):
             self.thread.start()
 
             self.progressbar = ProgressBar()
+            xpos = self.pos().x() + self.width()/2 - self.progressbar.width()/2
+            ypos = self.pos().y() + self.height()/2 - self.progressbar.height()/2
+            self.progressbar.move(xpos,ypos)
             self.progressbar.show()
             self.progressbar.button.setEnabled(False)
+            self.progressbar.button.clicked.connect(self.killThread)
             #self.progressbar.button.clicked.connect(self.progressbar.close)
 
             self.timer = QTimer()
@@ -772,8 +793,9 @@ class MainWin(QMainWindow):
         vbox.addLayout(point_hbox)
         vbox.addLayout(enr_hbox)
 
-        spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-        vbox.addItem(spacerItem)
+        #spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        #vbox.addItem(spacerItem)
+        vbox.addStretch(1)
 
         groupbox = QGroupBox()
         groupbox.setStyleSheet("QGroupBox { background-color: rgb(200, 200,\
