@@ -16,7 +16,8 @@ from IPython.core.debugger import Tracer
 import numpy as np
 import re
 import linecache
-import os.path
+import os
+#import os.path
 import sys
 #import time
 #from multiprocessing import Pool
@@ -485,6 +486,44 @@ class casdata:
 
         #Tracer()()
 
+
+    def runc3(self): # Running C3 disturbance model
+        # C3 input file
+        c3inp = "./c3.inp"
+        # output file
+        c3out = "./c3.out"
+        # cax file
+        c3cax = "./c3.cax"
+        # libs
+        lib1 = "./lib/c3/e4lbj40"
+        lib2 = "./lib/c3/bal8ab4"
+        lib3 = "./lib/c3/galb410"
+        # C3 executable
+        c3exe = "./bin/casmo3"
+
+        # Write C3 configuration file
+        c3cfg = "./c3.txt"
+        f = open(c3cfg, "w")
+        f.write(c3inp + "\n")
+        f.write(c3out + "\n")
+        f.write(lib1 + "\n")
+        f.write(lib2 + "\n")
+        f.write("\n")
+        f.write(lib3 + "\n")
+        f.write(c3cax + "\n")
+        newlines = '\n' * 7
+        f.write(newlines)
+        f.close()
+
+        # Run C3 executable
+        cmd = c3exe + " " + c3cfg
+        print cmd
+        os.system(cmd)
+
+        # Remove files
+        os.remove(c3cfg)
+
+
     def findpoint(self,burnup=None,vhi=None,voi=None,tfu=None):
         """Return statepoint index that correspond to specific burnup, void and void history
         Syntax: pt = findpoint(burnup=burnup_val,vhi=vhi_val,voi=voi_val,tfu=tfu_val)"""
@@ -498,6 +537,7 @@ class casdata:
             pindex = next(i for i,p in enumerate(self.statepts)
                           if p.vhi==vhi and p.voi==voi)    
         return pindex
+
         
 
 if __name__ == '__main__':
