@@ -425,59 +425,59 @@ class casdata:
         #caifile = "cas.inp"
 
         f = open(caifile,'w')
-        f.write(self.title + '\n')
-        f.write(self.sim + '\n')
-        f.write(self.tfu + '\n')
-        f.write(self.tmo + '\n')
-        f.write(self.voi + '\n')
+        f.write(self.data.title + '\n')
+        f.write(self.data.sim + '\n')
+        f.write(self.data.tfu + '\n')
+        f.write(self.data.tmo + '\n')
+        f.write(self.data.voi + '\n')
 
-        Nfue = self.FUE.shape[0]
+        Nfue = self.data.FUE.shape[0]
         for i in range(Nfue):
-            f.write(' FUE  %d ' % (self.FUE[i,0]))
-            f.write('%5.3f/%5.3f' % (self.FUE[i,1],self.FUE[i,2]))
-            if ~np.isnan(self.FUE[i,3]):
-                f.write(' %d=%4.2f' % (self.FUE[i,3],self.FUE[i,4]))
+            f.write(' FUE  %d ' % (self.data.FUE[i,0]))
+            f.write('%5.3f/%5.3f' % (self.data.FUE[i,1],self.data.FUE[i,2]))
+            if ~np.isnan(self.data.FUE[i,3]):
+                f.write(' %d=%4.2f' % (self.data.FUE[i,3],self.data.FUE[i,4]))
             f.write('\n')
 
         f.write(' LFU\n')
-        for i in range(self.npst):
+        for i in range(self.data.npst):
             for j in range(i+1):
-                f.write(' %d' % self.LFU[i,j])
+                f.write(' %d' % self.data.LFU[i,j])
                 #if j < i: f.write(' ')
             f.write('\n')
 
-        f.write(self.pde + '\n')
+        f.write(self.data.pde + '\n')
 
-        f.write(self.bwr + '\n')
+        f.write(self.data.bwr + '\n')
 
-        Npin = np.size(self.pinlines)
+        Npin = np.size(self.data.pinlines)
         for i in range(Npin):
-            f.write(self.pinlines[i] + '\n')
+            f.write(self.data.pinlines[i] + '\n')
         
-        Nsla = np.size(self.slalines)
+        Nsla = np.size(self.data.slalines)
         for i in range(Nsla):
-            f.write(self.slalines[i] + '\n')
+            f.write(self.data.slalines[i] + '\n')
 
         f.write(' LPI\n')
-        for i in range(self.npst):
+        for i in range(self.data.npst):
             for j in range(i+1):
-                f.write(' %d' % self.LPI[i,j])
+                f.write(' %d' % self.data.LPI[i,j])
                 #if j < i: f.write(' ')
             f.write('\n')
 
-        f.write(self.spa + '\n')
-        f.write(self.dep + '\n')
-        f.write(self.gam + '\n')
-        f.write(self.wri + '\n')
-        f.write(self.sta + '\n')
+        f.write(self.data.spa + '\n')
+        f.write(self.data.dep + '\n')
+        f.write(self.data.gam + '\n')
+        f.write(self.data.wri + '\n')
+        f.write(self.data.sta + '\n')
 
         f.write(' TTL\n')
 
-        depstr = re.split('DEP',self.dep)[1].replace(',','').strip()
+        depstr = re.split('DEP',self.data.dep)[1].replace(',','').strip()
         f.write(' RES,,%s\n' % (depstr))
 
         #f.write(' RES,,0 0.5 1.5 2.5 5.0 7.5 10.0 12.5 15.0 17.5 20.0 25 30 40 50 60 70\n')
-        f.write(self.crd + '\n')
+        f.write(self.data.crd + '\n')
         f.write(' NLI\n')
         f.write(' STA\n')
         f.write(' END\n')
@@ -485,6 +485,61 @@ class casdata:
         f.close()
 
         #Tracer()()
+
+    def writec3cai(self):
+        c3inp = "./c3_.inp"
+        print "Writing c3 input file " + c3inp
+        
+        f = open(c3inp,'w')
+        tit = self.data.title.replace('TTL','TIT').strip()
+        f.write(tit + '\n')
+        f.write(self.data.sim.strip() + '\n')
+        f.write(self.data.tfu.strip() + '\n')
+        f.write(self.data.tmo.strip() + '\n')
+        f.write(self.data.voi.strip() + '\n')
+
+        Nfue = self.data.FUE.shape[0]
+        for i in range(Nfue):
+            f.write('FUE  %d ' % (self.data.FUE[i,0]))
+            f.write('%5.3f/%5.3f' % (self.data.FUE[i,1],self.data.FUE[i,2]))
+            if ~np.isnan(self.data.FUE[i,3]):
+                f.write(' %d=%4.2f' % (self.data.FUE[i,3],self.data.FUE[i,4]))
+            f.write('\n')
+
+        f.write('LFU\n')
+        for i in range(self.data.npst):
+            for j in range(i+1):
+                f.write('%d ' % self.data.LFU[i,j])
+            f.write('\n')
+
+        pde = self.data.pde.split('\'')[0]
+        f.write(pde.strip() + '\n')
+        f.write(self.data.bwr.strip() + '\n')
+
+        Npin = np.size(self.data.pinlines)
+        for i in range(Npin):
+            f.write(self.data.pinlines[i].strip() + '\n')
+
+        f.write('LPI\n')
+        for i in range(self.data.npst):
+            for j in range(i+1):
+                f.write('%d ' % self.data.LPI[i,j])
+            f.write('\n')
+
+        f.write(self.data.spa.strip() + '\n')
+        f.write(self.data.dep.strip() + '\n')
+        f.write('NLI\n')
+        f.write('STA\n')
+        f.write('TIT\n')
+        
+        depstr = re.split('DEP',self.data.dep)[1].replace(',','').strip()
+        f.write('RES,,%s\n' % (depstr))
+        f.write(self.data.crd.strip() + '\n')
+        f.write('NLI\n')
+        f.write('STA\n')
+        f.write('END\n')
+
+        f.close()
 
 
     def runc3(self): # Running C3 disturbance model
