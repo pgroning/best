@@ -220,11 +220,8 @@ class casdata:
         self.data.pinlines = flines[iPIN[0]:iPIN[0]+Npin]
 
         # Read SLA
-        #Nsla = iSLA.size
-        #self.slalines = flines[iSLA[0]:iSLA[0]+Nsla]
-        #self.slalines = flines[iSLA]
         if iSLA is not None:
-            self.data.slalines = flines[iSLA]
+            self.data.slaline = flines[iSLA]
         # ------Step through the state points----------
         print "Stepping through state points..."
 
@@ -454,9 +451,7 @@ class casdata:
         for i in range(Npin):
             f.write(self.data.pinlines[i] + '\n')
         
-        Nsla = np.size(self.data.slalines)
-        for i in range(Nsla):
-            f.write(self.data.slalines[i] + '\n')
+        f.write(self.data.slaline.strip() + '\n')
 
         f.write(' LPI\n')
         for i in range(self.data.npst):
@@ -487,16 +482,19 @@ class casdata:
         #Tracer()()
 
     def writec3cai(self):
-        c3inp = "./c3_.inp"
+        c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
         
         f = open(c3inp,'w')
-        tit = self.data.title.replace('TTL','TIT').strip()
-        f.write(tit + '\n')
+
+        tit = "TIT "
+        tit = tit + self.data.tfu.split('*')[0].replace(',','=').strip() + " "
+        tit = tit + self.data.tmo.split('*')[0].replace(',','=').strip() + " "
+        voivec = self.data.voi.split('*')[0].replace(',',' ').strip().split(' ')[1:]
+        tit = tit + "VOI=" + voivec[0] + " "
+        ide1 = "'BD" + voivec[0] + "'"
+        f.write(tit + "IDE=" + ide1 + '\n')
         f.write(self.data.sim.strip() + '\n')
-        f.write(self.data.tfu.strip() + '\n')
-        f.write(self.data.tmo.strip() + '\n')
-        f.write(self.data.voi.strip() + '\n')
 
         Nfue = self.data.FUE.shape[0]
         for i in range(Nfue):
@@ -511,7 +509,7 @@ class casdata:
             for j in range(i+1):
                 f.write('%d ' % self.data.LFU[i,j])
             f.write('\n')
-
+        
         pde = self.data.pde.split('\'')[0]
         f.write(pde.strip() + '\n')
         f.write(self.data.bwr.strip() + '\n')
@@ -519,6 +517,8 @@ class casdata:
         Npin = np.size(self.data.pinlines)
         for i in range(Npin):
             f.write(self.data.pinlines[i].strip() + '\n')
+        
+        f.write(self.data.slaline.strip() + '\n')
 
         f.write('LPI\n')
         for i in range(self.data.npst):
@@ -530,19 +530,29 @@ class casdata:
         f.write(self.data.dep.strip() + '\n')
         f.write('NLI\n')
         f.write('STA\n')
-        f.write('TIT\n')
-        
-        depstr = re.split('DEP',self.data.dep)[1].replace(',','').strip()
-        f.write('RES,,%s\n' % (depstr))
-        f.write(self.data.crd.strip() + '\n')
-        f.write('NLI\n')
+
+        ide2 = "'BD" + voivec[1] + "'"
+        f.write(tit + "IDE=" + ide2 + '\n')
+        res1 = "RES," + ide1 + ",0"
+        f.write(res1 + '\n')
+        f.write("VOI " + voivec[1] + '\n')
+        f.write(self.data.dep.strip() + '\n')
         f.write('STA\n')
+
+        ide3 = "IDE='BD" + voivec[2] + "'"
+        f.write(tit + ide3 + '\n')
+        res2 = "RES," + ide2 + ",0"
+        f.write(res2 + '\n')
+        f.write("VOI " + voivec[2] + '\n')
+        f.write(self.data.dep.strip() + '\n')
+        f.write('STA\n')
+
         f.write('END\n')
 
         f.close()
 
 
-    def runc3(self): # Running C3 disturbance model
+    def runc3(self): # Running C3 perturbation model
         # C3 input file
         c3inp = "./c3.inp"
         # output file
@@ -577,6 +587,11 @@ class casdata:
 
         # Remove files
         os.remove(c3cfg)
+
+
+    def readc3cax(self):
+        print "Reading c3 cax file..."
+        
 
 
     def findpoint(self,burnup=None,vhi=None,voi=None,tfu=None):
