@@ -33,8 +33,10 @@ class casdata:
     def __init__(self,caxfile):
         self.data = datastruct()
         self.statepts = []
+        self.pert = datastruct()
         self.readcax(caxfile)
         self.__ave_enr()
+        
         #self.writecai()
         #self.btfcalc()
 
@@ -282,7 +284,6 @@ class casdata:
                     EXP[:,:,i] = POW[:,:,i]*burnup[i]
                 else:
                     EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
-
 
         # Calculate Fint:
         fint = np.zeros(Nburnpts); fint.fill(np.nan)
@@ -582,9 +583,97 @@ class casdata:
 
 
     def readc3cax(self):
-        print "Reading c3 cax file..."
         
+        caxfile = "./c3.cax"
+        if not os.path.isfile(caxfile):
+            print "Could not open file " + caxfile
+            return
+        else:
+            print "Reading file " + caxfile
+        
+        # Read the whole file at once
+        with open(caxfile) as f:
+            flines = f.read().splitlines() #exclude \n
 
+        # ------Search for regexp matches-------
+        iTIT = self.__matchcontent(flines,'^TIT')
+        iPOW = self.__matchcontent(flines,'POW\s+')
+        iPOL = self.__matchcontent(flines,'^POL')
+
+        # Read fuel dimension
+        npst = int(flines[iPOW[0]+1][4:6])
+
+        # ------Step through the state points----------
+        Nburnpts = len(iTIT)
+        
+        burnup = np.zeros(Nburnpts); burnup.fill(np.nan)
+        voi = np.zeros(Nburnpts); voi.fill(np.nan)
+        vhi = np.zeros(Nburnpts); vhi.fill(np.nan)
+        tfu = np.zeros(Nburnpts); tfu.fill(np.nan)
+        tmo = np.zeros(Nburnpts); tmo.fill(np.nan)
+        kinf = np.zeros(Nburnpts); kinf.fill(np.nan)
+        POW = np.zeros((npst,npst,Nburnpts)); POW.fill(np.nan)
+        
+        # Row vector containing burnup, voi, vhi, tfu and tmo
+        rvec = [re.split('/',flines[i+2].strip()) for i in iTIT]
+
+        # Row containing Kinf
+        kinfstr = [flines[i+5] for i in iPOL]
+
+        # Rows containing radial power distribution map
+        powmap = [flines[i+2:i+2+npst] for i in iPOW]
+
+        for i in range(Nburnpts):
+            # Read burnup, voids, tfu and tmo
+            burnup[i],voi[i] = re.split('\s+',rvec[i][0].strip())
+            vhi[i],tfu[i] = re.split('\s+',rvec[i][1].strip())
+            tmo[i] = re.split('\s+',rvec[i][2].strip())[1]
+            # Read kinf
+            kinf[i] = re.split('\s+',kinfstr[i].strip())[0]
+            # Read radial power distribution map
+            POW[:,:,i] = self.__symtrans(self.__map2mat(powmap[i],npst))
+
+        # Calculate radial burnup distributions
+        EXP = self.__burncalc(POW,burnup)
+        # Calculate Fint:
+        fint = self.__fintcalc(POW)
+
+        # Append state instancies
+        self.pert.statepts = []
+        for i in range(Nburnpts):
+            self.pert.statepts.append(datastruct()) # append new instance to list
+            self.pert.statepts[i].burnup = burnup[i]
+            self.pert.statepts[i].voi = voi[i]
+            self.pert.statepts[i].vhi = vhi[i]
+            self.pert.statepts[i].tfu = tfu[i]
+            self.pert.statepts[i].tmo = tmo[i]
+            self.pert.statepts[i].kinf = kinf[i]
+            self.pert.statepts[i].fint = fint[i]
+            self.pert.statepts[i].POW = POW[:,:,i]
+            self.pert.statepts[i].EXP = EXP[:,:,i]
+            
+
+    def __burncalc(self,POW,burnup):
+        Nburnpts = burnup.size
+        npst = POW.shape[0]
+        EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
+        for i in range(Nburnpts):
+            if burnup[i] == 0:
+                EXP[:,:,i] = 0
+            else:
+                dburn = burnup[i] - burnup[i-1]
+                if dburn < 0:
+                    EXP[:,:,i] = POW[:,:,i]*burnup[i]
+                else:
+                    EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
+        return EXP
+
+    def __fintcalc(self,POW):
+        Nburnpts = POW.shape[2]
+        fint = np.zeros(Nburnpts); fint.fill(np.nan)
+        for i in range(Nburnpts):
+            fint[i] = POW[:,:,i].max()
+        return fint
 
     def findpoint(self,burnup=None,vhi=None,voi=None,tfu=None):
         """Return statepoint index that correspond to specific burnup, void and void history
