@@ -492,8 +492,8 @@ class casdata:
         tit = tit + self.data.tmo.split('*')[0].replace(',','=').strip() + " "
         voivec = self.data.voi.split('*')[0].replace(',',' ').strip().split(' ')[1:]
         tit = tit + "VOI=" + voivec[0] + " "
-        ide1 = "'BD" + voivec[0] + "'"
-        f.write(tit + "IDE=" + ide1 + '\n')
+        ide = ["'BD"+x+"'" for x in voivec]
+        f.write(tit + "IDE=" + ide[0] + '\n')
         f.write(self.data.sim.strip() + '\n')
 
         Nfue = self.data.FUE.shape[0]
@@ -531,24 +531,16 @@ class casdata:
         f.write('NLI\n')
         f.write('STA\n')
 
-        ide2 = "'BD" + voivec[1] + "'"
-        f.write(tit + "IDE=" + ide2 + '\n')
-        res1 = "RES," + ide1 + ",0"
-        f.write(res1 + '\n')
-        f.write("VOI " + voivec[1] + '\n')
-        f.write(self.data.dep.strip() + '\n')
-        f.write('STA\n')
-
-        ide3 = "IDE='BD" + voivec[2] + "'"
-        f.write(tit + ide3 + '\n')
-        res2 = "RES," + ide2 + ",0"
-        f.write(res2 + '\n')
-        f.write("VOI " + voivec[2] + '\n')
-        f.write(self.data.dep.strip() + '\n')
-        f.write('STA\n')
+        N = len(ide)
+        for i in range(1,N):
+            f.write(tit + "IDE=" + ide[i] + '\n')
+            res = "RES," + ide[i-1] + ",0"
+            f.write(res + '\n')
+            f.write("VOI " + voivec[i] + '\n')
+            f.write(self.data.dep.strip() + '\n')
+            f.write('STA\n')
 
         f.write('END\n')
-
         f.close()
 
 
