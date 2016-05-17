@@ -274,21 +274,9 @@ class casdata:
         #Tracer()()
         # -----------------------------------------------------------------------
         # Calculate radial burnup distributions
-        EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
-        for i in range(Nburnpts):
-            if burnup[i] == 0:
-                EXP[:,:,i] = 0
-            else:
-                dburn = burnup[i] - burnup[i-1]
-                if dburn < 0:
-                    EXP[:,:,i] = POW[:,:,i]*burnup[i]
-                else:
-                    EXP[:,:,i] = EXP[:,:,i-1] + POW[:,:,i]*dburn
-
+        EXP = self.__burncalc(POW,burnup)
         # Calculate Fint:
-        fint = np.zeros(Nburnpts); fint.fill(np.nan)
-        for i in range(Nburnpts):
-            fint[i] = POW[:,:,i].max()
+        fint = self.__fintcalc(POW)
 
         # Append state instancies
         for i in range(Nburnpts):
