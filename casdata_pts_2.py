@@ -276,7 +276,7 @@ class casdata:
         #Tracer()()
         # -----------------------------------------------------------------------
         # Calculate radial burnup distributions
-        EXP = self.__burncalc(POW,burnup)
+        EXP = self.__expcalc(POW,burnup)
         # Calculate Fint:
         fint = self.__fintcalc(POW)
 
@@ -472,6 +472,58 @@ class casdata:
 
         #Tracer()()
 
+    def writec3_singlevoi(self,voi=40,maxdep=60):
+        c3inp = "./c3.inp"
+        print "Writing c3 input file " + c3inp
+        f = open(c3inp,'w')
+        tit = "TIT "
+        tit = tit + self.data.tfu.split('*')[0].replace(',','=').strip() + " "
+        tit = tit + self.data.tmo.split('*')[0].replace(',','=').strip() + " "
+        tit = tit + "VOI=" + str(voi) + " "
+        f.write(tit + '\n')
+        f.write(self.data.sim.strip() + '\n')
+
+        Nfue = self.data.FUE.shape[0]
+        for i in range(Nfue):
+            f.write('FUE  %d ' % (self.data.FUE[i,0]))
+            f.write('%5.3f/%5.3f' % (self.data.FUE[i,1],self.data.FUE[i,2]))
+            if ~np.isnan(self.data.FUE[i,3]):
+                f.write(' %d=%4.2f' % (self.data.FUE[i,3],self.data.FUE[i,4]))
+            f.write('\n')
+        
+        f.write('LFU\n')
+        for i in range(self.data.npst):
+            for j in range(i+1):
+                f.write('%d ' % self.data.LFU[i,j])
+            f.write('\n')
+
+        pde = self.data.pde.split('\'')[0]
+        f.write(pde.strip() + '\n')
+        f.write(self.data.bwr.strip() + '\n')
+
+        Npin = np.size(self.data.pinlines)
+        for i in range(Npin):
+            f.write(self.data.pinlines[i].strip() + '\n')
+            
+        f.write(self.data.slaline.strip() + '\n')
+
+        f.write('LPI\n')
+        for i in range(self.data.npst):
+            for j in range(i+1):
+                f.write('%d ' % self.data.LPI[i,j])
+            f.write('\n')
+
+        f.write(self.data.spa.strip() + '\n')
+        depstr = "DEP 0, 0.001, -" + str(maxdep)
+        f.write(depstr + '\n')
+
+        f.write('NLI\n')
+        f.write('STA\n')
+        f.write('END\n')
+
+        f.close()
+
+
     def writec3cai(self):
         c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
@@ -564,7 +616,7 @@ class casdata:
         f.close()
 
         # Run C3 executable
-        cmd = c3exe + " " + c3cfg
+        cmd = "linrsh " + c3exe + " " + c3cfg
         print cmd
         os.system(cmd)
 
@@ -624,7 +676,7 @@ class casdata:
             POW[:,:,i] = self.__symtrans(self.__map2mat(powmap[i],npst))
 
         # Calculate radial burnup distributions
-        EXP = self.__burncalc(POW,burnup)
+        EXP = self.__expcalc(POW,burnup)
         # Calculate Fint:
         fint = self.__fintcalc(POW)
 
@@ -648,12 +700,12 @@ class casdata:
     def pertrun(self,model='c3'):
         if model == 'c3':
             print "Running perturbation model..."
-            self.writec3cai()
+            self.writec3_singlevoi()
             self.runc3()
             self.readc3cax()
             print "Done."
 
-    def __burncalc(self,POW,burnup):
+    def __expcalc(self,POW,burnup):
         Nburnpts = burnup.size
         npst = POW.shape[0]
         EXP = np.zeros((npst,npst,Nburnpts)); EXP.fill(np.nan)
