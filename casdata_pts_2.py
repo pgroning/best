@@ -33,10 +33,12 @@ class casdata:
     def __init__(self,caxfile):
         self.data = datastruct()
         self.statepts = []
-        self.pert = datastruct()
+        #self.pert = datastruct()
         self.readcax(caxfile)
         self.__ave_enr()
         
+        self.pert = []
+
         #self.writecai()
         #self.btfcalc()
 
@@ -627,19 +629,29 @@ class casdata:
         fint = self.__fintcalc(POW)
 
         # Append state instancies
-        self.pert.statepts = []
+        self.pert.append(datastruct())
+        pindex = -1 # Index of last instance
+        self.pert[pindex].model = "c3"
+        self.pert[pindex].statepts = []
         for i in range(Nburnpts):
-            self.pert.statepts.append(datastruct()) # append new instance to list
-            self.pert.statepts[i].burnup = burnup[i]
-            self.pert.statepts[i].voi = voi[i]
-            self.pert.statepts[i].vhi = vhi[i]
-            self.pert.statepts[i].tfu = tfu[i]
-            self.pert.statepts[i].tmo = tmo[i]
-            self.pert.statepts[i].kinf = kinf[i]
-            self.pert.statepts[i].fint = fint[i]
-            self.pert.statepts[i].POW = POW[:,:,i]
-            self.pert.statepts[i].EXP = EXP[:,:,i]
-            
+            self.pert[pindex].statepts.append(datastruct()) # append new instance to list
+            self.pert[pindex].statepts[i].burnup = burnup[i]
+            self.pert[pindex].statepts[i].voi = voi[i]
+            self.pert[pindex].statepts[i].vhi = vhi[i]
+            self.pert[pindex].statepts[i].tfu = tfu[i]
+            self.pert[pindex].statepts[i].tmo = tmo[i]
+            self.pert[pindex].statepts[i].kinf = kinf[i]
+            self.pert[pindex].statepts[i].fint = fint[i]
+            self.pert[pindex].statepts[i].POW = POW[:,:,i]
+            self.pert[pindex].statepts[i].EXP = EXP[:,:,i]
+
+    def pertrun(self,model='c3'):
+        if model == 'c3':
+            print "Running perturbation model..."
+            self.writec3cai()
+            self.runc3()
+            self.readc3cax()
+            print "Done."
 
     def __burncalc(self,POW,burnup):
         Nburnpts = burnup.size
