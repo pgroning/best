@@ -412,16 +412,9 @@ class MainWin(QMainWindow):
             self.statusBar().showMessage('Saved to %s' % path, 2000)
     
     def on_about(self):
-        msg = """ A demo of using PyQt with matplotlib:
-        
-         * Use the matplotlib navigation bar
-         * Add values to the text box and press Enter (or click "Draw")
-         * Show or hide the grid
-         * Drag the slider to modify the width of the bars
-         * Save the plot to a file using the File menu
-         * Click on a bar to receive an informative message
+        msg = """A design tool using PyQt with matplotlib.
         """
-        QMessageBox.about(self, "About the demo", msg.strip())
+        QMessageBox.about(self, "About the software", msg.strip())
 
     def tableHeaderSort(self):
         #print "Sort header"
@@ -578,7 +571,8 @@ class MainWin(QMainWindow):
         p_fancy = mpatches.FancyBboxPatch((0.12, 0.12),
                                           0.77, 0.77,
                                           boxstyle="round,pad=0.04",
-                                          fc=(0.85,1,1),
+                                          #fc=(0.85,1,1),
+                                          fc=(1,1,1),
                                           ec=(0.3, 0.3, 0.3))
         p_fancy.set_linewidth(4.0)
         self.axes.add_patch(p_fancy)
