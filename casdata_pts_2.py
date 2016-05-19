@@ -472,7 +472,7 @@ class casdata:
 
         #Tracer()()
 
-    def writec3_singlevoi(self,voi=40,maxdep=60):
+    def writec3cai_singlevoi(self,voi=40,maxdep=60):
         c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
         f = open(c3inp,'w')
@@ -524,7 +524,7 @@ class casdata:
         f.close()
 
 
-    def writec3cai(self):
+    def writec3cai_multivoi(self):
         c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
         
@@ -697,10 +697,10 @@ class casdata:
             self.pert[pindex].statepts[i].POW = POW[:,:,i]
             self.pert[pindex].statepts[i].EXP = EXP[:,:,i]
 
-    def pertrun(self,model='c3'):
+    def pertcalc(self,model='c3'):
         if model == 'c3':
             print "Running perturbation model..."
-            self.writec3_singlevoi()
+            self.writec3cai_singlevoi()
             self.runc3()
             self.readc3cax()
             print "Done."
