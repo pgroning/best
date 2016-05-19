@@ -464,6 +464,7 @@ class MainWin(QMainWindow):
                 #self.table.selectRow(i)
                 #print i,self.circlelist[i].x,self.circlelist[i].y
                 self.mark_pin(i)
+                self.pinselection_index = i
     
     def mark_pin(self,i):
         d = self.circlelist[i].circle.get_radius()*2*1.25
@@ -488,6 +489,20 @@ class MainWin(QMainWindow):
         self.axes.add_patch(self.clickpatch)
         self.canvas.draw()
 
+    def enr_add(self):
+        i = self.pinselection_index
+        print "Increase enrichment for pin " + str(i)
+        pinenr = self.circlelist[i].ENR
+        print pinenr
+        
+        j = next(j for j,x in enumerate(self.enrpinlist) if x.ENR > pinenr)
+        pinenr_new = self.enrpinlist[j].ENR
+        print pinenr_new
+
+    def enr_sub(self):
+        i = self.pinselection_index
+        print "Decrease enrichment for pin " + str(i)
+        print self.circlelist[i].ENR
 
     def fig_update(self):
         """ Redraw figure and update values
@@ -702,7 +717,14 @@ class MainWin(QMainWindow):
         enr_hbox = QHBoxLayout()
         enr_hbox.addWidget(self.enr_minus_button)
         enr_hbox.addWidget(self.enr_plus_button)
-        #self.connect(self.enr_plus_button, SIGNAL('clicked()'), self.draw_fuelmap)
+        self.connect(self.enr_plus_button, SIGNAL('clicked()'), self.enr_add)
+        self.connect(self.enr_minus_button, SIGNAL('clicked()'), self.enr_sub)
+
+        self.calc_quick_button = QPushButton("Quick calc")
+        self.calc_full_button = QPushButton("Full calc")
+        calc_hbox = QHBoxLayout()
+        calc_hbox.addWidget(self.calc_quick_button)
+        calc_hbox.addWidget(self.calc_full_button)
 
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
@@ -791,6 +813,7 @@ class MainWin(QMainWindow):
         vbox.addLayout(case_hbox)
         vbox.addLayout(point_hbox)
         vbox.addLayout(enr_hbox)
+        vbox.addLayout(calc_hbox)
 
         #spacerItem = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         #vbox.addItem(spacerItem)
