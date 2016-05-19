@@ -579,6 +579,11 @@ class MainWin(QMainWindow):
         
         s96o2(self)
  
+        # Draw symmetry line
+        #pp = [[0.035, 0.965], [0.965, 0.035]]
+        #poly = mpatches.Polygon(pp)
+        #poly.set_closed(False)
+        #self.axes.add_patch(poly)
 
         
     def startpoint(self,case_id):
