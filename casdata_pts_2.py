@@ -19,7 +19,7 @@ import linecache
 import os
 #import os.path
 import sys
-#import time
+import time
 #from multiprocessing import Pool
 #from btf import btf
 
@@ -698,12 +698,13 @@ class casdata:
             self.pert[pindex].statepts[i].EXP = EXP[:,:,i]
 
     def pertcalc(self,model='c3'):
+        tic = time.time()
         if model == 'c3':
             print "Running perturbation model..."
-            self.writec3cai_singlevoi()
+            self.writec3cai_singlevoi(50,60)
             self.runc3()
             self.readc3cax()
-            print "Done."
+        print "Done in "+str(time.time()-tic)+" seconds."
 
     def __expcalc(self,POW,burnup):
         Nburnpts = burnup.size
