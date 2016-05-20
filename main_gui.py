@@ -379,9 +379,7 @@ class MainWin(QMainWindow):
                     text =  ('%.0f' % (self.circlelist[i].FINT))
                 self.circlelist[i].set_text(text)
 
-
         self.canvas.draw()
-
 
         #self.circlelist[0].set_text(pinvalues[0,0])
 
@@ -492,17 +490,39 @@ class MainWin(QMainWindow):
     def enr_add(self):
         i = self.pinselection_index
         print "Increase enrichment for pin " + str(i)
-        pinenr = self.circlelist[i].ENR
-        print pinenr
-        
-        j = next(j for j,x in enumerate(self.enrpinlist) if x.ENR > pinenr)
-        pinenr_new = self.enrpinlist[j].ENR
-        print pinenr_new
+        pinEnr = self.circlelist[i].ENR
+        pinBA = self.circlelist[i].BA
+
+        for j,x in enumerate(self.enrpinlist):
+            if np.isnan(x.BA): x.BA = 0.0
+            if x.ENR == pinEnr and x.BA == pinBA:
+                break
+        if j < len(self.enrpinlist)-1:
+            self.__pinenr_update(j+1)
 
     def enr_sub(self):
         i = self.pinselection_index
         print "Decrease enrichment for pin " + str(i)
-        print self.circlelist[i].ENR
+        pinenr = self.circlelist[i].ENR
+
+        enrArray = [x.ENR for x in self.enrpinlist][::-1] # Reverse order
+        print enrArray
+
+#        if np.min(enrArray) < pinenr:
+#            j,pinenr_new = next((j,x) for j,x in enumerate(enrArray) if x < pinenr)
+#            print j
+#            self.__pinenr_update(j)
+
+    def __pinenr_update(self,j):
+        i = self.pinselection_index
+        self.circlelist[i].ENR = self.enrpinlist[j].ENR
+        self.circlelist[i].BA = self.enrpinlist[j].BA
+        fc = self.enrpinlist[j].circle.get_facecolor()
+        text = self.enrpinlist[j].text.get_text()
+        self.circlelist[i].set_text(text)
+        self.circlelist[i].circle.set_facecolor(fc)
+        self.canvas.draw()
+        
 
     def fig_update(self):
         """ Redraw figure and update values
