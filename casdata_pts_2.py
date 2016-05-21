@@ -616,7 +616,8 @@ class casdata:
         f.close()
 
         # Run C3 executable
-        cmd = "linrsh " + c3exe + " " + c3cfg
+        #cmd = "linrsh " + c3exe + " " + c3cfg
+        cmd = c3exe + " " + c3cfg
         print cmd
         os.system(cmd)
 

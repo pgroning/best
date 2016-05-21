@@ -492,7 +492,7 @@ class MainWin(QMainWindow):
         print "Increase enrichment for pin " + str(i)
         pinEnr = self.circlelist[i].ENR
         pinBA = self.circlelist[i].BA
-
+        
         for j,x in enumerate(self.enrpinlist):
             if np.isnan(x.BA): x.BA = 0.0
             if x.ENR == pinEnr and x.BA == pinBA:
@@ -516,7 +516,11 @@ class MainWin(QMainWindow):
     def __pinenr_update(self,j):
         i = self.pinselection_index
         self.circlelist[i].ENR = self.enrpinlist[j].ENR
-        self.circlelist[i].BA = self.enrpinlist[j].BA
+        if np.isnan(self.enrpinlist[j].BA):
+            self.circlelist[i].BA = 0.0
+        else:
+            self.circlelist[i].BA = self.enrpinlist[j].BA
+
         fc = self.enrpinlist[j].circle.get_facecolor()
         text = self.enrpinlist[j].text.get_text()
         self.circlelist[i].set_text(text)
