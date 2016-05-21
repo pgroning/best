@@ -503,15 +503,20 @@ class MainWin(QMainWindow):
     def enr_sub(self):
         i = self.pinselection_index
         print "Decrease enrichment for pin " + str(i)
-        pinenr = self.circlelist[i].ENR
+        pinEnr = self.circlelist[i].ENR
+        pinBA = self.circlelist[i].BA
 
-        enrArray = [x.ENR for x in self.enrpinlist][::-1] # Reverse order
-        print enrArray
+        for j,x in enumerate(self.enrpinlist):
+            if np.isnan(x.BA): x.BA = 0.0
+            if x.ENR == pinEnr and x.BA == pinBA:
+                break
+        if j > 0:
+            self.__pinenr_update(j-1)
 
-#        if np.min(enrArray) < pinenr:
-#            j,pinenr_new = next((j,x) for j,x in enumerate(enrArray) if x < pinenr)
-#            print j
-#            self.__pinenr_update(j)
+        
+        #enrArray = [x.ENR for x in self.enrpinlist][::-1] # Reverse order
+        #print enrArray
+
 
     def __pinenr_update(self,j):
         i = self.pinselection_index
