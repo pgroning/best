@@ -58,11 +58,19 @@ def s96o2(self):
     enr_ba = FUE[:,4]
     #print enr_levels, enr_ba
  
-    cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333","#FF3399"]
+    #cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333","#FF3399"]
     #cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,1,1], [1,0,0]]
+    nc = enr_levels.size
+    b = np.linspace(1,0,nc)
+    r = np.linspace(0,1,nc)
+    g1 = np.linspace(0,1,np.round(nc/2))
+    g2 = np.linspace(1,0,nc-np.round(nc/2))
+    g = np.concatenate((g1,g2),axis=0)
+    cmap = np.array([r,g,b]).transpose().tolist()
     #enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
     #enr_ba = [3.4, 5.0]
-
+    #from pyqt_trace import pyqt_trace
+    #pyqt_trace()
     pin_radius = 0.028
     pin_delta = 0.078
     
