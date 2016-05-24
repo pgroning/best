@@ -153,12 +153,23 @@ class MainWin(QMainWindow):
         self.draw_fuelmap()
         self.set_pinvalues()
 
+        # Update case number list box
+        ncases = len(self.dataobj.cases)
+        for i in range(1,ncases+1):
+            self.case_cbox.addItem(str(i))
+        
     def dataobj_finished(self):
         print "dataobject constructed"
         #self.thread.quit()
         self.draw_fuelmap()
         self.set_pinvalues()
         self.timer.stop()
+
+        # Update case number list box
+        ncases = len(self.dataobj.cases)
+        for i in range(1,ncases+1):
+            self.case_cbox.addItem(str(i))
+        
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
@@ -577,7 +588,7 @@ class MainWin(QMainWindow):
     def draw_fuelmap(self):
         """ Draw fuel map
         """
-        print "draw fuel map"
+        #print "draw fuel map"
         from map_s96o2 import s96o2
         from map_a10xm import a10xm
 
@@ -729,9 +740,9 @@ class MainWin(QMainWindow):
 
         case_label = QLabel('Case number:')
         self.case_cbox = QComboBox()
-        caselist = ['1', '2', '3']
-        for i in caselist:
-            self.case_cbox.addItem(i)
+        #caselist = ['1', '2', '3']
+        #for i in caselist:
+        #    self.case_cbox.addItem(i)
         case_hbox = QHBoxLayout()
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
