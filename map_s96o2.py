@@ -61,9 +61,18 @@ def s96o2(self):
     #cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333","#FF3399"]
     #cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,1,1], [1,0,0]]
     nc = enr_levels.size
-    b = np.linspace(1,0,nc)
-    r = np.linspace(0,1,nc)
-    g1 = np.linspace(0,1,np.round(nc/2))
+    nc1 = np.round(nc/2)
+    b1 = np.linspace(1,0.2,nc1)
+    b2 = np.linspace(0,0,nc-nc1)
+    b = np.concatenate((b1,b2),axis=0)
+    #b = np.linspace(1,0,nc)
+
+    r1 = np.linspace(0,0,nc1)
+    r2 = np.linspace(0.2,1,nc-nc1)
+    r = np.concatenate((r1,r2),axis=0)
+    #r = np.linspace(0,1,nc)
+
+    g1 = np.linspace(0,0.8,np.round(nc/2))
     g2 = np.linspace(1,0,nc-np.round(nc/2))
     g = np.concatenate((g1,g2),axis=0)
     cmap = np.array([r,g,b]).transpose().tolist()

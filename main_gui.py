@@ -291,7 +291,8 @@ class MainWin(QMainWindow):
 
         self.table.sortItems(0,Qt.AscendingOrder) # Sorting column 0 in ascending order
         self.setpincoords()
-        
+ 
+        #pyqt_trace()
         #row = 0
         k = 0
         for i in range(npst):
@@ -576,7 +577,9 @@ class MainWin(QMainWindow):
     def draw_fuelmap(self):
         """ Draw fuel map
         """
+        print "draw fuel map"
         from map_s96o2 import s96o2
+        from map_a10xm import a10xm
 
         #print "draw fuel map"
         self.fig.set_facecolor((1,1,0.8784))
@@ -621,7 +624,10 @@ class MainWin(QMainWindow):
         p_fancy.set_linewidth(4.0)
         self.axes.add_patch(p_fancy)
         
-        s96o2(self)
+        if self.dataobj.data.fuetype == 'SVEA-96':
+            s96o2(self)
+        elif self.dataobj.data.fuetype == 'A10XM':
+            a10xm(self)
  
         # Draw symmetry line
         #pp = [[0.035, 0.965], [0.965, 0.035]]

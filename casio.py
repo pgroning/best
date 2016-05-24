@@ -81,7 +81,10 @@ class casio:
         with open(pfile,'wb') as fp:
             pickle.dump(self.data,fp,1)
             pickle.dump(self.cases,fp,1)
-            pickle.dump(self.btf,fp,1)
+            try:
+                pickle.dump(self.btf,fp,1)
+            except:
+                print "Warning: Could not save BTF"
         print "Saved data to file " + pfile
         
 
@@ -90,7 +93,10 @@ class casio:
         with open(pfile,'rb') as fp:
             self.data = pickle.load(fp)
             self.cases = pickle.load(fp)
-            self.btf = pickle.load(fp)
+            try:
+                self.btf = pickle.load(fp)
+            except:
+                print "Warning: Could not load BTF"
         self.data.pfile = pfile
 
 

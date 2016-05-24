@@ -12,6 +12,8 @@ class btf:
 
         if self.casobj.data.fuetype == 'SVEA-96':
             self.svea96()
+        elif self.casobj.data.fuetype == 'A10XM':
+            self.a10xm()
 
 
     def export2ascii(self):
@@ -65,7 +67,7 @@ class btf:
 
 
     def svea96(self):
-        print 'Calculating SVEA96OPT2'
+        print 'Calculating BTF for SVEA96OPT2'
         from btf_s96 import calc_btf
         
         voi = 50
@@ -102,12 +104,42 @@ class btf:
         #self.DOX = calc_btf(casobj.data.fuetype,self.POW3)
         #Tracer()()
 
+    def a10xm(self):
+        print 'Calculating BTF for A10XM'
+        from btf_a10xm import calc_btf
+        
+        voi = 60
+
+        # Find intersection burnup points for all cases
+        idx = self.lastindex(0)
+        x = [self.casobj.cases[0].statepts[i].burnup for i in range(idx)]
+        ncases = len(self.casobj.cases)
+        for case_id in range(1,ncases):
+            idx = self.lastindex(case_id)
+            x2 = [self.casobj.cases[case_id].statepts[i].burnup for i in range(idx)]
+            x = [val for val in x if val in x2]
+
+        npst = self.casobj.cases[case_id].data.npst
+        self.DOX = np.zeros((len(x),npst,npst))
+
+
+        POW3 = self.pow3d(voi,0)
+        self.DOX[0,:,:] = calc_btf(self.casobj.data.fuetype,POW3)
+
+        #for i,burnup in enumerate(x):
+        #    #print burnup
+        #    POW3 = self.pow3d(voi,burnup)
+        #    self.DOX[i,:,:] = calc_btf(self.casobj.data.fuetype,POW3)
+
+        self.burnpoints = x
+
+        #Tracer()()
 
 
 if __name__ == '__main__':
     from casio import casio
     casobj = casio()
-    casobj.loadpic('caxfiles_2.p')
+    casobj.loadpic('caxfiles_a10xm.p')
     #fuetype = 'SVEA96OPT2'
     btf(casobj)
     #Tracer()()
