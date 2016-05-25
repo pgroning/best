@@ -118,13 +118,13 @@ class btf:
             idx = self.lastindex(case_id)
             x2 = [self.casobj.cases[case_id].statepts[i].burnup for i in range(idx)]
             x = [val for val in x if val in x2]
-
+        case_id = 0
         npst = self.casobj.cases[case_id].data.npst
         self.DOX = np.zeros((len(x),npst,npst))
 
-
-        POW3 = self.pow3d(voi,0)
-        self.DOX[0,:,:] = calc_btf(self.casobj.data.fuetype,POW3)
+        for i,burnup in enumerate(x):
+            POW3 = self.pow3d(voi,burnup)
+            self.DOX[i,:,:] = calc_btf(self.casobj.data.fuetype,POW3)
 
         #for i,burnup in enumerate(x):
         #    #print burnup
