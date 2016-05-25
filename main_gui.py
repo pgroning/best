@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 This is the main window of the program.
 This window embeds a matplotlib (mpl) plot into a PyQt4 GUI application
@@ -93,9 +94,16 @@ class MainWin(QMainWindow):
     def __init__(self, parent=None):
         QMainWindow.__init__(self, parent)
         self.setWindowTitle('Main Window')
-        self.resize(1100,620)
-        self.move(200,200)
-
+        #self.resize(1100,620)
+        #self.move(200,200)
+        
+        # Initial window size/pos last saved
+        settings = QSettings()
+        settings.beginGroup("MainWindow")
+        self.resize(settings.value("size", QVariant(QSize(1100, 620))).toSize());
+        self.move(settings.value("pos", QVariant(QPoint(200, 200))).toPoint())
+        settings.endGroup()
+        
         #screenShape = QDesktopWidget().screenGeometry()
         #self.resize( screenShape.width()*0.8,screenShape.width()*0.445 )
         #self.setMinimumWidth(1100)
@@ -1006,6 +1014,15 @@ class MainWin(QMainWindow):
             action.setCheckable(True)
         return action
 
+    def closeEvent(self, event):
+        # Write window size and position to config file
+        settings = QSettings()
+        settings.beginGroup("MainWindow")
+        settings.setValue("size", QVariant(self.size()))
+        settings.setValue("pos", QVariant(self.pos()))
+        settings.endGroup()
+        print "Good bye!"
+        
 
 def main():
     app = QApplication(sys.argv)
