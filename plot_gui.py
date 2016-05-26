@@ -25,12 +25,19 @@ from casio import casio
 class PlotWin(QMainWindow):
     def __init__(self, parent=None):
         super(PlotWin, self).__init__(parent)
+        self.parent = parent
         #QMainWindow.__init__(self, parent)
         self.setWindowTitle('Plot Window')
-        self.move(600,300)
+        #self.move(600,300)
+
+        self.settings = QSettings("greenbird")
+        self.settings.beginGroup("PlotWindow")
+        self.resize(self.settings.value("size", QVariant(QSize(800, 650))).toSize());
+        self.move(self.settings.value("pos", QVariant(QPoint(600, 300))).toPoint())
+        self.settings.endGroup()
 
         # Retrieve initial data
-        self.parent = parent
+        #self.parent = parent
         self.data_init()
         self.case_id_current = int(self.parent.case_cbox.currentIndex())
 
@@ -436,6 +443,11 @@ class PlotWin(QMainWindow):
             action.setCheckable(True)
         return action
 
+    def closeEvent(self, event):
+        self.settings.beginGroup("PlotWindow")
+        self.settings.setValue("size", QVariant(self.size()))
+        self.settings.setValue("pos", QVariant(self.pos()))
+        self.settings.endGroup()
 
 def main():
     app = QApplication(sys.argv)
