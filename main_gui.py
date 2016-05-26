@@ -483,7 +483,14 @@ class MainWin(QMainWindow):
                 #print i,self.circlelist[i].x,self.circlelist[i].y
                 self.mark_pin(i)
                 self.pinselection_index = i
-    
+                j = self.halfsym_pin(i)
+                print "half symmetric pin: "+str(j)
+                #self.mark_pin(j)
+
+    def halfsym_pin(self,i):
+        j = i
+        return j
+
     def mark_pin(self,i):
         d = self.circlelist[i].circle.get_radius()*2*1.25
         x = self.circlelist[i].x-d/2
