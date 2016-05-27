@@ -1,5 +1,7 @@
 *~
 *.pyc
 *.cax
-libADDC*
 addc*
+bin
+cax
+lib
