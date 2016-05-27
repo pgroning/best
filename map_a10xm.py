@@ -89,16 +89,16 @@ def a10xm(self):
 
     # Draw pin coordinates                
     # x-axis
-    for i in range(5):
+    for i in range(10):
         self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
-    for i in range(5,10):
-        self.axes.text(0.17+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
+    #for i in range(5,10):
+    #    self.axes.text(0.17+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
         
     # y-axis
-    for i in range(5):
-        self.axes.text(0.99,0.87-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
-    for i in range(5,10):
-        self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
+    for i in range(10):
+        self.axes.text(0.99,0.875-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
+    #for i in range(5,10):
+    #    self.axes.text(0.99,0.83-i*pin_delta,self.ylist[i],ha='center',va='center',fontsize=9)
         
         #self.canvas.draw()
         #Tracer()()
