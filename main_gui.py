@@ -614,8 +614,11 @@ class MainWin(QMainWindow):
     def enr_add(self):
         i = self.pinselection_index
         print "Increase enrichment for pin " + str(i)
-        pinEnr = self.circlelist[i].ENR
-        pinBA = self.circlelist[i].BA
+        case_num = int(self.case_cbox.currentIndex())
+        pinEnr = self.pinobjects[case_num][i].ENR
+        pinBA = self.pinobjects[case_num][i].BA
+        #pinEnr = self.circlelist[i].ENR
+        #pinBA = self.circlelist[i].BA
         
         for j,x in enumerate(self.enrpinlist):
             if np.isnan(x.BA): x.BA = 0.0
@@ -627,8 +630,11 @@ class MainWin(QMainWindow):
     def enr_sub(self):
         i = self.pinselection_index
         print "Decrease enrichment for pin " + str(i)
-        pinEnr = self.circlelist[i].ENR
-        pinBA = self.circlelist[i].BA
+        case_num = int(self.case_cbox.currentIndex())
+        pinEnr = self.pinobjects[case_num][i].ENR
+        pinBA = self.pinobjects[case_num][i].BA
+        #pinEnr = self.circlelist[i].ENR
+        #pinBA = self.circlelist[i].BA
 
         for j,x in enumerate(self.enrpinlist):
             if np.isnan(x.BA): x.BA = 0.0
@@ -644,16 +650,23 @@ class MainWin(QMainWindow):
 
     def __pinenr_update(self,j):
         i = self.pinselection_index
-        self.circlelist[i].ENR = self.enrpinlist[j].ENR
+        case_num = int(self.case_cbox.currentIndex())
+        self.pinobjects[case_num][i].ENR = self.enrpinlist[j].ENR
+        #self.circlelist[i].ENR = self.enrpinlist[j].ENR
         if np.isnan(self.enrpinlist[j].BA):
-            self.circlelist[i].BA = 0.0
+            self.pinobjects[case_num][i].BA = 0.0
+            #self.circlelist[i].BA = 0.0
         else:
-            self.circlelist[i].BA = self.enrpinlist[j].BA
+            self.pinobjects[case_num][i].BA = self.enrpinlist[j].BA
+            #self.circlelist[i].BA = self.enrpinlist[j].BA
 
         fc = self.enrpinlist[j].circle.get_facecolor()
         text = self.enrpinlist[j].text.get_text()
-        self.circlelist[i].set_text(text)
-        self.circlelist[i].circle.set_facecolor(fc)
+        self.pinobjects[case_num][i].text.remove()
+        self.pinobjects[case_num][i].set_text(text)
+        #self.circlelist[i].set_text(text)
+        self.pinobjects[case_num][i].circle.set_facecolor(fc)
+        #self.circlelist[i].circle.set_facecolor(fc)
         self.canvas.draw()
         
 
