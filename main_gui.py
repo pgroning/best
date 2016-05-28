@@ -177,7 +177,8 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage('Importing data from %s' % filename, 2000)
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
- 
+
+        self.init_pinobjects()
         #fuetype = 'SVEA-96'
         #self.dataobj.btf = btf(self.dataobj,fuetype)
 
@@ -194,6 +195,7 @@ class MainWin(QMainWindow):
         
     def dataobj_finished(self):
         print "dataobject constructed"
+        self.init_pinobjects()
         #self.thread.quit()
         #self.draw_fuelmap()
         #self.set_pinvalues()
@@ -302,6 +304,25 @@ class MainWin(QMainWindow):
             msgBox = QMessageBox()
             msgBox.information(self,"No data",msg.strip(),QMessageBox.Close)
 
+            
+    def init_pinobjects(self):
+        self.pinobjects = []
+        ncases = len(self.dataobj.cases)
+        for case_num in range(ncases):
+            LFU = self.dataobj.cases[case_num].data.LFU
+            ENR = self.dataobj.cases[case_num].data.ENR
+            BA = self.dataobj.cases[case_num].data.BA
+            pinlist = []
+            for i in range(LFU.shape[0]):
+                for j in range(LFU.shape[1]):
+                    if LFU[i,j] > 0:
+                        pinobj = cpin(self.axes)
+                        pinobj.enr = ENR[i,j]
+                        pinobj.ba = BA[i,j]
+                        pinlist.append(pinobj)
+            self.pinobjects.append(pinlist)
+
+            
     def set_pinvalues(self):
         #print "Set values"
         param_str = str(self.param_cbox.currentText())
