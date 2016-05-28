@@ -126,6 +126,7 @@ def s96o2(self):
             if LFU[i,j] > 0:
                 self.pinobjects[case_num][k].set_circle(x,y,0.028,(1,1,1))
                 self.pinobjects[case_num][k].coord = self.ylist[i] + self.xlist[j]
+                self.pinobjects[case_num][k].set_text()
                 self.axes.add_patch(self.pinobjects[case_num][k].circle)
                 k += 1
                 circobj = Circle(self.axes,x,y,(1,1,1),'')

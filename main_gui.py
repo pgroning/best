@@ -103,9 +103,9 @@ class cpin(object):
         except:
             pass
 
-    def set_text(self,string,fsize=8):
-        if hasattr(self,'text'):
-            self.text.remove()
+    def set_text(self,string='',fsize=8):
+        #if hasattr(self,'text'):
+        #    self.text.remove()
         self.text = self.axes.text(self.x,self.y,string,ha='center',va='center',fontsize=fsize)
 
     def is_clicked(self,xc,yc):
@@ -373,6 +373,9 @@ class MainWin(QMainWindow):
                 #    if not ((i==4 and j==4) or (i==4 and j==6) or (i==6 and j==4) or (i==6 and j==6)):
                         #print i,j
                         #print self.circlelist[k].text.get_text()
+                    self.pinobjects[case_num][k].EXP = EXP[i,j]
+                    self.pinobjects[case_num][k].FINT = FINT[i,j]
+                    self.pinobjects[case_num][k].BTF = BTF[i,j]
                     self.circlelist[k].ENR = ENR[i,j]
                     self.circlelist[k].EXP = EXP[i,j]
                     self.circlelist[k].FINT = FINT[i,j]
@@ -424,33 +427,75 @@ class MainWin(QMainWindow):
         
         for i in range(npins):
             
-        #print self.circlelist[i].text.get_text()
-            if param_str == 'ENR' or param_str == 'BTF':
-                if self.circlelist[i].BA == 0:
-                    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
-                else:
-                    j = next(j for j,cobj in enumerate(self.enrpinlist)
-                             if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
-                
-                fc = self.enrpinlist[j].circle.get_facecolor()
-                text = self.enrpinlist[j].text.get_text()
-                self.circlelist[i].set_text(text)
-                self.circlelist[i].circle.set_facecolor(fc)
+            if self.pinobjects[case_num][i].BA == 0:
+                j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.pinobjects[case_num][i].ENR)
+            else:
+                j = next(j for j,cobj in enumerate(self.enrpinlist)
+                         if cobj.BA == self.pinobjects[case_num][i].BA and cobj.ENR == self.pinobjects[case_num][i].ENR)
+            fc = self.enrpinlist[j].circle.get_facecolor() 
             
+            if param_str == 'ENR':
+                #if self.pinobjects[case_num][i].BA == 0:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.pinobjects[case_num][i].ENR)
+                #else:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist)
+                #             if cobj.BA == self.pinobjects[case_num][i].BA and cobj.ENR == self.pinobjects[case_num][i].ENR)
+                
+                #if self.circlelist[i].BA == 0:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
+                #else:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist)
+                #             if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
+                
+                #fc = self.enrpinlist[j].circle.get_facecolor()
+                text = self.enrpinlist[j].text.get_text()
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                #self.circlelist[i].set_text(text)
+                #self.circlelist[i].circle.set_facecolor(fc)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+
+            elif param_str == 'BTF':
+                #text =  ('%.2f' % (self.pinobjects[case_num][i].BTF))
+                btf_ratio = self.pinobjects[case_num][i].BTF/btf*100
+                text =  ('%.0f' % (btf_ratio))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+                
             elif param_str == 'EXP':
-                if self.circlelist[i].EXP < 10:
-                    text =  ('%.1f' % (self.circlelist[i].EXP))
+                if self.pinobjects[case_num][i].EXP < 10:
+                    text =  ('%.1f' % (self.pinobjects[case_num][i].EXP))
                 else:
-                    text =  ('%.0f' % (self.circlelist[i].EXP))
-                self.circlelist[i].set_text(text)
+                    text =  ('%.0f' % (self.pinobjects[case_num][i].EXP))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+                
+            #elif param_str == 'EXP':
+            #    if self.circlelist[i].EXP < 10:
+            #        text =  ('%.1f' % (self.circlelist[i].EXP))
+            #    else:
+            #        text =  ('%.0f' % (self.circlelist[i].EXP))
+            #    self.circlelist[i].set_text(text)
 
             elif param_str == 'FINT':
-                if self.circlelist[i].FINT < 10:
-                    text =  ('%.1f' % (self.circlelist[i].FINT))
+                if self.pinobjects[case_num][i].FINT < 10:
+                    text =  ('%.1f' % (self.pinobjects[case_num][i].FINT))
                 else:
-                    text =  ('%.0f' % (self.circlelist[i].FINT))
-                self.circlelist[i].set_text(text)
-
+                    text =  ('%.0f' % (self.pinobjects[case_num][i].FINT))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+            
+            #elif param_str == 'FINT':
+            #    if self.circlelist[i].FINT < 10:
+            #        text =  ('%.1f' % (self.circlelist[i].FINT))
+            #    else:
+            #        text =  ('%.0f' % (self.circlelist[i].FINT))
+            #    self.circlelist[i].set_text(text)
+                
+                
         self.canvas.draw()
 
         #self.circlelist[0].set_text(pinvalues[0,0])
