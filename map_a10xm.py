@@ -53,6 +53,7 @@ def a10xm(self):
     for i in range(enr_levels.size):
         y = 0.95-i*pin_delta
         circobj = Circle(self.axes,x,y,cmap[i],str(i+1),pin_radius)
+        self.axes.add_patch(circobj.circle)
         self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
         circobj.ENR = enr_levels[i]
         circobj.BA = enr_ba[i]
@@ -78,11 +79,17 @@ def a10xm(self):
     pin_delta = 0.083
 
     self.circlelist = []
+    k = 0
     for i in range(LFU.shape[0]):
         for j in range(LFU.shape[1]):
             x = 0.13+j*pin_delta
             y = 0.875-i*pin_delta
             if LFU[i,j] > 0:
+                self.pinobjects[case_num][k].set_circle(x,y,pin_radius,(1,1,1))
+                self.pinobjects[case_num][k].coord = self.ylist[i] + self.xlist[j]
+                self.pinobjects[case_num][k].set_text()
+                self.axes.add_patch(self.pinobjects[case_num][k].circle)
+                k += 1
                 circobj = Circle(self.axes,x,y,(1,1,1),'',pin_radius)
                 circobj.coord = self.ylist[i] + self.xlist[j]
                 self.circlelist.append(circobj)
