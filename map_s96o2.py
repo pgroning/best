@@ -89,6 +89,7 @@ def s96o2(self):
     for i in range(enr_levels.size):
         y = 0.9-i*pin_delta
         circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
+        self.axes.add_patch(circobj.circle)
         self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
         circobj.ENR = enr_levels[i]
         circobj.BA = enr_ba[i]
@@ -115,6 +116,7 @@ def s96o2(self):
     self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
 
     self.circlelist = []
+    k = 0
     for i in range(LFU.shape[0]):
         for j in range(LFU.shape[1]):
             x = 0.13+j*pin_delta
@@ -122,11 +124,15 @@ def s96o2(self):
             if j > 4: x += 0.04
             if i > 4: y -= 0.04
             if LFU[i,j] > 0:
+                self.pinobjects[case_num][k].set_circle(x,y,0.028,(1,1,1))
+                self.pinobjects[case_num][k].coord = self.ylist[i] + self.xlist[j]
+                self.axes.add_patch(self.pinobjects[case_num][k].circle)
+                k += 1
                 circobj = Circle(self.axes,x,y,(1,1,1),'')
                 circobj.coord = self.ylist[i] + self.xlist[j]
                 self.circlelist.append(circobj)
 
-                
+
     # Draw pin coordinates x-axis
     for i in range(5):
         self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)

@@ -71,12 +71,13 @@ class Circle(object):
         self.x = x
         self.y = y
         self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=8)
-        self.axes.add_patch(self.circle)
+        #self.axes.add_patch(self.circle)
         
         
     def set_text(self,text):
-        self.text.remove()
-        self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=8)
+        pass
+        #self.text.remove()
+        #self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=8)
 
 
     def is_clicked(self,xc,yc):
@@ -103,6 +104,8 @@ class cpin(object):
             pass
 
     def set_text(self,string,fsize=8):
+        if hasattr(self,'text'):
+            self.text.remove()
         self.text = self.axes.text(self.x,self.y,string,ha='center',va='center',fontsize=fsize)
 
     def is_clicked(self,xc,yc):
@@ -317,8 +320,8 @@ class MainWin(QMainWindow):
                 for j in range(LFU.shape[1]):
                     if LFU[i,j] > 0:
                         pinobj = cpin(self.axes)
-                        pinobj.enr = ENR[i,j]
-                        pinobj.ba = BA[i,j]
+                        pinobj.ENR = ENR[i,j]
+                        pinobj.BA = BA[i,j]
                         pinlist.append(pinobj)
             self.pinobjects.append(pinlist)
 
