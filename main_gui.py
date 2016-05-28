@@ -86,9 +86,33 @@ class Circle(object):
         else:
             return False
 
-#def on_resize(event):
-#    Tracer()()
 
+class cpin(object):
+    def __init__(self,axes):
+        self.axes = axes
+
+    def set_circle(self,x,y,r,c):
+        self.x = x
+        self.y = y
+        self.circle = mpatches.Circle((x,y), r, fc=c, ec=(0.1, 0.1, 0.1))
+        self.circle.set_linestyle('solid')
+        self.circle.set_linewidth(2.0)
+        try:
+            self.circle.set_path_effects([path_effects.withSimplePatchShadow()])
+        except:
+            pass
+
+    def set_text(self,string,fsize=8):
+        self.text = self.axes.text(self.x,self.y,string,ha='center',va='center',fontsize=fsize)
+
+    def is_clicked(self,xc,yc):
+        r2 = (xc-self.x)**2 + (yc-self.y)**2
+        if r2 < self.circle.get_radius()**2: #Mouse click is within pin radius
+            return True
+        else:
+            return False
+        
+        
 class MainWin(QMainWindow):
 #class AppForm(QMainWindow):
     def __init__(self, parent=None):
@@ -158,26 +182,30 @@ class MainWin(QMainWindow):
         #self.dataobj.btf = btf(self.dataobj,fuetype)
 
         #self.setpincoords()
-        self.draw_fuelmap()
-        self.set_pinvalues()
+        #self.draw_fuelmap()
+        #self.set_pinvalues()
 
         # Update case number list box
         ncases = len(self.dataobj.cases)
         for i in range(1,ncases+1):
             self.case_cbox.addItem(str(i))
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        self.fig_update()
         
     def dataobj_finished(self):
         print "dataobject constructed"
         #self.thread.quit()
-        self.draw_fuelmap()
-        self.set_pinvalues()
+        #self.draw_fuelmap()
+        #self.set_pinvalues()
         self.timer.stop()
 
         # Update case number list box
         ncases = len(self.dataobj.cases)
         for i in range(1,ncases+1):
             self.case_cbox.addItem(str(i))
-        
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        self.fig_update()
+            
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
@@ -563,7 +591,8 @@ class MainWin(QMainWindow):
     def fig_update(self):
         """ Redraw figure and update values
         """
-        self.on_draw()
+        #self.on_draw()
+        self.axes.clear()
         self.draw_fuelmap()
         self.set_pinvalues()
 
@@ -762,7 +791,7 @@ class MainWin(QMainWindow):
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
         #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
-        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
 
         point_label = QLabel('Point number:')
         self.point_sbox = QSpinBox()
