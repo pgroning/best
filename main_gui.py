@@ -71,12 +71,13 @@ class Circle(object):
         self.x = x
         self.y = y
         self.text = self.axes.text(x,y,text,ha='center',va='center',fontsize=8)
-        self.axes.add_patch(self.circle)
+        #self.axes.add_patch(self.circle)
         
         
     def set_text(self,text):
-        self.text.remove()
-        self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=8)
+        pass
+        #self.text.remove()
+        #self.text = self.axes.text(self.x,self.y,text,ha='center',va='center',fontsize=8)
 
 
     def is_clicked(self,xc,yc):
@@ -86,9 +87,35 @@ class Circle(object):
         else:
             return False
 
-#def on_resize(event):
-#    Tracer()()
 
+class cpin(object):
+    def __init__(self,axes):
+        self.axes = axes
+
+    def set_circle(self,x,y,r,c):
+        self.x = x
+        self.y = y
+        self.circle = mpatches.Circle((x,y), r, fc=c, ec=(0.1, 0.1, 0.1))
+        self.circle.set_linestyle('solid')
+        self.circle.set_linewidth(2.0)
+        try:
+            self.circle.set_path_effects([path_effects.withSimplePatchShadow()])
+        except:
+            pass
+
+    def set_text(self,string='',fsize=8):
+        #if hasattr(self,'text'):
+        #    self.text.remove()
+        self.text = self.axes.text(self.x,self.y,string,ha='center',va='center',fontsize=fsize)
+
+    def is_clicked(self,xc,yc):
+        r2 = (xc-self.x)**2 + (yc-self.y)**2
+        if r2 < self.circle.get_radius()**2: #Mouse click is within pin radius
+            return True
+        else:
+            return False
+        
+        
 class MainWin(QMainWindow):
 #class AppForm(QMainWindow):
     def __init__(self, parent=None):
@@ -153,31 +180,37 @@ class MainWin(QMainWindow):
         self.statusBar().showMessage('Importing data from %s' % filename, 2000)
         self.dataobj = casio()
         self.dataobj.loadpic(filename)
- 
+
+        self.init_pinobjects()
         #fuetype = 'SVEA-96'
         #self.dataobj.btf = btf(self.dataobj,fuetype)
 
         #self.setpincoords()
-        self.draw_fuelmap()
-        self.set_pinvalues()
+        #self.draw_fuelmap()
+        #self.set_pinvalues()
 
         # Update case number list box
         ncases = len(self.dataobj.cases)
         for i in range(1,ncases+1):
             self.case_cbox.addItem(str(i))
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        self.fig_update()
         
     def dataobj_finished(self):
         print "dataobject constructed"
+        self.init_pinobjects()
         #self.thread.quit()
-        self.draw_fuelmap()
-        self.set_pinvalues()
+        #self.draw_fuelmap()
+        #self.set_pinvalues()
         self.timer.stop()
 
         # Update case number list box
         ncases = len(self.dataobj.cases)
         for i in range(1,ncases+1):
             self.case_cbox.addItem(str(i))
-        
+        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        self.fig_update()
+            
         self.progressbar.update(100)
         self.progressbar.setWindowTitle('All data imported')
         self.progressbar.button.setText('Ok')
@@ -274,6 +307,25 @@ class MainWin(QMainWindow):
             msgBox = QMessageBox()
             msgBox.information(self,"No data",msg.strip(),QMessageBox.Close)
 
+            
+    def init_pinobjects(self):
+        self.pinobjects = []
+        ncases = len(self.dataobj.cases)
+        for case_num in range(ncases):
+            LFU = self.dataobj.cases[case_num].data.LFU
+            ENR = self.dataobj.cases[case_num].data.ENR
+            BA = self.dataobj.cases[case_num].data.BA
+            pinlist = []
+            for i in range(LFU.shape[0]):
+                for j in range(LFU.shape[1]):
+                    if LFU[i,j] > 0:
+                        pinobj = cpin(self.axes)
+                        pinobj.ENR = ENR[i,j]
+                        pinobj.BA = BA[i,j]
+                        pinlist.append(pinobj)
+            self.pinobjects.append(pinlist)
+
+            
     def set_pinvalues(self):
         #print "Set values"
         param_str = str(self.param_cbox.currentText())
@@ -321,6 +373,9 @@ class MainWin(QMainWindow):
                 #    if not ((i==4 and j==4) or (i==4 and j==6) or (i==6 and j==4) or (i==6 and j==6)):
                         #print i,j
                         #print self.circlelist[k].text.get_text()
+                    self.pinobjects[case_num][k].EXP = EXP[i,j]
+                    self.pinobjects[case_num][k].FINT = FINT[i,j]
+                    self.pinobjects[case_num][k].BTF = BTF[i,j]
                     self.circlelist[k].ENR = ENR[i,j]
                     self.circlelist[k].EXP = EXP[i,j]
                     self.circlelist[k].FINT = FINT[i,j]
@@ -372,33 +427,75 @@ class MainWin(QMainWindow):
         
         for i in range(npins):
             
-        #print self.circlelist[i].text.get_text()
-            if param_str == 'ENR' or param_str == 'BTF':
-                if self.circlelist[i].BA == 0:
-                    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
-                else:
-                    j = next(j for j,cobj in enumerate(self.enrpinlist)
-                             if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
-                
-                fc = self.enrpinlist[j].circle.get_facecolor()
-                text = self.enrpinlist[j].text.get_text()
-                self.circlelist[i].set_text(text)
-                self.circlelist[i].circle.set_facecolor(fc)
+            if self.pinobjects[case_num][i].BA == 0:
+                j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.pinobjects[case_num][i].ENR)
+            else:
+                j = next(j for j,cobj in enumerate(self.enrpinlist)
+                         if cobj.BA == self.pinobjects[case_num][i].BA and cobj.ENR == self.pinobjects[case_num][i].ENR)
+            fc = self.enrpinlist[j].circle.get_facecolor() 
             
+            if param_str == 'ENR':
+                #if self.pinobjects[case_num][i].BA == 0:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.pinobjects[case_num][i].ENR)
+                #else:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist)
+                #             if cobj.BA == self.pinobjects[case_num][i].BA and cobj.ENR == self.pinobjects[case_num][i].ENR)
+                
+                #if self.circlelist[i].BA == 0:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist) if cobj.ENR == self.circlelist[i].ENR)
+                #else:
+                #    j = next(j for j,cobj in enumerate(self.enrpinlist)
+                #             if cobj.BA == self.circlelist[i].BA and cobj.ENR == self.circlelist[i].ENR)
+                
+                #fc = self.enrpinlist[j].circle.get_facecolor()
+                text = self.enrpinlist[j].text.get_text()
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                #self.circlelist[i].set_text(text)
+                #self.circlelist[i].circle.set_facecolor(fc)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+
+            elif param_str == 'BTF':
+                #text =  ('%.2f' % (self.pinobjects[case_num][i].BTF))
+                btf_ratio = self.pinobjects[case_num][i].BTF/btf*100
+                text =  ('%.0f' % (btf_ratio))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+                
             elif param_str == 'EXP':
-                if self.circlelist[i].EXP < 10:
-                    text =  ('%.1f' % (self.circlelist[i].EXP))
+                if self.pinobjects[case_num][i].EXP < 10:
+                    text =  ('%.1f' % (self.pinobjects[case_num][i].EXP))
                 else:
-                    text =  ('%.0f' % (self.circlelist[i].EXP))
-                self.circlelist[i].set_text(text)
+                    text =  ('%.0f' % (self.pinobjects[case_num][i].EXP))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+                
+            #elif param_str == 'EXP':
+            #    if self.circlelist[i].EXP < 10:
+            #        text =  ('%.1f' % (self.circlelist[i].EXP))
+            #    else:
+            #        text =  ('%.0f' % (self.circlelist[i].EXP))
+            #    self.circlelist[i].set_text(text)
 
             elif param_str == 'FINT':
-                if self.circlelist[i].FINT < 10:
-                    text =  ('%.1f' % (self.circlelist[i].FINT))
+                if self.pinobjects[case_num][i].FINT < 10:
+                    text =  ('%.1f' % (self.pinobjects[case_num][i].FINT))
                 else:
-                    text =  ('%.0f' % (self.circlelist[i].FINT))
-                self.circlelist[i].set_text(text)
-
+                    text =  ('%.0f' % (self.pinobjects[case_num][i].FINT))
+                self.pinobjects[case_num][i].text.remove()
+                self.pinobjects[case_num][i].set_text(text)
+                self.pinobjects[case_num][i].circle.set_facecolor(fc)
+            
+            #elif param_str == 'FINT':
+            #    if self.circlelist[i].FINT < 10:
+            #        text =  ('%.1f' % (self.circlelist[i].FINT))
+            #    else:
+            #        text =  ('%.0f' % (self.circlelist[i].FINT))
+            #    self.circlelist[i].set_text(text)
+                
+                
         self.canvas.draw()
 
         #self.circlelist[0].set_text(pinvalues[0,0])
@@ -517,8 +614,11 @@ class MainWin(QMainWindow):
     def enr_add(self):
         i = self.pinselection_index
         print "Increase enrichment for pin " + str(i)
-        pinEnr = self.circlelist[i].ENR
-        pinBA = self.circlelist[i].BA
+        case_num = int(self.case_cbox.currentIndex())
+        pinEnr = self.pinobjects[case_num][i].ENR
+        pinBA = self.pinobjects[case_num][i].BA
+        #pinEnr = self.circlelist[i].ENR
+        #pinBA = self.circlelist[i].BA
         
         for j,x in enumerate(self.enrpinlist):
             if np.isnan(x.BA): x.BA = 0.0
@@ -530,8 +630,11 @@ class MainWin(QMainWindow):
     def enr_sub(self):
         i = self.pinselection_index
         print "Decrease enrichment for pin " + str(i)
-        pinEnr = self.circlelist[i].ENR
-        pinBA = self.circlelist[i].BA
+        case_num = int(self.case_cbox.currentIndex())
+        pinEnr = self.pinobjects[case_num][i].ENR
+        pinBA = self.pinobjects[case_num][i].BA
+        #pinEnr = self.circlelist[i].ENR
+        #pinBA = self.circlelist[i].BA
 
         for j,x in enumerate(self.enrpinlist):
             if np.isnan(x.BA): x.BA = 0.0
@@ -547,23 +650,31 @@ class MainWin(QMainWindow):
 
     def __pinenr_update(self,j):
         i = self.pinselection_index
-        self.circlelist[i].ENR = self.enrpinlist[j].ENR
+        case_num = int(self.case_cbox.currentIndex())
+        self.pinobjects[case_num][i].ENR = self.enrpinlist[j].ENR
+        #self.circlelist[i].ENR = self.enrpinlist[j].ENR
         if np.isnan(self.enrpinlist[j].BA):
-            self.circlelist[i].BA = 0.0
+            self.pinobjects[case_num][i].BA = 0.0
+            #self.circlelist[i].BA = 0.0
         else:
-            self.circlelist[i].BA = self.enrpinlist[j].BA
+            self.pinobjects[case_num][i].BA = self.enrpinlist[j].BA
+            #self.circlelist[i].BA = self.enrpinlist[j].BA
 
         fc = self.enrpinlist[j].circle.get_facecolor()
         text = self.enrpinlist[j].text.get_text()
-        self.circlelist[i].set_text(text)
-        self.circlelist[i].circle.set_facecolor(fc)
+        self.pinobjects[case_num][i].text.remove()
+        self.pinobjects[case_num][i].set_text(text)
+        #self.circlelist[i].set_text(text)
+        self.pinobjects[case_num][i].circle.set_facecolor(fc)
+        #self.circlelist[i].circle.set_facecolor(fc)
         self.canvas.draw()
         
 
     def fig_update(self):
         """ Redraw figure and update values
         """
-        self.on_draw()
+        #self.on_draw()
+        self.axes.clear()
         self.draw_fuelmap()
         self.set_pinvalues()
 
@@ -762,7 +873,7 @@ class MainWin(QMainWindow):
         case_hbox.addWidget(case_label)
         case_hbox.addWidget(self.case_cbox)
         #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.set_pinvalues)
-        self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
+        #self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
 
         point_label = QLabel('Point number:')
         self.point_sbox = QSpinBox()

@@ -1,4 +1,5 @@
 import matplotlib.patches as mpatches
+from main_gui import cpin
 from main_gui import Circle
 import numpy as np
 
@@ -88,15 +89,20 @@ def s96o2(self):
     x = 1.06
     for i in range(enr_levels.size):
         y = 0.9-i*pin_delta
-        circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
+        enrobj = cpin(self.axes)
+        enrobj.set_circle(x,y,0.028,cmap[i])
+        enrobj.set_text(str(i+1))
+        #circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
+        self.axes.add_patch(enrobj.circle)
         self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)
-        circobj.ENR = enr_levels[i]
-        circobj.BA = enr_ba[i]
+        enrobj.ENR = enr_levels[i]
+        enrobj.BA = enr_ba[i]
         if not np.isnan(enr_ba[i]):
-            circobj.set_text('Ba')
+            enrobj.text.remove()
+            enrobj.set_text('Ba')
             self.axes.text(x+0.05,y-0.03,"%.2f" % enr_ba[i],fontsize=8)
             
-        self.enrpinlist.append(circobj)
+        self.enrpinlist.append(enrobj)
 
     # Print average enrichment
     ave_enr = self.dataobj.cases[case_num].data.ave_enr
@@ -115,6 +121,7 @@ def s96o2(self):
     self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
 
     self.circlelist = []
+    k = 0
     for i in range(LFU.shape[0]):
         for j in range(LFU.shape[1]):
             x = 0.13+j*pin_delta
@@ -122,11 +129,16 @@ def s96o2(self):
             if j > 4: x += 0.04
             if i > 4: y -= 0.04
             if LFU[i,j] > 0:
+                self.pinobjects[case_num][k].set_circle(x,y,0.028,(1,1,1))
+                self.pinobjects[case_num][k].coord = self.ylist[i] + self.xlist[j]
+                self.pinobjects[case_num][k].set_text()
+                self.axes.add_patch(self.pinobjects[case_num][k].circle)
+                k += 1
                 circobj = Circle(self.axes,x,y,(1,1,1),'')
                 circobj.coord = self.ylist[i] + self.xlist[j]
                 self.circlelist.append(circobj)
 
-                
+
     # Draw pin coordinates x-axis
     for i in range(5):
         self.axes.text(0.13+i*pin_delta,0.015,self.xlist[i],ha='center',va='center',fontsize=9)
