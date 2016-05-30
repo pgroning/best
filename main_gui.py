@@ -632,37 +632,48 @@ class MainWin(QMainWindow):
         self.canvas.draw()
 
     def enr_add(self):
-        i = self.pinselection_index
-        i = self.halfsym_pin(i)
-        print "Increase enrichment for pin " + str(i)
+        halfsym = True
         case_num = int(self.case_cbox.currentIndex())
-        pinEnr = self.pinobjects[case_num][i].ENR
-        pinBA = self.pinobjects[case_num][i].BA
-        #pinEnr = self.circlelist[i].ENR
-        #pinBA = self.circlelist[i].BA
-        
-        for j,x in enumerate(self.enrpinlist):
-            if np.isnan(x.BA): x.BA = 0.0
-            if x.ENR == pinEnr and x.BA == pinBA:
-                break
-        if j < len(self.enrpinlist)-1:
-            self.__pinenr_update(i,j+1)
+        ivec=[]
+        ivec.append(self.pinselection_index)
+        if halfsym:
+            isym = self.halfsym_pin(ivec[0])
+            if isym != ivec[0]: ivec.append(isym)
+        for i in ivec:
+            #print "Increase enrichment for pin " + str(i)
+            pinEnr = self.pinobjects[case_num][i].ENR
+            pinBA = self.pinobjects[case_num][i].BA
+            #pinEnr = self.circlelist[i].ENR
+            #pinBA = self.circlelist[i].BA
+            
+            for j,x in enumerate(self.enrpinlist):
+                if np.isnan(x.BA): x.BA = 0.0
+                if x.ENR == pinEnr and x.BA == pinBA:
+                    break
+            if j < len(self.enrpinlist)-1:
+                self.__pinenr_update(i,j+1)
 
     def enr_sub(self):
-        i = self.pinselection_index
-        print "Decrease enrichment for pin " + str(i)
+        halfsym = True
         case_num = int(self.case_cbox.currentIndex())
-        pinEnr = self.pinobjects[case_num][i].ENR
-        pinBA = self.pinobjects[case_num][i].BA
-        #pinEnr = self.circlelist[i].ENR
-        #pinBA = self.circlelist[i].BA
+        ivec=[]
+        ivec.append(self.pinselection_index)
+        if halfsym:
+            isym = self.halfsym_pin(ivec[0])
+            if isym != ivec[0]: ivec.append(isym)
+        for i in ivec:
+            #print "Decrease enrichment for pin " + str(i)
+            pinEnr = self.pinobjects[case_num][i].ENR
+            pinBA = self.pinobjects[case_num][i].BA
+            #pinEnr = self.circlelist[i].ENR
+            #pinBA = self.circlelist[i].BA
 
-        for j,x in enumerate(self.enrpinlist):
-            if np.isnan(x.BA): x.BA = 0.0
-            if x.ENR == pinEnr and x.BA == pinBA:
-                break
-        if j > 0:
-            self.__pinenr_update(i,j-1)
+            for j,x in enumerate(self.enrpinlist):
+                if np.isnan(x.BA): x.BA = 0.0
+                if x.ENR == pinEnr and x.BA == pinBA:
+                    break
+            if j > 0:
+                self.__pinenr_update(i,j-1)
 
         
         #enrArray = [x.ENR for x in self.enrpinlist][::-1] # Reverse order
