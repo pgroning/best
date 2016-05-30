@@ -662,8 +662,9 @@ class MainWin(QMainWindow):
 
         fc = self.enrpinlist[j].circle.get_facecolor()
         text = self.enrpinlist[j].text.get_text()
-        self.pinobjects[case_num][i].text.remove()
-        self.pinobjects[case_num][i].set_text(text)
+        if str(self.param_cbox.currentText()) == 'ENR':
+            self.pinobjects[case_num][i].text.remove()
+            self.pinobjects[case_num][i].set_text(text)
         #self.circlelist[i].set_text(text)
         self.pinobjects[case_num][i].circle.set_facecolor(fc)
         #self.circlelist[i].circle.set_facecolor(fc)
