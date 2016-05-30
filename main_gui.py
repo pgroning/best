@@ -320,6 +320,7 @@ class MainWin(QMainWindow):
                 for j in range(LFU.shape[1]):
                     if LFU[i,j] > 0:
                         pinobj = cpin(self.axes)
+                        pinobj.pos = [i,j]
                         pinobj.ENR = ENR[i,j]
                         pinobj.BA = BA[i,j]
                         pinlist.append(pinobj)
@@ -590,13 +591,13 @@ class MainWin(QMainWindow):
                 self.mark_pin(i)
                 self.pinselection_index = i
                 j = self.halfsym_pin(i)
-                print "half symmetric pin: "+str(j)
-                #self.mark_pin(j)
+
 
     def halfsym_pin(self,i):
-        print self.dataobj.cases[0].data.npst
-        #pyqt_trace()
-        j = i
+        case_num = int(self.case_cbox.currentIndex())
+        pos = self.pinobjects[case_num][i].pos
+        sympos = list(reversed(pos))
+        j = next(k for k,po in enumerate(self.pinobjects[case_num]) if po.pos == sympos)
         return j
 
     def mark_pin(self,i):
@@ -632,6 +633,7 @@ class MainWin(QMainWindow):
 
     def enr_add(self):
         i = self.pinselection_index
+        i = self.halfsym_pin(i)
         print "Increase enrichment for pin " + str(i)
         case_num = int(self.case_cbox.currentIndex())
         pinEnr = self.pinobjects[case_num][i].ENR
@@ -644,7 +646,7 @@ class MainWin(QMainWindow):
             if x.ENR == pinEnr and x.BA == pinBA:
                 break
         if j < len(self.enrpinlist)-1:
-            self.__pinenr_update(j+1)
+            self.__pinenr_update(i,j+1)
 
     def enr_sub(self):
         i = self.pinselection_index
@@ -660,15 +662,15 @@ class MainWin(QMainWindow):
             if x.ENR == pinEnr and x.BA == pinBA:
                 break
         if j > 0:
-            self.__pinenr_update(j-1)
+            self.__pinenr_update(i,j-1)
 
         
         #enrArray = [x.ENR for x in self.enrpinlist][::-1] # Reverse order
         #print enrArray
 
 
-    def __pinenr_update(self,j):
-        i = self.pinselection_index
+    def __pinenr_update(self,i,j):
+        #i = self.pinselection_index
         case_num = int(self.case_cbox.currentIndex())
         self.pinobjects[case_num][i].ENR = self.enrpinlist[j].ENR
         #self.circlelist[i].ENR = self.enrpinlist[j].ENR
