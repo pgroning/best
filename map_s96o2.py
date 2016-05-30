@@ -1,6 +1,6 @@
 import matplotlib.patches as mpatches
 from main_gui import cpin
-from main_gui import Circle
+#from main_gui import Circle
 import numpy as np
 
 def s96o2(self):
@@ -128,7 +128,7 @@ def s96o2(self):
     self.xlist = ('1','2','3','4','5','6','7','8','9','10')
     self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
 
-    self.circlelist = []
+    #self.circlelist = []
     k = 0
     for i in range(LFU.shape[0]):
         for j in range(LFU.shape[1]):
@@ -142,9 +142,9 @@ def s96o2(self):
                 self.pinobjects[case_num][k].set_text()
                 self.axes.add_patch(self.pinobjects[case_num][k].circle)
                 k += 1
-                circobj = Circle(self.axes,x,y,(1,1,1),'')
-                circobj.coord = self.ylist[i] + self.xlist[j]
-                self.circlelist.append(circobj)
+                #circobj = Circle(self.axes,x,y,(1,1,1),'')
+                #circobj.coord = self.ylist[i] + self.xlist[j]
+                #self.circlelist.append(circobj)
 
 
     # Draw pin coordinates x-axis

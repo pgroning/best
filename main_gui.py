@@ -57,7 +57,7 @@ class dataThread(QThread):
         #self.emit(SIGNAL('progressbar_update(int)'),90)
         #self.parent.dataobj.calcbtf()
 
-
+"""
 class Circle(object):
     def __init__(self,axes,x,y,c=(1,1,1),text='',r=0.028):
         self.axes = axes
@@ -86,7 +86,7 @@ class Circle(object):
             return True
         else:
             return False
-
+"""
 
 class cpin(object):
     def __init__(self,axes):
@@ -376,11 +376,11 @@ class MainWin(QMainWindow):
                     self.pinobjects[case_num][k].EXP = EXP[i,j]
                     self.pinobjects[case_num][k].FINT = FINT[i,j]
                     self.pinobjects[case_num][k].BTF = BTF[i,j]
-                    self.circlelist[k].ENR = ENR[i,j]
-                    self.circlelist[k].EXP = EXP[i,j]
-                    self.circlelist[k].FINT = FINT[i,j]
-                    self.circlelist[k].BA = BA[i,j]
-                    self.circlelist[k].BTF = BTF[i,j]
+                    #self.circlelist[k].ENR = ENR[i,j]
+                    #self.circlelist[k].EXP = EXP[i,j]
+                    #self.circlelist[k].FINT = FINT[i,j]
+                    #self.circlelist[k].BA = BA[i,j]
+                    #self.circlelist[k].BTF = BTF[i,j]
                     #k += 1
                     #expval = QTableWidgetItem().setData(Qt.DisplayRole,EXP[i,j])
                     #self.table.setItem(row,1,expval)
@@ -423,7 +423,8 @@ class MainWin(QMainWindow):
 
         #if param_str == 'ENR':
             # Print pin ENR
-        npins = len(self.circlelist)
+        npins = len(self.pinobjects[case_num])
+        #npins = len(self.circlelist)
         
         for i in range(npins):
             
@@ -505,10 +506,13 @@ class MainWin(QMainWindow):
         self.table.clearContents()
         #self.xlist = ('01','02','03','04','05','06','07','08','09','10')
         #self.ylist  = ('A','B','C','D','E','F','G','H','I','J')
-        npin = len(self.circlelist)
+        case_num = int(self.case_cbox.currentIndex())
+        npin = len(self.pinobjects[case_num])
+        #npin = len(self.circlelist)
         self.table.setRowCount(npin)
         
-        for i,pinobj in enumerate(self.circlelist):
+        for i,pinobj in enumerate(self.pinobjects[case_num]):
+        #for i,pinobj in enumerate(self.circlelist):
             coord_item = QTableWidgetItem(pinobj.coord)
             self.table.setVerticalHeaderItem(i,coord_item)
             i_item = QTableWidgetItem()
@@ -533,10 +537,13 @@ class MainWin(QMainWindow):
 
     def tableHeaderSort(self):
         #print "Sort header"
-        for i,pinobj in enumerate(self.circlelist):
+        case_num = int(self.case_cbox.currentIndex())
+        for i,pinobj in enumerate(self.pinobjects[case_num]):
+            #for i,pinobj in enumerate(self.circlelist):
             #item = QTableWidgetItem(str(self.table.item(i,0).text()))
             index = int(self.table.item(i,0).text())
-            item = QTableWidgetItem(str(self.circlelist[index].coord))
+            item = QTableWidgetItem(str(self.pinobjects[case_num][index].coord))
+            #item = QTableWidgetItem(str(self.circlelist[index].coord))
             self.table.setVerticalHeaderItem(i,item)
 
 
@@ -564,12 +571,14 @@ class MainWin(QMainWindow):
         #    remove = False
         #else:
         #    remove = True
+        case_num = int(self.case_cbox.currentIndex())
 
         if event.button is 1:
             #print event.xdata, event.ydata
             i = np.nan
             try: # check if any circle is selected and return the index
-                i = next(i for i,cobj in enumerate(self.circlelist) 
+                i = next(i for i,cobj in enumerate(self.pinobjects[case_num])
+                #i = next(i for i,cobj in enumerate(self.circlelist) 
                          if cobj.is_clicked(event.xdata,event.ydata))
             except:
                 pass
@@ -585,13 +594,20 @@ class MainWin(QMainWindow):
                 #self.mark_pin(j)
 
     def halfsym_pin(self,i):
+        print self.dataobj.cases[0].data.npst
+        #pyqt_trace()
         j = i
         return j
 
     def mark_pin(self,i):
-        d = self.circlelist[i].circle.get_radius()*2*1.25
-        x = self.circlelist[i].x-d/2
-        y = self.circlelist[i].y-d/2
+        case_num = int(self.case_cbox.currentIndex())
+        d = self.pinobjects[case_num][i].circle.get_radius()*2*1.25
+        x = self.pinobjects[case_num][i].x-d/2
+        y = self.pinobjects[case_num][i].y-d/2
+
+        #d = self.circlelist[i].circle.get_radius()*2*1.25
+        #x = self.circlelist[i].x-d/2
+        #y = self.circlelist[i].y-d/2
         if hasattr(self,'clickpatch'): # Remove any previously selected circles
             try:
                 self.clickpatch.remove()
@@ -601,11 +617,14 @@ class MainWin(QMainWindow):
         #                                    fc=(1,1,1),alpha=1.0,ec=(1, 0, 0))
         #self.clickrect = mpatches.Rectangle((x,y), d, d,
         #                                    fc=(1,1,1),Fill=False,ec=(0, 0, 0))
-        r = self.circlelist[i].circle.get_radius()*1.3
-        x = self.circlelist[i].x
-        y = self.circlelist[i].y
+        r = self.pinobjects[case_num][i].circle.get_radius()*1.3
+        x = self.pinobjects[case_num][i].x
+        y = self.pinobjects[case_num][i].y
+        #r = self.circlelist[i].circle.get_radius()*1.3
+        #x = self.circlelist[i].x
+        #y = self.circlelist[i].y
         self.clickpatch = mpatches.Circle((x,y), r, fc=(1,1,1), alpha=1.0, ec=(0.2, 0.2, 0.2))
-        self.clickpatch.set_linestyle('dotted')
+        self.clickpatch.set_linestyle('solid')
         self.clickpatch.set_fill(False)
         self.clickpatch.set_linewidth(2.0)
         self.axes.add_patch(self.clickpatch)
