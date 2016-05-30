@@ -62,21 +62,29 @@ def s96o2(self):
     #cmap = ["#6666FF","#B266FF","#66FFFF","#00CC00","#66FF66","#FFFF66","#FFB266","#FF9999","#FF3333","#FF3399"]
     #cmap = [[0,0,1], [0,1,1], [0,1,0], [0.604,0.804,0.196], [1,1,0], [0.933,0.867,0.51], [1,0.549,0], [1,1,1], [1,0,0]]
     nc = enr_levels.size
-    nc1 = np.round(nc/2)
-    b1 = np.linspace(1,0.2,nc1)
-    b2 = np.linspace(0,0,nc-nc1)
-    b = np.concatenate((b1,b2),axis=0)
+    #nc1 = np.round(nc/2)
+    #b1 = np.linspace(1,0.2,nc1)
+    #b2 = np.linspace(0,0,nc-nc1)
+    #b = np.concatenate((b1,b2),axis=0)
     #b = np.linspace(1,0,nc)
 
-    r1 = np.linspace(0,0,nc1)
-    r2 = np.linspace(0.2,1,nc-nc1)
-    r = np.concatenate((r1,r2),axis=0)
+    #r1 = np.linspace(0,0,nc1)
+    #r2 = np.linspace(0.2,1,nc-nc1)
+    #r = np.concatenate((r1,r2),axis=0)
     #r = np.linspace(0,1,nc)
 
-    g1 = np.linspace(0,0.8,np.round(nc/2))
-    g2 = np.linspace(1,0,nc-np.round(nc/2))
-    g = np.concatenate((g1,g2),axis=0)
-    cmap = np.array([r,g,b]).transpose().tolist()
+    #g1 = np.linspace(0,0.8,np.round(nc/2))
+    #g2 = np.linspace(1,0,nc-np.round(nc/2))
+    #g = np.concatenate((g1,g2),axis=0)
+    #cmap = np.array([r,g,b]).transpose().tolist()
+
+    cvec = ["#FF00FF","#CC00FF","#AA00FF","#0000FF","#0066FF","#00AAFF","#00CCFF","#00FFFF","#00FFCC","#00FFAA",
+             "#00FF66","#00FF00","#AAFF00","#CCFF00","#FFFF00","#FFCC00","#FFAA00","#FF9900","#FF5500","#FF0000"]
+    #cvec = ["#FF00FF","#CC00FF","#AA00FF","#0000FF","#00AAFF","#00CCFF","#00FFFF","#00FFCC","#00FFAA",
+    #         "#00FF66","#00FF00","#AAFF00","#CCFF00","#FFFF00","#FFCC00","#FFAA00","#FF9900","#FF5500","#FF0000"]
+    ic = np.linspace(0,len(cvec)-1,nc).astype(int).tolist()
+    cmap = [cvec[i] for i in ic]
+
     #enr_steps = [0.71, 2.5, 3.2, 3.4, 4.0, 4.2, 4.6, 4.9, 0]
     #enr_ba = [3.4, 5.0]
     #from pyqt_trace import pyqt_trace
