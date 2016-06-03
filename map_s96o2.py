@@ -100,6 +100,7 @@ def s96o2(self):
         enrobj = cpin(self.axes)
         enrobj.set_circle(x,y,0.028,cmap[i])
         enrobj.set_text(str(i+1))
+        #enrobj.index = i+1
         #circobj = Circle(self.axes,x,y,cmap[i],str(i+1))
         self.axes.add_patch(enrobj.circle)
         self.axes.text(x+0.05,y,"%.2f" % enr_levels[i],fontsize=8)

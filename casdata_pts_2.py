@@ -20,8 +20,11 @@ import os
 #import os.path
 import sys
 import time
+from subprocess import call
 #from multiprocessing import Pool
 #from btf import btf
+from pyqt_trace import pyqt_trace
+
 
 class datastruct:
     """Dummy class used to structure data"""
@@ -37,7 +40,8 @@ class casdata:
         self.readcax(caxfile)
         self.__ave_enr()
         
-        self.pert = []
+        self.qcalc = []
+        self.qcalc.append(datastruct())
 
         #self.writecai()
         #self.btfcalc()
@@ -354,8 +358,6 @@ class casdata:
 #        btf('SVEA-96','')
         
         
-        
-
     def __map2mat(self,caxmap,dim):
         M = np.zeros((dim,dim)); M.fill(np.nan)
         for i in range(dim):
@@ -475,6 +477,11 @@ class casdata:
     def writec3cai_singlevoi(self,voi=40,maxdep=60):
         c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
+
+        LFU = self.qcalc[-1].LFU 
+        #FUE = self.qcalc[-1].FUE
+        #pyqt_trace()
+
         f = open(c3inp,'w')
         tit = "TIT "
         tit = tit + self.data.tfu.split('*')[0].replace(',','=').strip() + " "
@@ -494,7 +501,8 @@ class casdata:
         f.write('LFU\n')
         for i in range(self.data.npst):
             for j in range(i+1):
-                f.write('%d ' % self.data.LFU[i,j])
+                f.write('%d ' % LFU[i,j])
+                #f.write('%d ' % self.data.LFU[i,j])
             f.write('\n')
 
         pde = self.data.pde.split('\'')[0]
@@ -504,8 +512,9 @@ class casdata:
         Npin = np.size(self.data.pinlines)
         for i in range(Npin):
             f.write(self.data.pinlines[i].strip() + '\n')
-            
-        f.write(self.data.slaline.strip() + '\n')
+
+        if hasattr(self.data,'slaline'): # Water cross?
+            f.write(self.data.slaline.strip() + '\n')
 
         f.write('LPI\n')
         for i in range(self.data.npst):
@@ -617,9 +626,13 @@ class casdata:
 
         # Run C3 executable
         #cmd = "linrsh " + c3exe + " " + c3cfg
-        cmd = c3exe + " " + c3cfg
-        print cmd
-        os.system(cmd)
+        #cmd = c3exe + " " + c3cfg
+        print "running c3 model"
+        #os.system(cmd)
+        try: # use linrsh if available
+            call(['linrsh',c3exe,c3cfg])
+        except:
+            call([c3exe,c3cfg])
 
         # Remove files
         os.remove(c3cfg)
@@ -682,27 +695,29 @@ class casdata:
         fint = self.__fintcalc(POW)
 
         # Append state instancies
-        self.pert.append(datastruct())
+        #self.qcalc.append(datastruct())
         pindex = -1 # Index of last instance
-        self.pert[pindex].model = "c3"
-        self.pert[pindex].statepts = []
+        self.qcalc[pindex].model = "c3"
+        self.qcalc[pindex].statepts = []
         for i in range(Nburnpts):
-            self.pert[pindex].statepts.append(datastruct()) # append new instance to list
-            self.pert[pindex].statepts[i].burnup = burnup[i]
-            self.pert[pindex].statepts[i].voi = voi[i]
-            self.pert[pindex].statepts[i].vhi = vhi[i]
-            self.pert[pindex].statepts[i].tfu = tfu[i]
-            self.pert[pindex].statepts[i].tmo = tmo[i]
-            self.pert[pindex].statepts[i].kinf = kinf[i]
-            self.pert[pindex].statepts[i].fint = fint[i]
-            self.pert[pindex].statepts[i].POW = POW[:,:,i]
-            self.pert[pindex].statepts[i].EXP = EXP[:,:,i]
+            self.qcalc[pindex].statepts.append(datastruct()) # append new instance to list
+            self.qcalc[pindex].statepts[i].burnup = burnup[i]
+            self.qcalc[pindex].statepts[i].voi = voi[i]
+            self.qcalc[pindex].statepts[i].vhi = vhi[i]
+            self.qcalc[pindex].statepts[i].tfu = tfu[i]
+            self.qcalc[pindex].statepts[i].tmo = tmo[i]
+            self.qcalc[pindex].statepts[i].kinf = kinf[i]
+            self.qcalc[pindex].statepts[i].fint = fint[i]
+            self.qcalc[pindex].statepts[i].POW = POW[:,:,i]
+            self.qcalc[pindex].statepts[i].EXP = EXP[:,:,i]
 
-    def pertcalc(self,model='c3'):
+    def quickcalc(self,model='c3'):
         tic = time.time()
         if model == 'c3':
-            print "Running perturbation model..."
-            self.writec3cai_singlevoi(50,60)
+            voi = 50
+            maxburn = 60
+            print "Running perturbation model for void "+str(voi)
+            self.writec3cai_singlevoi(voi,maxburn)
             self.runc3()
             self.readc3cax()
         print "Done in "+str(time.time()-tic)+" seconds."

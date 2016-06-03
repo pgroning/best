@@ -196,16 +196,25 @@ class MainWin(QMainWindow):
         self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
         self.fig_update()
         
+        
     def dataobj_finished(self):
         print "dataobject constructed"
         self.init_pinobjects()
+
+        # Perform reference quick calculation for base case 
+        print "Performing a reference quick calculation..."
+        ncases = len(self.dataobj.cases)
+        for case_num in range(ncases):
+            self.quick_calc(case_num)
+
+        #pyqt_trace()
         #self.thread.quit()
         #self.draw_fuelmap()
         #self.set_pinvalues()
         self.timer.stop()
 
         # Update case number list box
-        ncases = len(self.dataobj.cases)
+        #ncases = len(self.dataobj.cases)
         for i in range(1,ncases+1):
             self.case_cbox.addItem(str(i))
         self.connect(self.case_cbox, SIGNAL('currentIndexChanged(int)'), self.fig_update)
@@ -218,6 +227,7 @@ class MainWin(QMainWindow):
         self.progressbar.button.clicked.connect(self.progressbar.close)
         self.progressbar.button.setEnabled(True)
         
+        #pyqt_trace()
         #QMessageBox.information(self,"Done!","All data imported!")
 
     def progressbar_update(self,val=None):
@@ -323,6 +333,7 @@ class MainWin(QMainWindow):
                         pinobj.pos = [i,j]
                         pinobj.ENR = ENR[i,j]
                         pinobj.BA = BA[i,j]
+                        pinobj.LFU = LFU[i,j]
                         pinlist.append(pinobj)
             self.pinobjects.append(pinlist)
 
@@ -434,6 +445,7 @@ class MainWin(QMainWindow):
             else:
                 j = next(j for j,cobj in enumerate(self.enrpinlist)
                          if cobj.BA == self.pinobjects[case_num][i].BA and cobj.ENR == self.pinobjects[case_num][i].ENR)
+            self.pinobjects[case_num][i].LFU = j+1
             fc = self.enrpinlist[j].circle.get_facecolor() 
             
             if param_str == 'ENR':
@@ -683,6 +695,7 @@ class MainWin(QMainWindow):
     def __pinenr_update(self,i,j):
         #i = self.pinselection_index
         case_num = int(self.case_cbox.currentIndex())
+        self.pinobjects[case_num][i].LFU = j+1
         self.pinobjects[case_num][i].ENR = self.enrpinlist[j].ENR
         #self.circlelist[i].ENR = self.enrpinlist[j].ENR
         if np.isnan(self.enrpinlist[j].BA):
@@ -700,8 +713,45 @@ class MainWin(QMainWindow):
         #self.circlelist[i].set_text(text)
         self.pinobjects[case_num][i].circle.set_facecolor(fc)
         #self.circlelist[i].circle.set_facecolor(fc)
-        self.canvas.draw()
+
+        self.dataobj.cases[case_num].qcalc[0].LFU = self.__lfumap(case_num)
         
+        self.canvas.draw()
+
+
+    def __lfumap(self,case_num):
+        print "Creating LFU map"
+        #case_num = int(self.case_cbox.currentIndex())
+        
+        #pyqt_trace()
+
+        # Initialize new LFU map and fill with zeros
+        LFU_old = self.dataobj.cases[case_num].data.LFU
+        LFU = np.zeros((LFU_old.shape[0],LFU_old.shape[1]));
+        
+        k = 0
+        for i in range(LFU.shape[0]):
+            for j in range(LFU.shape[1]):
+                if LFU_old[i,j] > 0:
+                    LFU[i,j] = self.pinobjects[case_num][k].LFU
+                    k += 1
+        return LFU
+
+    
+
+    def quick_calc(self,case_num):
+        print "Performing quick calculation..."
+        LFU = self.__lfumap(case_num)
+        self.dataobj.cases[case_num].qcalc[0].LFU = LFU
+        self.dataobj.cases[case_num].quickcalc()
+        print "Done" 
+
+#       case_num = int(self.case_cbox.currentIndex())        
+#        self.dataobj.cases[case_num].pertcalc()
+
+        
+
+        #pyqt_trace()
 
     def fig_update(self):
         """ Redraw figure and update values
@@ -930,6 +980,7 @@ class MainWin(QMainWindow):
         calc_hbox = QHBoxLayout()
         calc_hbox.addWidget(self.calc_quick_button)
         calc_hbox.addWidget(self.calc_full_button)
+        self.connect(self.calc_quick_button, SIGNAL('clicked()'), self.quick_calc)
 
         type_label = QLabel('Type:')
         self.type_cbox = QComboBox()
