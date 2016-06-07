@@ -478,7 +478,13 @@ class casdata:
         c3inp = "./c3.inp"
         print "Writing c3 input file " + c3inp
 
-        LFU = self.qcalc[-1].LFU 
+        if hasattr(self.qcalc[-1],'LFU'):
+            LFU = self.qcalc[-1].LFU
+        else:
+            LFU = self.data.LFU
+        
+        #LFU = self.qcalc[-1].LFU
+        #LFU = self.data.LFU
         #FUE = self.qcalc[-1].FUE
         #pyqt_trace()
 
@@ -511,7 +517,15 @@ class casdata:
 
         Npin = np.size(self.data.pinlines)
         for i in range(Npin):
-            f.write(self.data.pinlines[i].strip() + '\n')
+            tmpstr = re.split('\*|/',self.data.pinlines[i].strip())[0]# Remove coments etc
+            pinarr = re.split(',|\s+',tmpstr.strip()) # Split for segments
+            npinsegs = len(pinarr)-2
+            if npinsegs > 3:
+                red_pinstr = ' '.join(pinarr[0:3]+pinarr[-2:])
+            else:
+                red_pinstr = self.data.pinlines[i].strip()
+            f.write(red_pinstr.strip() + '\n')
+            #f.write(self.data.pinlines[i].strip() + '\n')
 
         if hasattr(self.data,'slaline'): # Water cross?
             f.write(self.data.slaline.strip() + '\n')
